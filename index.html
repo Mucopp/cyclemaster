@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CycleMaster Pro | Official App</title>
+    <title>CycleMaster Pro | Multi-Strategy</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#3b82f6">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -12,7 +12,7 @@
     <style>
         :root {
             --bg-color: #05070a;
-            --card-bg: rgba(13, 17, 23, 0.85);
+            --card-bg: rgba(13, 17, 23, 0.9);
             --accent-blue: #3b82f6;
             --accent-red: #ef4444;
             --accent-gold: #f59e0b;
@@ -27,7 +27,7 @@
         body {
             background-color: var(--bg-color); color: var(--text-primary);
             min-height: 100vh; display: flex; flex-direction: column; align-items: center; 
-            padding: 15px 10px; transition: background 0.8s;
+            padding: 10px; transition: background 0.8s;
             background-image: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
         }
 
@@ -36,43 +36,51 @@
 
         .container { width: 100%; max-width: 1400px; z-index: 10; }
 
-        header { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; text-align: center; }
+        header { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; text-align: center; }
         @media (min-width: 1024px) { header { flex-direction: row; justify-content: space-between; text-align: left; } }
 
-        .logo h1 { font-size: 1.5rem; font-weight: 800; background: linear-gradient(to right, #fff, #64748b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo h1 { font-size: 1.4rem; font-weight: 800; background: linear-gradient(to right, #fff, #64748b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
         .controls-area { 
-            display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: rgba(255,255,255,0.03); 
-            padding: 10px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.05); 
+            display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: rgba(255,255,255,0.03); 
+            padding: 10px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); 
         }
         @media (min-width: 768px) { .controls-area { display: flex; flex-direction: row; } }
 
-        .search-input, .select-input { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 8px; color: white; font-family: 'JetBrains Mono'; outline: none; font-size: 0.8rem; }
-        .search-btn { background: var(--glow-color); border: none; border-radius: 10px; padding: 10px 15px; color: white; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 0.8rem; }
-        .sound-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 8px; border-radius: 10px; cursor: pointer; color: white; font-size: 0.7rem; }
+        .ctrl-group { display: flex; flex-direction: column; gap: 2px; }
+        .ctrl-label { font-size: 0.5rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin-left: 5px; }
+
+        .search-input, .select-input { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 7px; color: white; font-family: 'JetBrains Mono'; outline: none; font-size: 0.75rem; }
+        .search-btn { background: var(--glow-color); border: none; border-radius: 8px; padding: 7px 15px; color: white; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 0.75rem; }
+        .sound-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 7px; border-radius: 8px; cursor: pointer; color: white; font-size: 0.65rem; }
         .sound-btn.active { color: var(--accent-green); border-color: var(--accent-green); }
 
-        .dashboard { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .profile-badge { font-size: 0.6rem; background: var(--accent-gold); color: #000; padding: 2px 8px; border-radius: 100px; font-weight: 800; vertical-align: middle; margin-left: 10px; }
+
+        .dashboard { display: grid; grid-template-columns: 1fr; gap: 10px; }
         @media (min-width: 1024px) { .dashboard { grid-template-columns: 0.9fr 1.2fr 1fr 0.9fr; } }
 
-        .card { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); height: 100%; }
+        .card { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); height: 100%; }
         .center-card { text-align: center; border-top: 4px solid var(--glow-color); position: relative; }
 
-        .agent-score { font-size: 1.8rem; font-weight: 800; color: var(--accent-gold); font-family: 'JetBrains Mono'; }
-        .score-meter { height: 8px; background: rgba(255,255,255,0.05); border-radius: 100px; margin: 8px 0; overflow: hidden; }
-        .score-fill { height: 100%; width: 0%; background: var(--accent-gold); transition: 1s ease; }
-        .reasoning-box { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 10px; font-size: 0.7rem; line-height: 1.4; color: var(--text-secondary); min-height: 70px; border-left: 3px solid var(--accent-gold); }
+        .strategy-title { font-size: 0.8rem; font-weight: 800; color: var(--accent-gold); letter-spacing: 2px; margin-bottom: 5px; text-transform: uppercase; }
+        .current-mode { font-size: 2.2rem; font-weight: 800; color: var(--glow-color); text-shadow: 0 0 20px rgba(var(--glow-color), 0.4); margin-bottom: 5px; }
 
-        .timer-box { position: relative; width: 120px; height: 120px; margin: 0 auto; }
+        .timer-box { position: relative; width: 110px; height: 110px; margin: 0 auto; }
         .timer-svg { transform: rotate(-90deg); width: 100%; height: 100%; }
         .timer-circle-bg { fill: none; stroke: rgba(255,255,255,0.02); stroke-width: 4; }
         .timer-circle-progress { fill: none; stroke: var(--glow-color); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 440; stroke-dashoffset: 0; transition: stroke-dashoffset 1s linear; }
-        .timer-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'JetBrains Mono'; font-size: 1.5rem; font-weight: 700; }
+        .timer-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'JetBrains Mono'; font-size: 1.4rem; font-weight: 700; }
 
-        #match-status { font-size: 1.1rem; font-weight: 800; margin-top: 15px; padding: 15px; border-radius: 15px; text-align: center; line-height: 1.2; }
+        #match-status { font-size: 1.1rem; font-weight: 800; margin-top: 10px; padding: 15px; border-radius: 15px; text-align: center; line-height: 1.2; }
         .match-ok-short { background: var(--accent-red); color: white; animation: pulse 1s infinite; border: 2px solid #fff; }
         .match-ok-long { background: var(--accent-green); color: white; animation: pulse 1s infinite; border: 2px solid #fff; }
         .match-wait { background: rgba(245, 158, 11, 0.1); color: var(--accent-gold); border: 1px solid rgba(245, 158, 11, 0.2); }
+
+        .agent-score { font-size: 1.8rem; font-weight: 800; color: var(--accent-gold); font-family: 'JetBrains Mono'; }
+        .score-meter { height: 6px; background: rgba(255,255,255,0.05); border-radius: 100px; margin: 8px 0; overflow: hidden; }
+        .score-fill { height: 100%; width: 0%; background: var(--accent-gold); transition: 1s ease; }
+        .reasoning-box { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 10px; font-size: 0.65rem; line-height: 1.4; color: var(--text-secondary); min-height: 70px; border-left: 3px solid var(--accent-gold); }
 
         .analysis-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; background: rgba(255,255,255,0.02); padding: 8px; border-radius: 10px; }
         .indicator-dot { width: 7px; height: 7px; border-radius: 50%; background: #334155; }
@@ -80,6 +88,7 @@
         .indicator-dot.warning { background: var(--accent-red); box-shadow: 0 0 8px var(--accent-red); }
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+        footer { margin-top: 15px; text-align: center; font-family: 'JetBrains Mono'; font-size: 0.5rem; color: #475569; letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -87,30 +96,71 @@
     <div class="container">
         <header>
             <div class="logo">
-                <h1>CycleMaster <span style="font-size: 0.6rem; color: var(--accent-gold); border: 1px solid var(--accent-gold); padding: 2px 5px; border-radius: 5px; vertical-align: middle;">APP</span></h1>
+                <h1>CycleMaster <span style="font-size: 0.6rem; color: var(--accent-gold); border: 1px solid var(--accent-gold); padding: 2px 5px; border-radius: 5px; vertical-align: middle;">AI PRO</span></h1>
             </div>
             
             <div class="controls-area">
                 <button id="sound-toggle" class="sound-btn" onclick="toggleSound()">🔊 SES</button>
-                <div class="ctrl-group"><input type="text" id="coin-input" class="search-input" value="BTCUSDT" style="width: 100px;"></div>
-                <div class="ctrl-group"><select id="cycle-select" class="select-input" onchange="updateSettings()"><option value="5">5dk</option><option value="15">15dk</option></select></div>
-                <div class="ctrl-group"><select id="tf-select" class="select-input" onchange="updateSettings()"><option value="1m">1m</option><option value="5m">5m</option></select></div>
-                <button class="search-btn" onclick="updateCoin()">GÜNCELLE</button>
+                
+                <div class="ctrl-group">
+                    <span class="ctrl-label">Coin</span>
+                    <input type="text" id="coin-input" class="search-input" value="BTCUSDT" style="width: 100px;">
+                </div>
+
+                <div class="ctrl-group">
+                    <span class="ctrl-label">Strateji Profili</span>
+                    <select id="profile-select" class="select-input" onchange="applyProfile()">
+                        <option value="scalper">⚡ SCALPER (5m)</option>
+                        <option value="trader" selected>🎯 DAY TRADER (15m)</option>
+                        <option value="swing">🛡️ SWING (30m)</option>
+                        <option value="custom">⚙️ ÖZEL</option>
+                    </select>
+                </div>
+
+                <div class="ctrl-group">
+                    <span class="ctrl-label">Döngü</span>
+                    <select id="cycle-select" class="select-input" onchange="updateSettings()">
+                        <option value="1">1dk</option>
+                        <option value="3">3dk</option>
+                        <option value="5">5dk</option>
+                        <option value="10">10dk</option>
+                        <option value="15">15dk</option>
+                        <option value="30">30dk</option>
+                        <option value="60">60dk</option>
+                    </select>
+                </div>
+
+                <div class="ctrl-group">
+                    <span class="ctrl-label">Analiz (TF)</span>
+                    <select id="tf-select" class="select-input" onchange="updateSettings()">
+                        <option value="1m">1m</option>
+                        <option value="3m">3m</option>
+                        <option value="5m">5m</option>
+                        <option value="15m">15m</option>
+                        <option value="30m">30m</option>
+                        <option value="1h">1h</option>
+                        <option value="4h">4h</option>
+                    </select>
+                </div>
+                
+                <button class="search-btn" onclick="updateCoin()">ANALİZ</button>
             </div>
         </header>
 
         <div class="dashboard">
+            <!-- Market Panel -->
             <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                     <span id="display-symbol" style="font-size: 1.2rem; font-weight: 800; color: var(--accent-gold);">BTCUSDT</span>
                     <span id="price-change" style="font-weight: 700; font-size: 0.8rem;">%0.00</span>
                 </div>
                 <div id="display-price" style="font-size: 2rem; font-weight: 700; font-family: 'JetBrains Mono'; margin-bottom: 12px;">0.00</div>
-                <div style="background:rgba(255,255,255,0.03); padding:8px; border-radius:12px; font-size:0.7rem;">
+                <div style="background:rgba(255,255,255,0.03); padding:8px; border-radius:12px; font-size:0.65rem;">
                     24H HI: <span id="h24">-</span> | 24H LO: <span id="l24">-</span>
                 </div>
             </div>
 
+            <!-- Agent Panel -->
             <div class="card" style="border-top: 4px solid var(--accent-gold);">
                 <h3 style="font-size:0.7rem; color:var(--accent-gold); margin-bottom:8px; letter-spacing:1px;">🧠 KARAR VERİCİ AJAN</h3>
                 <div style="display:flex; justify-content:space-between; align-items:flex-end;">
@@ -118,44 +168,60 @@
                     <span class="agent-score" id="agent-score">0%</span>
                 </div>
                 <div class="score-meter"><div class="score-fill" id="agent-score-fill"></div></div>
-                <div class="reasoning-box" id="agent-reasoning">Ajan hazır...</div>
+                <div class="reasoning-box" id="agent-reasoning">Analiz bekleniyor...</div>
             </div>
 
+            <!-- Command Panel -->
             <div class="card center-card">
-                <span id="action-label" style="font-size: 0.8rem; font-weight: 800; margin-bottom: 5px; display: block;">BEKLENİYOR</span>
+                <div id="strategy-name" class="strategy-title">DAY TRADER MODE</div>
                 <div class="current-mode" id="mode-text">---</div>
                 <div class="timer-box">
-                    <svg class="timer-svg"><circle class="timer-circle-bg" cx="60" cy="60" r="55"></circle><circle class="timer-circle-progress" id="progress-circle" cx="60" cy="60" r="55"></circle></svg>
+                    <svg class="timer-svg"><circle class="timer-circle-bg" cx="55" cy="55" r="50"></circle><circle class="timer-circle-progress" id="progress-circle" cx="55" cy="55" r="50"></circle></svg>
                     <div class="timer-text" id="timer-display">00:00</div>
                 </div>
                 <div id="match-status" class="match-wait">VERİ YOK</div>
             </div>
 
+            <!-- Tech Scan Panel -->
             <div class="card">
-                <h3 style="font-size:0.7rem; color:var(--text-secondary); margin-bottom:10px;">📊 TEKNİK TARAMA</h3>
+                <h3 style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:10px;">📊 TEKNİK TARAMA</h3>
                 <div class="analysis-item"><span>Stoch RSI</span><div style="display:flex; align-items:center; gap:6px;"><span id="stoch-rsi-val" style="font-size:0.8rem; font-weight:700;">-</span><div id="stoch-dot" class="indicator-dot"></div></div></div>
-                <div class="analysis-item"><span>Bollinger</span><div style="display:flex; align-items:center; gap:6px;"><span id="bb-status" style="font-size:0.7rem; font-weight:700;">-</span><div id="bb-dot" class="indicator-dot"></div></div></div>
-                <div class="analysis-item"><span>RSI (14)</span><div style="display:flex; align-items:center; gap:6px;"><span id="rsi-val" style="font-size:0.8rem; font-weight:700;">-</span><div id="rsi-dot" class="indicator-dot"></div></div></div>
+                <div class="analysis-item"><span>Bollinger</span><div style="display:flex; align-items:center; gap:8px;"><span id="bb-status" style="font-size:0.7rem; font-weight:700;">-</span><div id="bb-dot" class="indicator-dot"></div></div></div>
+                <div class="analysis-item"><span>RSI (14)</span><div style="display:flex; align-items:center; gap:8px;"><span id="rsi-val" style="font-size:0.8rem; font-weight:700;">-</span><div id="rsi-dot" class="indicator-dot"></div></div></div>
             </div>
         </div>
 
-        <div style="margin-top: 20px; text-align: center; font-family: 'JetBrains Mono'; font-size: 0.5rem; color: #475569; letter-spacing: 2px;">
-            SİSTEM ZAMANI: <span id="current-time">00:00:00</span> | PWA READY 📡
-        </div>
+        <footer>
+            SİSTEM ZAMANI: <span id="current-time">00:00:00</span> | VERSION 2.0 MULTI-STRATEGY READY 📡
+        </footer>
     </div>
 
     <audio id="alert-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
 
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch(()=>{});
-            });
-        }
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(()=>{}); }); }
 
-        let currentCoin = "BTCUSDT", cycleMinutes = 5, analysisTF = "5m", lastMode = null;
+        let currentCoin = "BTCUSDT", cycleMinutes = 15, analysisTF = "5m", lastMode = null;
         let rsiValue = 50, stochRsiValue = 50, bbStatus = "Mid";
         let isSoundEnabled = false, alertPlayedInThisWindow = false;
+
+        const profiles = {
+            scalper: { cycle: 5, tf: "1m", name: "⚡ SCALPER MODE" },
+            trader: { cycle: 15, tf: "5m", name: "🎯 DAY TRADER MODE" },
+            swing: { cycle: 30, tf: "15m", name: "🛡️ SWING MODE" }
+        };
+
+        function applyProfile() {
+            const pKey = document.getElementById('profile-select').value;
+            if(pKey === "custom") return;
+            const p = profiles[pKey];
+            cycleMinutes = p.cycle;
+            analysisTF = p.tf;
+            document.getElementById('cycle-select').value = cycleMinutes;
+            document.getElementById('tf-select').value = analysisTF;
+            document.getElementById('strategy-name').textContent = p.name;
+            updateSettings();
+        }
 
         function loadFromMemory() {
             const mC = localStorage.getItem('cycle_coin'), mMi = localStorage.getItem('cycle_min'), mTF = localStorage.getItem('cycle_tf'), mS = localStorage.getItem('cycle_sound');
@@ -163,6 +229,9 @@
             if(mS === 'true') { isSoundEnabled = true; document.getElementById('sound-toggle').className = "sound-btn active"; }
             document.getElementById('coin-input').value = currentCoin; document.getElementById('cycle-select').value = cycleMinutes;
             document.getElementById('tf-select').value = analysisTF; document.getElementById('display-symbol').textContent = currentCoin;
+            // Set profile name based on loaded settings
+            const found = Object.values(profiles).find(p => p.cycle == cycleMinutes && p.tf == analysisTF);
+            document.getElementById('strategy-name').textContent = found ? found.name : "⚙️ ÖZEL MOD";
         }
 
         function saveToMemory() {
@@ -178,6 +247,8 @@
 
         function updateSettings() {
             cycleMinutes = parseInt(document.getElementById('cycle-select').value); analysisTF = document.getElementById('tf-select').value;
+            const found = Object.values(profiles).find(p => p.cycle == cycleMinutes && p.tf == analysisTF);
+            document.getElementById('strategy-name').textContent = found ? found.name : "⚙️ ÖZEL MOD";
             saveToMemory(); fetchTechnical();
         }
 
@@ -245,16 +316,16 @@
         function updateCycle() {
             const now = new Date(); const min = now.getMinutes(), sec = now.getSeconds();
             document.getElementById('current-time').textContent = now.toLocaleTimeString('tr-TR');
-            const currentMode = (Math.floor(((now.getHours()*60)+min)/cycleMinutes)%2===0)?'SHORT':'LONG';
+            const totalMinToday = (now.getHours()*60)+min;
+            const currentMode = (Math.floor(totalMinToday / cycleMinutes) % 2 === 0) ? 'SHORT' : 'LONG';
             if (currentMode !== lastMode) { lastMode = currentMode; alertPlayedInThisWindow = false; handleModeChange(currentMode); }
             const sr = ((cycleMinutes-(min%cycleMinutes)-1)*60)+(60-sec);
             document.getElementById('timer-display').textContent = `${Math.floor(sr/60).toString().padStart(2,'0')}:${(sr%60).toString().padStart(2,'0')}`;
-            document.getElementById('progress-circle').style.strokeDashoffset = 345*(1-(sr/(cycleMinutes*60)));
+            document.getElementById('progress-circle').style.strokeDashoffset = 314*(1-(sr/(cycleMinutes*60)));
         }
 
         function handleModeChange(m) {
             document.body.className = m === 'SHORT' ? 'mode-short' : 'mode-long';
-            const al = document.getElementById('action-label'); al.textContent = m==='SHORT'?'⬇️ SATIŞ ODAKLI':'⬆️ ALIŞ ODAKLI'; al.style.color = m==='SHORT'?'#ef4444':'#10b981';
             document.getElementById('mode-text').textContent = m==='SHORT'?'SHORT':'LONG';
             runAgentDecision();
         }
@@ -274,7 +345,7 @@
             if(score >= 70) score += 10;
             scoreEl.textContent = score + "%"; fillEl.style.width = score + "%";
             if (score >= 75) {
-                reasonEl.innerHTML = `<strong>ONAYLANDI.</strong><br>${reasons.join('<br>')}`;
+                reasonEl.innerHTML = `<strong>GİRİŞ UYGUN.</strong><br>${reasons.join('<br>')}`;
                 if (lastMode === 'SHORT') { statusBox.textContent = "🔥 ŞİMDİ SATIŞ YAP"; statusBox.className = "match-ok-short"; }
                 else { statusBox.textContent = "🚀 ŞİMDİ ALIM YAP"; statusBox.className = "match-ok-long"; }
                 if(isSoundEnabled && !alertPlayedInThisWindow) { document.getElementById('alert-sound').play().catch(()=>{}); alertPlayedInThisWindow = true; }
