@@ -1,8 +1,8 @@
+
 {
   "name": "CycleMaster 15 Pro",
   "short_name": "CycleMaster",
-  "description": "Professional 15m Scalping Dashboard",
-  "start_url": "CycleMaster.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#05070a",
   "theme_color": "#3b82f6",
@@ -10,8 +10,7 @@
     {
       "src": "https://cdn-icons-png.flaticon.com/512/2091/2091665.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ]
 }
