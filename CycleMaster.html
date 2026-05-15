@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22CycleMaster%22,%22short_name%22:%22CycleMaster%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22#05070a%22,%22theme_color%22:%22#05070a%22}">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CycleMaster Pro | Universal Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #05070a;
+            --card-bg: rgba(13, 17, 23, 0.85);
+            --accent-blue: #3b82f6;
+            --accent-red: #ef4444;
+            --accent-gold: #f59e0b;
+            --accent-green: #10b981;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --glow-color: var(--accent-blue);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--bg-color); color: var(--text-primary);
+            min-height: 100vh; display: flex; flex-direction: column; align-items: center; 
+            padding: 20px 10px; transition: background 0.8s;
+            background-image: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
+        }
+
+        body.mode-short { --glow-color: var(--accent-red); }
+        body.mode-long { --glow-color: var(--accent-blue); }
+
+        .container { width: 100%; max-width: 1400px; z-index: 10; }
+
+        header { 
+            display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; text-align: center;
+        }
+
+        @media (min-width: 1024px) {
+            header { flex-direction: row; justify-content: space-between; text-align: left; }
+        }
+
+        .logo h1 { font-size: 1.6rem; font-weight: 800; background: linear-gradient(to right, #fff, #64748b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .controls-area { 
+            display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: rgba(255,255,255,0.03); 
+            padding: 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); 
+        }
+
+        @media (min-width: 768px) {
+            .controls-area { display: flex; flex-direction: row; }
+        }
+
+        .ctrl-group { display: flex; flex-direction: column; gap: 2px; }
+        .ctrl-label { font-size: 0.55rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin-left: 5px; }
+
+        .search-input, .select-input { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 10px; color: white; font-family: 'JetBrains Mono'; outline: none; font-size: 0.85rem; }
+        .search-btn { background: var(--glow-color); border: none; border-radius: 12px; padding: 10px 20px; color: white; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .sound-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 12px; cursor: pointer; color: white; font-size: 0.8rem; }
+        .sound-btn.active { color: var(--accent-green); border-color: var(--accent-green); }
+
+        /* --- Dashboard Grid --- */
+        .dashboard { display: grid; grid-template-columns: 1fr; gap: 15px; }
+
+        @media (min-width: 1024px) {
+            .dashboard { grid-template-columns: 0.9fr 1.2fr 1fr 0.9fr; }
+        }
+
+        .card { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); border-radius: 25px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); height: 100%; }
+        .center-card { text-align: center; border-top: 5px solid var(--glow-color); position: relative; }
+
+        .action-type { font-size: 1rem; font-weight: 800; margin-bottom: 5px; display: block; }
+        .current-mode { font-size: 2.4rem; font-weight: 800; color: var(--glow-color); text-shadow: 0 0 20px rgba(var(--glow-color), 0.4); margin-bottom: 5px; }
+
+        .timer-box { position: relative; width: 130px; height: 130px; margin: 0 auto; }
+        .timer-svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+        .timer-circle-bg { fill: none; stroke: rgba(255,255,255,0.02); stroke-width: 4; }
+        .timer-circle-progress { fill: none; stroke: var(--glow-color); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 440; stroke-dashoffset: 0; transition: stroke-dashoffset 1s linear; }
+        .timer-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'JetBrains Mono'; font-size: 1.6rem; font-weight: 700; }
+
+        .agent-score { font-size: 2rem; font-weight: 800; color: var(--accent-gold); font-family: 'JetBrains Mono'; }
+        .score-meter { height: 8px; background: rgba(255,255,255,0.05); border-radius: 100px; margin: 10px 0; overflow: hidden; }
+        .score-fill { height: 100%; width: 0%; background: var(--accent-gold); transition: 1s ease; }
+        .reasoning-box { background: rgba(0,0,0,0.2); border-radius: 15px; padding: 12px; font-size: 0.75rem; line-height: 1.4; color: var(--text-secondary); min-height: 80px; border-left: 3px solid var(--accent-gold); }
+
+        .analysis-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 12px; }
+        .indicator-dot { width: 8px; height: 8px; border-radius: 50%; background: #334155; }
+        .indicator-dot.active { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+        .indicator-dot.warning { background: var(--accent-red); box-shadow: 0 0 8px var(--accent-red); }
+
+        #match-status { font-size: 1.2rem; font-weight: 800; margin-top: 15px; padding: 18px; border-radius: 20px; text-align: center; line-height: 1.3; }
+        .match-ok-short { background: var(--accent-red); color: white; animation: pulse 1s infinite; }
+        .match-ok-long { background: var(--accent-green); color: white; animation: pulse 1s infinite; }
+        .match-wait { background: rgba(245, 158, 11, 0.1); color: var(--accent-gold); border: 1px solid rgba(245, 158, 11, 0.2); }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+
+        footer { margin-top: 25px; text-align: center; font-family: 'JetBrains Mono'; font-size: 0.6rem; color: #475569; letter-spacing: 2px; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1>CycleMaster <span style="font-size: 0.6rem; color: var(--accent-gold); border: 1px solid var(--accent-gold); padding: 2px 5px; border-radius: 5px; vertical-align: middle;">UNIVERSAL PRO</span></h1>
+            </div>
+            
+            <div class="controls-area">
+                <button id="sound-toggle" class="sound-btn" onclick="toggleSound()">🔊 SES</button>
+                <div class="ctrl-group"><span class="ctrl-label">Coin</span><input type="text" id="coin-input" class="search-input" value="BTCUSDT"></div>
+                <div class="ctrl-group">
+                    <span class="ctrl-label">Döngü</span>
+                    <select id="cycle-select" class="select-input" onchange="updateSettings()">
+                        <option value="5">5dk</option><option value="15">15dk</option><option value="30">30dk</option>
+                    </select>
+                </div>
+                <div class="ctrl-group">
+                    <span class="ctrl-label">Analiz</span>
+                    <select id="tf-select" class="select-input" onchange="updateSettings()">
+                        <option value="1m">1m</option><option value="5m">5m</option><option value="15m">15m</option>
+                    </select>
+                </div>
+                <button class="search-btn" onclick="updateCoin()">ANALİZ ET</button>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <!-- Market Panel -->
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <span id="display-symbol" style="font-size: 1.3rem; font-weight: 800; color: var(--accent-gold);">BTCUSDT</span>
+                    <span id="price-change" style="font-weight: 700; font-size: 0.85rem;">%0.00</span>
+                </div>
+                <div id="display-price" style="font-size: 2.2rem; font-weight: 700; font-family: 'JetBrains Mono'; margin-bottom: 15px;">0.00</div>
+                <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:15px; font-size:0.75rem;">
+                    24H HI: <span id="h24" style="color:white;">-</span><br>
+                    24H LO: <span id="l24" style="color:white; margin-top:4px; display:inline-block;">-</span>
+                </div>
+            </div>
+
+            <!-- Agent Panel -->
+            <div class="card" style="border-top: 4px solid var(--accent-gold);">
+                <h3 style="font-size:0.75rem; color:var(--accent-gold); margin-bottom:10px; letter-spacing:1px;">🧠 KARAR VERİCİ AJAN</h3>
+                <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                    <span style="font-size:0.65rem; color:var(--text-secondary);">GÜVEN SKORU</span>
+                    <span class="agent-score" id="agent-score">0%</span>
+                </div>
+                <div class="score-meter"><div class="score-fill" id="agent-score-fill"></div></div>
+                <div class="reasoning-box" id="agent-reasoning">Ajan verileri bekliyor...</div>
+            </div>
+
+            <!-- Command Panel -->
+            <div class="card center-card">
+                <span id="action-label" class="action-type">BEKLENİYOR</span>
+                <div class="current-mode" id="mode-text">---</div>
+                <div class="timer-box">
+                    <svg class="timer-svg"><circle class="timer-circle-bg" cx="65" cy="65" r="60"></circle><circle class="timer-circle-progress" id="progress-circle" cx="65" cy="65" r="60"></circle></svg>
+                    <div class="timer-text" id="timer-display">00:00</div>
+                </div>
+                <div id="match-status" class="match-wait">VERİ YOK</div>
+            </div>
+
+            <!-- Tech Scan Panel -->
+            <div class="card">
+                <h3 style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:12px;">📊 TEKNİK TARAMA</h3>
+                <div class="analysis-item"><span>Stoch RSI</span><div style="display:flex; align-items:center; gap:8px;"><span id="stoch-rsi-val" style="font-size:0.85rem; font-weight:700;">-</span><div id="stoch-dot" class="indicator-dot"></div></div></div>
+                <div class="analysis-item"><span>Bollinger</span><div style="display:flex; align-items:center; gap:8px;"><span id="bb-status" style="font-size:0.75rem; font-weight:700;">-</span><div id="bb-dot" class="indicator-dot"></div></div></div>
+                <div class="analysis-item"><span>RSI (14)</span><div style="display:flex; align-items:center; gap:8px;"><span id="rsi-val" style="font-size:0.85rem; font-weight:700;">-</span><div id="rsi-dot" class="indicator-dot"></div></div></div>
+            </div>
+        </div>
+
+        <footer>
+            SİSTEM ZAMANI: <span id="current-time">00:00:00</span> | OPTIMIZED FOR ALL DEVICES 📱💻
+        </footer>
+    </div>
+
+    <audio id="alert-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
+
+    <script>
+        let currentCoin = "BTCUSDT", cycleMinutes = 5, analysisTF = "5m", lastMode = null;
+        let rsiValue = 50, stochRsiValue = 50, bbStatus = "Mid";
+        let isSoundEnabled = false, alertPlayedInThisWindow = false;
+
+        function loadFromMemory() {
+            const mC = localStorage.getItem('cycle_coin'), mMi = localStorage.getItem('cycle_min'), mTF = localStorage.getItem('cycle_tf'), mS = localStorage.getItem('cycle_sound');
+            if(mC) currentCoin = mC; if(mMi) cycleMinutes = parseInt(mMi); if(mTF) analysisTF = mTF;
+            if(mS === 'true') { isSoundEnabled = true; document.getElementById('sound-toggle').className = "sound-btn active"; }
+            document.getElementById('coin-input').value = currentCoin; document.getElementById('cycle-select').value = cycleMinutes;
+            document.getElementById('tf-select').value = analysisTF; document.getElementById('display-symbol').textContent = currentCoin;
+        }
+
+        function saveToMemory() {
+            localStorage.setItem('cycle_coin', currentCoin); localStorage.setItem('cycle_min', cycleMinutes);
+            localStorage.setItem('cycle_tf', analysisTF); localStorage.setItem('cycle_sound', isSoundEnabled);
+        }
+
+        function toggleSound() {
+            isSoundEnabled = !isSoundEnabled; saveToMemory();
+            document.getElementById('sound-toggle').className = isSoundEnabled ? "sound-btn active" : "sound-btn";
+            if(isSoundEnabled) { const a = document.getElementById('alert-sound'); a.play().then(()=>a.pause()).catch(()=>{}); }
+        }
+
+        function updateSettings() {
+            cycleMinutes = parseInt(document.getElementById('cycle-select').value); analysisTF = document.getElementById('tf-select').value;
+            saveToMemory(); fetchTechnical();
+        }
+
+        function updateCoin() {
+            const i = document.getElementById('coin-input').value.toUpperCase();
+            if(i) { currentCoin = i.includes("USDT") ? i : i + "USDT"; document.getElementById('display-symbol').textContent = currentCoin; saveToMemory(); fetchData(); }
+        }
+
+        async function fetchData() { fetchPrice(); fetchTechnical(); }
+
+        async function fetchPrice() {
+            try {
+                const r = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${currentCoin}`);
+                const d = await r.json();
+                if(d.lastPrice) {
+                    const p = parseFloat(d.lastPrice); document.getElementById('display-price').textContent = p > 1 ? p.toLocaleString() : p.toFixed(6);
+                    const c = parseFloat(d.priceChangePercent); const e = document.getElementById('price-change');
+                    e.textContent = (c>=0?"+":"")+c.toFixed(2)+"%"; e.style.color = c>=0?"#10b981":"#ef4444";
+                    document.getElementById('h24').textContent = parseFloat(d.highPrice).toLocaleString();
+                    document.getElementById('l24').textContent = parseFloat(d.lowPrice).toLocaleString();
+                }
+            } catch(e){}
+        }
+
+        async function fetchTechnical() {
+            try {
+                const r = await fetch(`https://api.binance.com/api/v3/klines?symbol=${currentCoin}&interval=${analysisTF}&limit=300`);
+                const k = await r.json(); const closes = k.map(x => parseFloat(x[4]));
+                if(closes.length < 50) return;
+                const rsiSeries = calculateRSISeries(closes, 14); rsiValue = rsiSeries[rsiSeries.length - 1];
+                document.getElementById('rsi-val').textContent = rsiValue.toFixed(1);
+                const stochRsiSeries = calculateStochRSISeries(rsiSeries, 14); stochRsiValue = stochRsiSeries[stochRsiSeries.length - 1];
+                document.getElementById('stoch-rsi-val').textContent = stochRsiValue.toFixed(1);
+                const { upper, lower } = calculateBB(closes); const lp = closes[closes.length - 1];
+                if (lp >= upper * 0.995) bbStatus = "Top"; else if (lp <= lower * 1.005) bbStatus = "Bottom"; else bbStatus = "Mid";
+                const bt = document.getElementById('bb-status'); bt.textContent = bbStatus==="Top"?"ÜST":(bbStatus==="Bottom"?"ALT":"ORTA");
+                bt.style.color = bbStatus==="Top"?"#ef4444":(bbStatus==="Bottom"?"#3b82f6":"#94a3b8");
+                runAgentDecision();
+            } catch(e){}
+        }
+
+        function calculateRSISeries(c, p = 14) {
+            let r = [], g = [], l = [];
+            for(let i=1; i<c.length; i++) { let d = c[i]-c[i-1]; g.push(Math.max(0,d)); l.push(Math.max(0,-d)); }
+            let ag = g.slice(0,p).reduce((a,b)=>a+b)/p, al = l.slice(0,p).reduce((a,b)=>a+b)/p;
+            for(let i=p; i<g.length; i++) { ag = ((ag*(p-1))+g[i])/p; al = ((al*(p-1))+l[i])/p; r.push(al===0?100:100-(100/(1+ag/al))); }
+            return r;
+        }
+
+        function calculateStochRSISeries(r, p = 14) {
+            let s = [];
+            for(let i=p; i<=r.length; i++) {
+                let sl = r.slice(i-p, i); let c = r[i-1], min = Math.min(...sl), max = Math.max(...sl);
+                s.push(max===min?50:((c-min)/(max-min))*100);
+            }
+            return s;
+        }
+
+        function calculateBB(c, p=20, d=2) {
+            const s = c.slice(-p); const m = s.reduce((a,b)=>a+b,0)/p;
+            const sd = Math.sqrt(s.reduce((a,b)=>a+Math.pow(b-m,2),0)/p);
+            return { upper: m+(sd*d), lower: m-(sd*d) };
+        }
+
+        function updateCycle() {
+            const now = new Date(); const min = now.getMinutes(), sec = now.getSeconds();
+            document.getElementById('current-time').textContent = now.toLocaleTimeString('tr-TR');
+            const currentMode = (Math.floor(((now.getHours()*60)+min)/cycleMinutes)%2===0)?'SHORT':'LONG';
+            if (currentMode !== lastMode) { lastMode = currentMode; alertPlayedInThisWindow = false; handleModeChange(currentMode); }
+            const sr = ((cycleMinutes-(min%cycleMinutes)-1)*60)+(60-sec);
+            document.getElementById('timer-display').textContent = `${Math.floor(sr/60).toString().padStart(2,'0')}:${(sr%60).toString().padStart(2,'0')}`;
+            document.getElementById('progress-circle').style.strokeDashoffset = 440*(1-(sr/(cycleMinutes*60)));
+        }
+
+        function handleModeChange(m) {
+            document.body.className = m === 'SHORT' ? 'mode-short' : 'mode-long';
+            const al = document.getElementById('action-label'); al.textContent = m==='SHORT'?'⬇️ SATIŞ ODAKLI':'⬆️ ALIŞ ODAKLI'; al.style.color = m==='SHORT'?'#ef4444':'#10b981';
+            document.getElementById('mode-text').textContent = m==='SHORT'?'SHORT':'LONG';
+            runAgentDecision();
+        }
+
+        function runAgentDecision() {
+            const scoreEl = document.getElementById('agent-score');
+            const fillEl = document.getElementById('agent-score-fill');
+            const reasonEl = document.getElementById('agent-reasoning');
+            const statusBox = document.getElementById('match-status');
+            let score = 0, reasons = [];
+            let stochOk = lastMode === 'SHORT' ? stochRsiValue > 80 : stochRsiValue < 20;
+            let bbOk = lastMode === 'SHORT' ? bbStatus === "Top" : bbStatus === "Bottom";
+            let rsiOk = lastMode === 'SHORT' ? rsiValue > 55 : rsiValue < 45;
+            if(stochOk) { score += 40; reasons.push(`Stoch RSI ${lastMode==='SHORT'?'tepe':'dip'} onaylı.`); }
+            if(bbOk) { score += 30; reasons.push(`Bollinger Bandı teması var.`); }
+            if(rsiOk) { score += 20; reasons.push(`Ana RSI trendi destekliyor.`); }
+            if(score >= 70) score += 10;
+            scoreEl.textContent = score + "%"; fillEl.style.width = score + "%";
+            if (score >= 75) {
+                reasonEl.innerHTML = `<strong>ONAYLANDI.</strong><br>${reasons.join('<br>')}`;
+                if (lastMode === 'SHORT') { statusBox.textContent = "🔥 ŞİMDİ SATIŞ YAP"; statusBox.className = "match-ok-short"; }
+                else { statusBox.textContent = "🚀 ŞİMDİ ALIM YAP"; statusBox.className = "match-ok-long"; }
+                if(isSoundEnabled && !alertPlayedInThisWindow) { document.getElementById('alert-sound').play().catch(()=>{}); alertPlayedInThisWindow = true; }
+            } else {
+                reasonEl.innerHTML = `<strong>BEKLE.</strong><br>Şartlar tam değil (${score}%).`;
+                statusBox.textContent = "⏳ ŞARTLAR BEKLENİYOR"; statusBox.className = "match-wait";
+            }
+            document.getElementById('stoch-dot').className = "indicator-dot " + (stochOk ? "active" : "warning");
+            document.getElementById('bb-dot').className = "indicator-dot " + (bbOk ? "active" : "warning");
+            document.getElementById('rsi-dot').className = "indicator-dot " + (rsiOk ? "active" : "warning");
+        }
+
+        loadFromMemory(); setInterval(updateCycle, 1000); setInterval(fetchPrice, 3000); setInterval(fetchTechnical, 15000);
+        updateCycle(); fetchData();
+    </script>
+</body>
+</html>
