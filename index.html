@@ -279,6 +279,69 @@
 
         ::-webkit-scrollbar { width:3px; }
         ::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.08); border-radius:3px; }
+
+        /* PWA INSTALL BANNER */
+        .install-banner {
+            display: none;
+            position: fixed;
+            bottom: calc(var(--bottom-h) + var(--safe-bottom) + 12px);
+            left: 14px; right: 14px;
+            background: linear-gradient(135deg, #0d1f3c, #0d1524);
+            border: 1px solid rgba(59,130,246,0.35);
+            border-radius: 18px;
+            padding: 14px 16px;
+            z-index: 300;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            animation: slideUp 0.4s cubic-bezier(0.4,0,0.2,1);
+        }
+        @keyframes slideUp { from { transform:translateY(20px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+        .install-banner.visible { display: flex; align-items: center; gap: 12px; }
+        .install-icon { font-size: 2rem; flex-shrink: 0; }
+        .install-text { flex: 1; }
+        .install-title { font-size: 0.82rem; font-weight: 700; margin-bottom: 2px; }
+        .install-sub { font-size: 0.6rem; color: var(--text2); }
+        .install-actions { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+        .install-yes {
+            background: linear-gradient(135deg, var(--blue), #2563eb);
+            border: none; border-radius: 10px;
+            padding: 8px 14px; color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700; font-size: 0.72rem;
+            cursor: pointer; white-space: nowrap;
+        }
+        .install-no {
+            background: transparent; border: none;
+            color: var(--text3); font-size: 0.6rem;
+            cursor: pointer; text-align: center;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* iOS install hint */
+        .ios-hint {
+            display: none;
+            position: fixed;
+            bottom: calc(var(--bottom-h) + var(--safe-bottom) + 12px);
+            left: 14px; right: 14px;
+            background: linear-gradient(135deg, #0d1f3c, #0d1524);
+            border: 1px solid rgba(59,130,246,0.35);
+            border-radius: 18px;
+            padding: 16px 18px;
+            z-index: 300;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            font-size: 0.72rem; line-height: 1.7;
+            color: var(--text2);
+            animation: slideUp 0.4s cubic-bezier(0.4,0,0.2,1);
+        }
+        .ios-hint.visible { display: block; }
+        .ios-hint strong { color: var(--text); }
+        .ios-hint-close {
+            position: absolute; top: 10px; right: 14px;
+            background: none; border: none; color: var(--text3);
+            font-size: 1rem; cursor: pointer;
+        }
+        .ios-arrow {
+            text-align: center; font-size: 1.4rem; margin-top: 6px;
+        }
     </style>
 </head>
 <body>
@@ -457,6 +520,27 @@
         <div class="nav-dot"></div>
     </div>
 </nav>
+
+<!-- PWA Install Banner (Android/Desktop) -->
+<div class="install-banner" id="install-banner">
+    <div class="install-icon">📡</div>
+    <div class="install-text">
+        <div class="install-title">Uygulamayı Yükle</div>
+        <div class="install-sub">Ana ekrana ekle, uygulama gibi aç</div>
+    </div>
+    <div class="install-actions">
+        <button class="install-yes" id="install-yes">YÜKLE</button>
+        <button class="install-no" id="install-no">Şimdi değil</button>
+    </div>
+</div>
+
+<!-- iOS Install Hint -->
+<div class="ios-hint" id="ios-hint">
+    <button class="ios-hint-close" onclick="closeIosHint()">✕</button>
+    <strong>Ana Ekrana Ekle</strong><br>
+    Safari'de aşağıdaki <strong>paylaş</strong> butonuna dokun → <strong>"Ana Ekrana Ekle"</strong> seç.
+    <div class="ios-arrow">⬇️</div>
+</div>
 
 <div class="toast" id="toast">
     <div class="toast-title" id="toast-title">🔔 Sinyal!</div>
@@ -715,6 +799,53 @@ function loadFromMemory(){
     const found=Object.values(profiles).find(p=>p.cycle==cycleMinutes&&p.tf==analysisTF);
     document.getElementById('strategy-name').textContent=found?found.name:"⚙️ ÖZEL MOD";
 }
+
+// ── PWA INSTALL ──
+let deferredPrompt = null;
+const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const isInStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    // Show banner after 3 seconds if not already installed
+    if (!isInStandalone && !localStorage.getItem('cm_install_dismissed')) {
+        setTimeout(() => document.getElementById('install-banner').classList.add('visible'), 3000);
+    }
+});
+
+document.getElementById('install-yes').addEventListener('click', async () => {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        document.getElementById('install-banner').classList.remove('visible');
+        if (outcome === 'accepted') showToast('✅ Yüklendi!', 'Uygulama ana ekrana eklendi.');
+    }
+});
+
+document.getElementById('install-no').addEventListener('click', () => {
+    document.getElementById('install-banner').classList.remove('visible');
+    localStorage.setItem('cm_install_dismissed', '1');
+});
+
+// iOS: show hint if in Safari and not installed
+if (isIos && !isInStandalone && !localStorage.getItem('cm_ios_hint_shown')) {
+    setTimeout(() => {
+        document.getElementById('ios-hint').classList.add('visible');
+        localStorage.setItem('cm_ios_hint_shown', '1');
+    }, 4000);
+}
+
+function closeIosHint() {
+    document.getElementById('ios-hint').classList.remove('visible');
+}
+
+// Install success detection
+window.addEventListener('appinstalled', () => {
+    document.getElementById('install-banner').classList.remove('visible');
+    showToast('✅ Başarıyla Yüklendi!', 'CycleMaster Pro ana ekranında.');
+});
 
 loadFromMemory();
 setInterval(updateCycle,1000);
