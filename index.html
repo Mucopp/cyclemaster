@@ -2,22 +2,23 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CycleMaster Pro | Multi-Strategy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>CycleMaster Ultimate | Mobile Optimized</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#3b82f6">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2091/2091665.png">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #05070a;
-            --card-bg: rgba(13, 17, 23, 0.9);
+            --bg-color: #030508;
+            --card-bg: rgba(17, 25, 40, 0.8);
             --accent-blue: #3b82f6;
             --accent-red: #ef4444;
-            --accent-gold: #f59e0b;
+            --accent-gold: #fbbf24;
             --accent-green: #10b981;
-            --text-primary: #f1f5f9;
+            --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
             --glow-color: var(--accent-blue);
         }
@@ -27,8 +28,9 @@
         body {
             background-color: var(--bg-color); color: var(--text-primary);
             min-height: 100vh; display: flex; flex-direction: column; align-items: center; 
-            padding: 10px; transition: background 0.8s;
-            background-image: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
+            padding: env(safe-area-inset-top) 8px env(safe-area-inset-bottom); 
+            overflow-x: hidden; transition: 0.5s;
+            background-image: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
         }
 
         body.mode-short { --glow-color: var(--accent-red); }
@@ -36,59 +38,71 @@
 
         .container { width: 100%; max-width: 1400px; z-index: 10; }
 
-        header { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; text-align: center; }
-        @media (min-width: 1024px) { header { flex-direction: row; justify-content: space-between; text-align: left; } }
+        header { width: 100%; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+        @media (min-width: 1024px) { header { flex-direction: row; justify-content: space-between; align-items: center; } }
 
-        .logo h1 { font-size: 1.4rem; font-weight: 800; background: linear-gradient(to right, #fff, #64748b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo h1 { font-size: 1.2rem; font-weight: 800; text-align: center; background: linear-gradient(135deg, #fff, #64748b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
         .controls-area { 
-            display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: rgba(255,255,255,0.03); 
-            padding: 10px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); 
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; 
+            background: rgba(255,255,255,0.03); padding: 8px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); 
         }
         @media (min-width: 768px) { .controls-area { display: flex; flex-direction: row; } }
 
         .ctrl-group { display: flex; flex-direction: column; gap: 2px; }
-        .ctrl-label { font-size: 0.5rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin-left: 5px; }
+        .ctrl-label { font-size: 0.5rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin-left: 4px; }
 
-        .search-input, .select-input { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 7px; color: white; font-family: 'JetBrains Mono'; outline: none; font-size: 0.75rem; }
-        .search-btn { background: var(--glow-color); border: none; border-radius: 8px; padding: 7px 15px; color: white; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 0.75rem; }
-        .sound-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 7px; border-radius: 8px; cursor: pointer; color: white; font-size: 0.65rem; }
+        .search-input, .select-input { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 8px; color: white; font-family: 'JetBrains Mono'; outline: none; font-size: 0.75rem; width: 100%; }
+        .search-btn { background: var(--glow-color); border: none; border-radius: 10px; padding: 8px; color: white; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 0.75rem; grid-column: span 2; }
+        @media (min-width: 768px) { .search-btn { grid-column: auto; width: 100px; } }
+
+        .sound-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 8px; border-radius: 10px; cursor: pointer; color: white; font-size: 0.7rem; }
         .sound-btn.active { color: var(--accent-green); border-color: var(--accent-green); }
 
-        .profile-badge { font-size: 0.6rem; background: var(--accent-gold); color: #000; padding: 2px 8px; border-radius: 100px; font-weight: 800; vertical-align: middle; margin-left: 10px; }
+        /* --- Dashboard --- */
+        .dashboard { display: grid; grid-template-columns: 1fr; gap: 10px; width: 100%; }
+        @media (min-width: 1024px) { .dashboard { grid-template-columns: 0.8fr 1.3fr 1fr 0.9fr; } }
 
-        .dashboard { display: grid; grid-template-columns: 1fr; gap: 10px; }
-        @media (min-width: 1024px) { .dashboard { grid-template-columns: 0.9fr 1.2fr 1fr 0.9fr; } }
+        .card { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 15px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.4); width: 100%; }
+        .center-card { text-align: center; border-top: 4px solid var(--glow-color); }
 
-        .card { background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); height: 100%; }
-        .center-card { text-align: center; border-top: 4px solid var(--glow-color); position: relative; }
+        .price-text { font-size: 2rem; font-weight: 800; font-family: 'JetBrains Mono'; line-height: 1.1; margin: 4px 0; }
+        
+        .htf-status-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 10px; }
+        .htf-box { background: rgba(0,0,0,0.2); padding: 6px; border-radius: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.02); }
+        .htf-label { font-size: 0.45rem; color: var(--text-secondary); margin-bottom: 2px; text-transform: uppercase; }
+        .htf-val { font-size: 0.6rem; font-weight: 800; padding: 2px 4px; border-radius: 4px; display: block; }
 
-        .strategy-title { font-size: 0.8rem; font-weight: 800; color: var(--accent-gold); letter-spacing: 2px; margin-bottom: 5px; text-transform: uppercase; }
-        .current-mode { font-size: 2.2rem; font-weight: 800; color: var(--glow-color); text-shadow: 0 0 20px rgba(var(--glow-color), 0.4); margin-bottom: 5px; }
+        .agent-score-circle { width: 80px; height: 80px; margin: 0 auto 10px; position: relative; }
+        .agent-val { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.4rem; font-weight: 800; color: var(--accent-gold); font-family: 'JetBrains Mono'; }
+        
+        .reasoning-list { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+        .reason-item { font-size: 0.65rem; color: var(--text-secondary); padding: 5px 8px; background: rgba(255,255,255,0.02); border-radius: 8px; border-left: 2px solid var(--accent-gold); }
 
-        .timer-box { position: relative; width: 110px; height: 110px; margin: 0 auto; }
-        .timer-svg { transform: rotate(-90deg); width: 100%; height: 100%; }
-        .timer-circle-bg { fill: none; stroke: rgba(255,255,255,0.02); stroke-width: 4; }
-        .timer-circle-progress { fill: none; stroke: var(--glow-color); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 440; stroke-dashoffset: 0; transition: stroke-dashoffset 1s linear; }
-        .timer-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'JetBrains Mono'; font-size: 1.4rem; font-weight: 700; }
+        .trade-planner { margin-top: 10px; padding: 10px; background: rgba(16, 185, 129, 0.05); border-radius: 12px; border: 1px dashed rgba(16, 185, 129, 0.2); }
+        .plan-row { display: flex; justify-content: space-between; font-size: 0.7rem; margin-bottom: 3px; font-family: 'JetBrains Mono'; }
 
-        #match-status { font-size: 1.1rem; font-weight: 800; margin-top: 10px; padding: 15px; border-radius: 15px; text-align: center; line-height: 1.2; }
-        .match-ok-short { background: var(--accent-red); color: white; animation: pulse 1s infinite; border: 2px solid #fff; }
-        .match-ok-long { background: var(--accent-green); color: white; animation: pulse 1s infinite; border: 2px solid #fff; }
-        .match-wait { background: rgba(245, 158, 11, 0.1); color: var(--accent-gold); border: 1px solid rgba(245, 158, 11, 0.2); }
+        .timer-text-big { font-size: 2.4rem; font-weight: 800; font-family: 'JetBrains Mono'; margin: 5px 0; color: var(--text-primary); }
 
-        .agent-score { font-size: 1.8rem; font-weight: 800; color: var(--accent-gold); font-family: 'JetBrains Mono'; }
-        .score-meter { height: 6px; background: rgba(255,255,255,0.05); border-radius: 100px; margin: 8px 0; overflow: hidden; }
-        .score-fill { height: 100%; width: 0%; background: var(--accent-gold); transition: 1s ease; }
-        .reasoning-box { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 10px; font-size: 0.65rem; line-height: 1.4; color: var(--text-secondary); min-height: 70px; border-left: 3px solid var(--accent-gold); }
+        #match-status { font-size: 1rem; font-weight: 800; padding: 15px; border-radius: 18px; text-align: center; margin-top: 10px; }
+        .match-ok-short { background: linear-gradient(135deg, #ef4444, #991b1b); color: white; animation: pulse 1s infinite; }
+        .match-ok-long { background: linear-gradient(135deg, #10b981, #065f46); color: white; animation: pulse 1s infinite; }
+        .match-wait { background: rgba(255,255,255,0.02); color: var(--text-secondary); border: 1px solid rgba(255,255,255,0.05); }
 
-        .analysis-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; background: rgba(255,255,255,0.02); padding: 8px; border-radius: 10px; }
-        .indicator-dot { width: 7px; height: 7px; border-radius: 50%; background: #334155; }
+        .indicator-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; background: rgba(0,0,0,0.15); padding: 8px 12px; border-radius: 12px; }
+        .ind-label { font-size: 0.7rem; font-weight: 600; }
+        .ind-val { font-family: 'JetBrains Mono'; font-weight: 700; font-size: 0.75rem; }
+
+        .indicator-dot { width: 6px; height: 6px; border-radius: 50%; background: #334155; display: inline-block; margin-left: 6px; vertical-align: middle; }
         .indicator-dot.active { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
         .indicator-dot.warning { background: var(--accent-red); box-shadow: 0 0 8px var(--accent-red); }
 
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
-        footer { margin-top: 15px; text-align: center; font-family: 'JetBrains Mono'; font-size: 0.5rem; color: #475569; letter-spacing: 1px; }
+        .progress-bar-small { width: 100%; height: 3px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-top: 4px; }
+        .progress-fill-small { height: 100%; width: 0%; background: var(--accent-blue); transition: 0.5s; border-radius: 10px; }
+
+        footer { margin-top: 15px; color: var(--text-secondary); font-size: 0.55rem; letter-spacing: 1px; text-align: center; padding-bottom: 15px; }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -96,103 +110,106 @@
     <div class="container">
         <header>
             <div class="logo">
-                <h1>CycleMaster <span style="font-size: 0.6rem; color: var(--accent-gold); border: 1px solid var(--accent-gold); padding: 2px 5px; border-radius: 5px; vertical-align: middle;">AI PRO</span></h1>
+                <h1>CycleMaster <span style="font-size: 0.5rem; color: var(--accent-gold); border: 1px solid var(--accent-gold); padding: 1px 4px; border-radius: 4px; vertical-align: middle;">ULTIMATE MOBILE</span></h1>
             </div>
             
             <div class="controls-area">
-                <button id="sound-toggle" class="sound-btn" onclick="toggleSound()">🔊 SES</button>
-                
                 <div class="ctrl-group">
                     <span class="ctrl-label">Coin</span>
-                    <input type="text" id="coin-input" class="search-input" value="BTCUSDT" style="width: 100px;">
+                    <input type="text" id="coin-input" class="search-input" value="BTCUSDT">
                 </div>
-
                 <div class="ctrl-group">
-                    <span class="ctrl-label">Strateji Profili</span>
+                    <span class="ctrl-label">Profil</span>
                     <select id="profile-select" class="select-input" onchange="applyProfile()">
-                        <option value="scalper">⚡ SCALPER (5m)</option>
-                        <option value="trader" selected>🎯 DAY TRADER (15m)</option>
-                        <option value="swing">🛡️ SWING (30m)</option>
-                        <option value="custom">⚙️ ÖZEL</option>
+                        <option value="scalper">⚡ SCALPER</option>
+                        <option value="trader" selected>🎯 TRADER</option>
+                        <option value="swing">🛡️ SWING</option>
                     </select>
                 </div>
-
                 <div class="ctrl-group">
                     <span class="ctrl-label">Döngü</span>
                     <select id="cycle-select" class="select-input" onchange="updateSettings()">
-                        <option value="1">1dk</option>
-                        <option value="3">3dk</option>
-                        <option value="5">5dk</option>
-                        <option value="10">10dk</option>
-                        <option value="15">15dk</option>
-                        <option value="30">30dk</option>
-                        <option value="60">60dk</option>
+                        <option value="5">5dk</option><option value="15">15dk</option><option value="30">30dk</option>
                     </select>
                 </div>
-
                 <div class="ctrl-group">
-                    <span class="ctrl-label">Analiz (TF)</span>
+                    <span class="ctrl-label">TF</span>
                     <select id="tf-select" class="select-input" onchange="updateSettings()">
-                        <option value="1m">1m</option>
-                        <option value="3m">3m</option>
-                        <option value="5m">5m</option>
-                        <option value="15m">15m</option>
-                        <option value="30m">30m</option>
-                        <option value="1h">1h</option>
-                        <option value="4h">4h</option>
+                        <option value="1m">1m</option><option value="5m">5m</option><option value="15m">15m</option>
                     </select>
                 </div>
-                
-                <button class="search-btn" onclick="updateCoin()">ANALİZ</button>
+                <button class="sound-btn" id="sound-toggle" onclick="toggleSound()">🔊 SES</button>
+                <button class="search-btn" onclick="updateCoin()">ANALİZ ET</button>
             </div>
         </header>
 
         <div class="dashboard">
-            <!-- Market Panel -->
+            <!-- Market Status Card -->
             <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <span id="display-symbol" style="font-size: 1.2rem; font-weight: 800; color: var(--accent-gold);">BTCUSDT</span>
-                    <span id="price-change" style="font-weight: 700; font-size: 0.8rem;">%0.00</span>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span id="display-symbol" style="font-size: 0.9rem; font-weight: 800; color: var(--accent-gold);">BTCUSDT</span>
+                    <span id="price-change-pct" style="font-weight:700; font-size:0.75rem;">+%0.00</span>
                 </div>
-                <div id="display-price" style="font-size: 2rem; font-weight: 700; font-family: 'JetBrains Mono'; margin-bottom: 12px;">0.00</div>
-                <div style="background:rgba(255,255,255,0.03); padding:8px; border-radius:12px; font-size:0.65rem;">
-                    24H HI: <span id="h24">-</span> | 24H LO: <span id="l24">-</span>
+                <div class="price-text" id="display-price">0.00</div>
+                
+                <div class="htf-status-grid">
+                    <div class="htf-box"><div class="htf-label">1G Trend</div><span id="htf-1d" class="htf-val">-</span></div>
+                    <div class="htf-box"><div class="htf-label">4S Trend</div><span id="htf-4h" class="htf-val">-</span></div>
+                    <div class="htf-box"><div class="htf-label">1S Trend</div><span id="htf-1h" class="htf-val">-</span></div>
+                </div>
+
+                <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.55rem; color:var(--text-secondary);">RİSK (ATR)</span>
+                    <span id="volatility-status" style="font-size:0.6rem; font-weight:800;">DÜŞÜK</span>
+                </div>
+                <div class="progress-bar-small"><div id="vol-fill" class="progress-fill-small"></div></div>
+            </div>
+
+            <!-- Agent Intelligence -->
+            <div class="card" style="border-top: 3px solid var(--accent-gold);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <span style="font-size:0.6rem; color:var(--accent-gold); font-weight:800;">🧠 KARAR VERİCİ</span>
+                    <span id="agent-verdict" style="font-size:0.6rem; font-weight:800;">BEKLEMEDE</span>
+                </div>
+                
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div class="agent-score-circle">
+                        <svg width="80" height="80" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="6"/>
+                            <circle id="score-circle" cx="50" cy="50" r="45" fill="none" stroke="var(--accent-gold)" stroke-width="6" stroke-dasharray="283" stroke-dashoffset="283" stroke-linecap="round" style="transition:1.5s;"/>
+                        </svg>
+                        <div class="agent-val" id="agent-score">0%</div>
+                    </div>
+                    <div id="agent-reasoning" class="reasoning-list" style="flex:1;">
+                        <div class="reason-item">Analiz bekleniyor...</div>
+                    </div>
+                </div>
+
+                <div id="trade-plan-box" class="trade-planner" style="display:none;">
+                    <div class="plan-row"><span>Giriş:</span><span id="plan-entry">-</span></div>
+                    <div class="plan-row"><span>TP:</span><span id="plan-tp" style="color:var(--accent-green);">-</span></div>
+                    <div class="plan-row"><span>SL:</span><span id="plan-sl" style="color:var(--accent-red);">-</span></div>
                 </div>
             </div>
 
-            <!-- Agent Panel -->
-            <div class="card" style="border-top: 4px solid var(--accent-gold);">
-                <h3 style="font-size:0.7rem; color:var(--accent-gold); margin-bottom:8px; letter-spacing:1px;">🧠 KARAR VERİCİ AJAN</h3>
-                <div style="display:flex; justify-content:space-between; align-items:flex-end;">
-                    <span style="font-size:0.6rem; color:var(--text-secondary);">GÜVEN SKORU</span>
-                    <span class="agent-score" id="agent-score">0%</span>
-                </div>
-                <div class="score-meter"><div class="score-fill" id="agent-score-fill"></div></div>
-                <div class="reasoning-box" id="agent-reasoning">Analiz bekleniyor...</div>
-            </div>
-
-            <!-- Command Panel -->
+            <!-- Execution Center -->
             <div class="card center-card">
-                <div id="strategy-name" class="strategy-title">DAY TRADER MODE</div>
-                <div class="current-mode" id="mode-text">---</div>
-                <div class="timer-box">
-                    <svg class="timer-svg"><circle class="timer-circle-bg" cx="55" cy="55" r="50"></circle><circle class="timer-circle-progress" id="progress-circle" cx="55" cy="55" r="50"></circle></svg>
-                    <div class="timer-text" id="timer-display">00:00</div>
-                </div>
-                <div id="match-status" class="match-wait">VERİ YOK</div>
+                <div style="font-size:0.7rem; font-weight:800; color:var(--glow-color);" id="mode-text">---</div>
+                <div class="timer-text-big" id="timer-display">00:00</div>
+                <div style="font-size:0.5rem; color:var(--text-secondary); margin-bottom:8px;">SIRADAKİ DÖNGÜ</div>
+                <div id="match-status" class="match-wait">VERİ BEKLENİYOR</div>
             </div>
 
-            <!-- Tech Scan Panel -->
+            <!-- Technical Gauges -->
             <div class="card">
-                <h3 style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:10px;">📊 TEKNİK TARAMA</h3>
-                <div class="analysis-item"><span>Stoch RSI</span><div style="display:flex; align-items:center; gap:6px;"><span id="stoch-rsi-val" style="font-size:0.8rem; font-weight:700;">-</span><div id="stoch-dot" class="indicator-dot"></div></div></div>
-                <div class="analysis-item"><span>Bollinger</span><div style="display:flex; align-items:center; gap:8px;"><span id="bb-status" style="font-size:0.7rem; font-weight:700;">-</span><div id="bb-dot" class="indicator-dot"></div></div></div>
-                <div class="analysis-item"><span>RSI (14)</span><div style="display:flex; align-items:center; gap:8px;"><span id="rsi-val" style="font-size:0.8rem; font-weight:700;">-</span><div id="rsi-dot" class="indicator-dot"></div></div></div>
+                <div class="indicator-row"><span class="ind-label">Stoch RSI</span><div><span class="ind-val" id="stoch-rsi-val">-</span><div id="stoch-dot" class="indicator-dot"></div></div></div>
+                <div class="indicator-row"><span class="ind-label">Hacim Gücü</span><div><span class="ind-val" id="volume-power-val">-</span><div id="vol-dot" class="indicator-dot"></div></div></div>
+                <div class="indicator-row"><span class="ind-label">Bollinger</span><div><span class="ind-val" id="bb-status">-</span><div id="bb-dot" class="indicator-dot"></div></div></div>
             </div>
         </div>
 
         <footer>
-            SİSTEM ZAMANI: <span id="current-time">00:00:00</span> | VERSION 2.0 MULTI-STRATEGY READY 📡
+            STATUS: ACTIVE | <span id="current-time">00:00:00</span>
         </footer>
     </div>
 
@@ -202,24 +219,21 @@
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(()=>{}); }); }
 
         let currentCoin = "BTCUSDT", cycleMinutes = 15, analysisTF = "5m", lastMode = null;
-        let rsiValue = 50, stochRsiValue = 50, bbStatus = "Mid";
+        let rsiValue = 50, stochRsiValue = 50, bbStatus = "Mid", volumePower = 1.0, atrValue = 0;
+        let htfTrends = { "1d": "NONE", "4h": "NONE", "1h": "NONE" };
         let isSoundEnabled = false, alertPlayedInThisWindow = false;
 
         const profiles = {
-            scalper: { cycle: 5, tf: "1m", name: "⚡ SCALPER MODE" },
-            trader: { cycle: 15, tf: "5m", name: "🎯 DAY TRADER MODE" },
-            swing: { cycle: 30, tf: "15m", name: "🛡️ SWING MODE" }
+            scalper: { cycle: 5, tf: "1m", name: "⚡ SCALPER" },
+            trader: { cycle: 15, tf: "5m", name: "🎯 TRADER" },
+            swing: { cycle: 30, tf: "15m", name: "🛡️ SWING" }
         };
 
         function applyProfile() {
-            const pKey = document.getElementById('profile-select').value;
-            if(pKey === "custom") return;
-            const p = profiles[pKey];
-            cycleMinutes = p.cycle;
-            analysisTF = p.tf;
+            const p = profiles[document.getElementById('profile-select').value];
+            cycleMinutes = p.cycle; analysisTF = p.tf;
             document.getElementById('cycle-select').value = cycleMinutes;
             document.getElementById('tf-select').value = analysisTF;
-            document.getElementById('strategy-name').textContent = p.name;
             updateSettings();
         }
 
@@ -229,9 +243,6 @@
             if(mS === 'true') { isSoundEnabled = true; document.getElementById('sound-toggle').className = "sound-btn active"; }
             document.getElementById('coin-input').value = currentCoin; document.getElementById('cycle-select').value = cycleMinutes;
             document.getElementById('tf-select').value = analysisTF; document.getElementById('display-symbol').textContent = currentCoin;
-            // Set profile name based on loaded settings
-            const found = Object.values(profiles).find(p => p.cycle == cycleMinutes && p.tf == analysisTF);
-            document.getElementById('strategy-name').textContent = found ? found.name : "⚙️ ÖZEL MOD";
         }
 
         function saveToMemory() {
@@ -247,9 +258,7 @@
 
         function updateSettings() {
             cycleMinutes = parseInt(document.getElementById('cycle-select').value); analysisTF = document.getElementById('tf-select').value;
-            const found = Object.values(profiles).find(p => p.cycle == cycleMinutes && p.tf == analysisTF);
-            document.getElementById('strategy-name').textContent = found ? found.name : "⚙️ ÖZEL MOD";
-            saveToMemory(); fetchTechnical();
+            saveToMemory(); fetchData();
         }
 
         function updateCoin() {
@@ -257,7 +266,7 @@
             if(i) { currentCoin = i.includes("USDT") ? i : i + "USDT"; document.getElementById('display-symbol').textContent = currentCoin; saveToMemory(); fetchData(); }
         }
 
-        async function fetchData() { fetchPrice(); fetchTechnical(); }
+        async function fetchData() { fetchPrice(); fetchTechnical(); fetchHTF(); }
 
         async function fetchPrice() {
             try {
@@ -265,50 +274,82 @@
                 const d = await r.json();
                 if(d.lastPrice) {
                     const p = parseFloat(d.lastPrice); document.getElementById('display-price').textContent = p > 1 ? p.toLocaleString() : p.toFixed(6);
-                    const c = parseFloat(d.priceChangePercent); const e = document.getElementById('price-change');
+                    const c = parseFloat(d.priceChangePercent); const e = document.getElementById('price-change-pct');
                     e.textContent = (c>=0?"+":"")+c.toFixed(2)+"%"; e.style.color = c>=0?"#10b981":"#ef4444";
-                    document.getElementById('h24').textContent = parseFloat(d.highPrice).toLocaleString();
-                    document.getElementById('l24').textContent = parseFloat(d.lowPrice).toLocaleString();
                 }
             } catch(e){}
         }
 
+        async function fetchHTF() {
+            const intervals = ["1d", "4h", "1h"];
+            for(let interval of intervals) {
+                try {
+                    const r = await fetch(`https://api.binance.com/api/v3/klines?symbol=${currentCoin}&interval=${interval}&limit=50`);
+                    const k = await r.json();
+                    const closes = k.map(x => parseFloat(x[4]));
+                    const sma20 = closes.slice(-20).reduce((a,b)=>a+b)/20;
+                    const trend = (closes[closes.length-1] > sma20) ? "BULL" : "BEAR";
+                    htfTrends[interval] = trend;
+                    const el = document.getElementById(`htf-${interval}`);
+                    el.textContent = trend === "BULL" ? "BOĞA" : "AYI";
+                    el.style.color = trend === "BULL" ? "var(--accent-green)" : "var(--accent-red)";
+                } catch(e){}
+            }
+        }
+
         async function fetchTechnical() {
             try {
-                const r = await fetch(`https://api.binance.com/api/v3/klines?symbol=${currentCoin}&interval=${analysisTF}&limit=300`);
-                const k = await r.json(); const closes = k.map(x => parseFloat(x[4]));
-                if(closes.length < 50) return;
-                const rsiSeries = calculateRSISeries(closes, 14); rsiValue = rsiSeries[rsiSeries.length - 1];
-                document.getElementById('rsi-val').textContent = rsiValue.toFixed(1);
-                const stochRsiSeries = calculateStochRSISeries(rsiSeries, 14); stochRsiValue = stochRsiSeries[stochRsiSeries.length - 1];
-                document.getElementById('stoch-rsi-val').textContent = stochRsiValue.toFixed(1);
+                const r = await fetch(`https://api.binance.com/api/v3/klines?symbol=${currentCoin}&interval=${analysisTF}&limit=100`);
+                const k = await r.json();
+                const closes = k.map(x => parseFloat(x[4]));
+                const highs = k.map(x => parseFloat(x[2]));
+                const lows = k.map(x => parseFloat(x[3]));
+                const volumes = k.map(x => parseFloat(x[5]));
+
+                const rsiSeries = calculateRSI(closes, 14); rsiValue = rsiSeries[rsiSeries.length-1];
+                stochRsiValue = calculateStochRSI(rsiSeries, 14);
+                const avgVol = volumes.slice(-20).reduce((a,b)=>a+b)/20;
+                volumePower = volumes[volumes.length-1] / avgVol;
+                atrValue = calculateATR(highs, lows, closes, 14);
+                
+                const volPct = (atrValue / closes[closes.length-1]) * 1000;
+                document.getElementById('vol-fill').style.width = Math.min(volPct*10, 100) + "%";
+                document.getElementById('volatility-status').textContent = volPct > 5 ? "YÜKSEK" : (volPct > 2 ? "ORTA" : "DÜŞÜK");
+                document.getElementById('volatility-status').style.color = volPct > 5 ? "var(--accent-red)" : (volPct > 2 ? "var(--accent-gold)" : "var(--accent-green)");
+
                 const { upper, lower } = calculateBB(closes); const lp = closes[closes.length - 1];
                 if (lp >= upper * 0.995) bbStatus = "Top"; else if (lp <= lower * 1.005) bbStatus = "Bottom"; else bbStatus = "Mid";
-                const bt = document.getElementById('bb-status'); bt.textContent = bbStatus==="Top"?"ÜST":(bbStatus==="Bottom"?"ALT":"ORTA");
-                bt.style.color = bbStatus==="Top"?"#ef4444":(bbStatus==="Bottom"?"#3b82f6":"#94a3b8");
-                runAgentDecision();
+                
+                // Update small UI elements
+                document.getElementById('stoch-rsi-val').textContent = stochRsiValue.toFixed(0);
+                document.getElementById('volume-power-val').textContent = "x" + volumePower.toFixed(1);
+                document.getElementById('bb-status').textContent = bbStatus==="Top"?"ÜST":(bbStatus==="Bottom"?"ALT":"ORTA");
+
+                runAgentDecision(lp);
             } catch(e){}
         }
 
-        function calculateRSISeries(c, p = 14) {
-            let r = [], g = [], l = [];
-            for(let i=1; i<c.length; i++) { let d = c[i]-c[i-1]; g.push(Math.max(0,d)); l.push(Math.max(0,-d)); }
-            let ag = g.slice(0,p).reduce((a,b)=>a+b)/p, al = l.slice(0,p).reduce((a,b)=>a+b)/p;
-            for(let i=p; i<g.length; i++) { ag = ((ag*(p-1))+g[i])/p; al = ((al*(p-1))+l[i])/p; r.push(al===0?100:100-(100/(1+ag/al))); }
+        function calculateRSI(c, p) {
+            let g = [], l = [];
+            for(let i=1; i<c.length; i++){ let d=c[i]-c[i-1]; g.push(Math.max(0,d)); l.push(Math.max(0,-d)); }
+            let r = []; let ag = g.slice(0,p).reduce((a,b)=>a+b)/p, al = l.slice(0,p).reduce((a,b)=>a+b)/p;
+            for(let i=p; i<g.length; i++){ ag=(ag*(p-1)+g[i])/p; al=(al*(p-1)+l[i])/p; r.push(100-(100/(1+ag/al))); }
             return r;
         }
 
-        function calculateStochRSISeries(r, p = 14) {
-            let s = [];
-            for(let i=p; i<=r.length; i++) {
-                let sl = r.slice(i-p, i); let c = r[i-1], min = Math.min(...sl), max = Math.max(...sl);
-                s.push(max===min?50:((c-min)/(max-min))*100);
-            }
-            return s;
+        function calculateStochRSI(r, p) {
+            const s = r.slice(-p); const min = Math.min(...s), max = Math.max(...s);
+            return max===min ? 50 : ((r[r.length-1]-min)/(max-min))*100;
+        }
+
+        function calculateATR(h, l, c, p) {
+            let trs = [];
+            for(let i=1; i<c.length; i++) { trs.push(Math.max(h[i]-l[i], Math.abs(h[i]-c[i-1]), Math.abs(l[i]-c[i-1]))); }
+            return trs.slice(-p).reduce((a,b)=>a+b)/p;
         }
 
         function calculateBB(c, p=20, d=2) {
-            const s = c.slice(-p); const m = s.reduce((a,b)=>a+b,0)/p;
+            const s = c.slice(-p); const m = s.reduce((a,b)=>a+b)/p;
             const sd = Math.sqrt(s.reduce((a,b)=>a+Math.pow(b-m,2),0)/p);
             return { upper: m+(sd*d), lower: m-(sd*d) };
         }
@@ -316,49 +357,70 @@
         function updateCycle() {
             const now = new Date(); const min = now.getMinutes(), sec = now.getSeconds();
             document.getElementById('current-time').textContent = now.toLocaleTimeString('tr-TR');
-            const totalMinToday = (now.getHours()*60)+min;
-            const currentMode = (Math.floor(totalMinToday / cycleMinutes) % 2 === 0) ? 'SHORT' : 'LONG';
+            const currentMode = (Math.floor(((now.getHours()*60)+min) / cycleMinutes) % 2 === 0) ? 'SHORT' : 'LONG';
             if (currentMode !== lastMode) { lastMode = currentMode; alertPlayedInThisWindow = false; handleModeChange(currentMode); }
             const sr = ((cycleMinutes-(min%cycleMinutes)-1)*60)+(60-sec);
             document.getElementById('timer-display').textContent = `${Math.floor(sr/60).toString().padStart(2,'0')}:${(sr%60).toString().padStart(2,'0')}`;
-            document.getElementById('progress-circle').style.strokeDashoffset = 314*(1-(sr/(cycleMinutes*60)));
+            document.getElementById('progress-circle').style.strokeDashoffset = 283*(1-(sr/(cycleMinutes*60)));
         }
 
         function handleModeChange(m) {
             document.body.className = m === 'SHORT' ? 'mode-short' : 'mode-long';
-            document.getElementById('mode-text').textContent = m==='SHORT'?'SHORT':'LONG';
-            runAgentDecision();
+            document.getElementById('mode-text').textContent = m;
+            fetchData();
         }
 
-        function runAgentDecision() {
+        function runAgentDecision(price) {
             const scoreEl = document.getElementById('agent-score');
-            const fillEl = document.getElementById('agent-score-fill');
+            const circle = document.getElementById('score-circle');
             const reasonEl = document.getElementById('agent-reasoning');
             const statusBox = document.getElementById('match-status');
+            const planBox = document.getElementById('trade-plan-box');
+            
             let score = 0, reasons = [];
             let stochOk = lastMode === 'SHORT' ? stochRsiValue > 80 : stochRsiValue < 20;
             let bbOk = lastMode === 'SHORT' ? bbStatus === "Top" : bbStatus === "Bottom";
-            let rsiOk = lastMode === 'SHORT' ? rsiValue > 55 : rsiValue < 45;
-            if(stochOk) { score += 40; reasons.push(`Stoch RSI onaylı.`); }
-            if(bbOk) { score += 30; reasons.push(`Band teması var.`); }
-            if(rsiOk) { score += 20; reasons.push(`Trend destekli.`); }
-            if(score >= 70) score += 10;
-            scoreEl.textContent = score + "%"; fillEl.style.width = score + "%";
+            if(stochOk) score += 25;
+            if(bbOk) score += 15;
+            if(volumePower > 1.2) score += 20;
+            
+            let targetHtf = (lastMode === 'LONG') ? "BULL" : "BEAR";
+            if(htfTrends["1d"] === targetHtf) score += 20;
+            if(htfTrends["4h"] === targetHtf) score += 10;
+            if(htfTrends["1h"] === targetHtf) score += 10;
+
+            scoreEl.textContent = score + "%";
+            circle.style.strokeDashoffset = 283 - (283 * score / 100);
+            document.getElementById('agent-verdict').textContent = score >= 75 ? "GİRİŞ UYGUN" : "BEKLEMEDE";
+            
+            reasonEl.innerHTML = score >= 75 ? `<div class="reason-item">Şartlar ve Trend Uyumlu.</div>` : `<div class="reason-item" style="border-left-color:var(--accent-red)">Yeterli onay yok (${score}%).</div>`;
+
             if (score >= 75) {
-                reasonEl.innerHTML = `<strong>GİRİŞ UYGUN.</strong><br>${reasons.join('<br>')}`;
-                if (lastMode === 'SHORT') { statusBox.textContent = "🔥 ŞİMDİ SATIŞ YAP"; statusBox.className = "match-ok-short"; }
-                else { statusBox.textContent = "🚀 ŞİMDİ ALIM YAP"; statusBox.className = "match-ok-long"; }
+                statusBox.textContent = lastMode === 'SHORT' ? "SATIŞ YAP" : "ALIM YAP";
+                statusBox.className = lastMode === 'SHORT' ? "match-ok-short" : "match-ok-long";
+                planBox.style.display = "block";
+                document.getElementById('plan-entry').textContent = price.toLocaleString();
+                const tpDist = atrValue * 2.5; const slDist = atrValue * 1.5;
+                if(lastMode === 'LONG') {
+                    document.getElementById('plan-tp').textContent = (price + tpDist).toLocaleString();
+                    document.getElementById('plan-sl').textContent = (price - slDist).toLocaleString();
+                } else {
+                    document.getElementById('plan-tp').textContent = (price - tpDist).toLocaleString();
+                    document.getElementById('plan-sl').textContent = (price + slDist).toLocaleString();
+                }
                 if(isSoundEnabled && !alertPlayedInThisWindow) { document.getElementById('alert-sound').play().catch(()=>{}); alertPlayedInThisWindow = true; }
             } else {
-                reasonEl.innerHTML = `<strong>BEKLE.</strong><br>Şartlar tam değil (${score}%).`;
-                statusBox.textContent = "⏳ ŞARTLAR BEKLENİYOR"; statusBox.className = "match-wait";
+                statusBox.textContent = "BEKLENİYOR"; statusBox.className = "match-wait";
+                planBox.style.display = "none";
             }
+            
             document.getElementById('stoch-dot').className = "indicator-dot " + (stochOk ? "active" : "warning");
+            document.getElementById('vol-dot').className = "indicator-dot " + (volumePower > 1.2 ? "active" : "warning");
             document.getElementById('bb-dot').className = "indicator-dot " + (bbOk ? "active" : "warning");
-            document.getElementById('rsi-dot').className = "indicator-dot " + (rsiOk ? "active" : "warning");
         }
 
-        loadFromMemory(); setInterval(updateCycle, 1000); setInterval(fetchPrice, 3000); setInterval(fetchTechnical, 15000);
+        loadFromMemory(); setInterval(updateCycle, 1000); setInterval(fetchPrice, 3000); 
+        setInterval(fetchTechnical, 15000); setInterval(fetchHTF, 60000);
         updateCycle(); fetchData();
     </script>
 </body>
