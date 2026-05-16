@@ -2,426 +2,725 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CycleMaster Ultimate | Mobile Optimized</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>CycleMaster Pro</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#3b82f6">
+    <meta name="theme-color" content="#060910">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2091/2091665.png">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #030508;
-            --card-bg: rgba(17, 25, 40, 0.8);
-            --accent-blue: #3b82f6;
-            --accent-red: #ef4444;
-            --accent-gold: #fbbf24;
-            --accent-green: #10b981;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --glow-color: var(--accent-blue);
+            --bg: #060910;
+            --surface: #0d1524;
+            --surface2: #111f35;
+            --border: rgba(255,255,255,0.07);
+            --blue: #3b82f6;
+            --red: #f43f5e;
+            --gold: #f59e0b;
+            --green: #10b981;
+            --text: #f1f5f9;
+            --text2: #94a3b8;
+            --text3: #475569;
+            --accent: var(--blue);
+            --bottom-h: 70px;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
+        body.mode-short { --accent: var(--red); }
+        body.mode-long  { --accent: var(--blue); }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
         body {
-            background-color: var(--bg-color); color: var(--text-primary);
-            min-height: 100vh; display: flex; flex-direction: column; align-items: center; 
-            padding: env(safe-area-inset-top) 8px env(safe-area-inset-bottom); 
-            overflow-x: hidden; transition: 0.5s;
-            background-image: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            min-height: 100dvh;
+            overflow-x: hidden;
+            padding-bottom: calc(var(--bottom-h) + var(--safe-bottom));
         }
 
-        body.mode-short { --glow-color: var(--accent-red); }
-        body.mode-long { --glow-color: var(--accent-blue); }
-
-        .container { width: 100%; max-width: 1400px; z-index: 10; }
-
-        header { width: 100%; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
-        @media (min-width: 1024px) { header { flex-direction: row; justify-content: space-between; align-items: center; } }
-
-        .logo h1 { font-size: 1.2rem; font-weight: 800; text-align: center; background: linear-gradient(135deg, #fff, #64748b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-        .controls-area { 
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; 
-            background: rgba(255,255,255,0.03); padding: 8px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); 
+        body::before {
+            content:'';
+            position:fixed; inset:0;
+            background:
+                radial-gradient(ellipse 80% 40% at 50% 0%, rgba(59,130,246,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 50% at 80% 80%, rgba(245,158,11,0.04) 0%, transparent 60%);
+            pointer-events:none; z-index:0;
         }
-        @media (min-width: 768px) { .controls-area { display: flex; flex-direction: row; } }
 
-        .ctrl-group { display: flex; flex-direction: column; gap: 2px; }
-        .ctrl-label { font-size: 0.5rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin-left: 4px; }
+        /* HEADER */
+        .header {
+            position: sticky; top: 0; z-index: 50;
+            background: rgba(6,9,16,0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 16px;
+            padding-top: calc(12px + env(safe-area-inset-top, 0px));
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo { display:flex; align-items:center; gap:9px; }
+        .logo-icon {
+            width:34px; height:34px;
+            background: linear-gradient(135deg,var(--blue),#1d4ed8);
+            border-radius:9px;
+            display:flex; align-items:center; justify-content:center;
+            font-size:1rem;
+            box-shadow: 0 0 16px rgba(59,130,246,0.35);
+        }
+        .logo-name { font-size:1rem; font-weight:700; }
+        .badge-ai {
+            background:linear-gradient(90deg,var(--gold),#d97706);
+            color:#000; font-size:0.48rem; font-weight:700;
+            padding:2px 6px; border-radius:100px; letter-spacing:1px;
+            margin-left:5px; vertical-align:middle;
+        }
+        .header-right { display:flex; align-items:center; gap:8px; }
+        .live-pill {
+            display:flex; align-items:center; gap:5px;
+            background: rgba(16,185,129,0.1);
+            border:1px solid rgba(16,185,129,0.2);
+            border-radius:100px; padding:5px 10px;
+            font-size:0.52rem; font-weight:700; color:var(--green);
+        }
+        .live-dot {
+            width:5px;height:5px;border-radius:50%;
+            background:var(--green); box-shadow:0 0 5px var(--green);
+            animation:blink 1.5s infinite;
+        }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+        .icon-btn {
+            width:38px; height:38px;
+            background: var(--surface2);
+            border:1px solid var(--border);
+            border-radius:10px;
+            display:flex; align-items:center; justify-content:center;
+            cursor:pointer; font-size:1rem;
+            transition: all 0.2s;
+        }
+        .icon-btn.active { border-color:rgba(16,185,129,0.4); background:rgba(16,185,129,0.1); }
 
-        .search-input, .select-input { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 8px; color: white; font-family: 'JetBrains Mono'; outline: none; font-size: 0.75rem; width: 100%; }
-        .search-btn { background: var(--glow-color); border: none; border-radius: 10px; padding: 8px; color: white; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 0.75rem; grid-column: span 2; }
-        @media (min-width: 768px) { .search-btn { grid-column: auto; width: 100px; } }
+        /* PAGES */
+        .content { position:relative; z-index:1; padding:14px 14px 0; }
+        .page { display:none; flex-direction:column; gap:12px; }
+        .page.active { display:flex; }
 
-        .sound-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 8px; border-radius: 10px; cursor: pointer; color: white; font-size: 0.7rem; }
-        .sound-btn.active { color: var(--accent-green); border-color: var(--accent-green); }
+        /* COIN BAR */
+        .coin-bar { display:flex; gap:8px; }
+        .coin-input {
+            flex:1; background:var(--surface2);
+            border:1.5px solid var(--border);
+            border-radius:13px; padding:0 16px;
+            color:var(--text); font-family:'Space Mono',monospace;
+            font-size:1rem; font-weight:700;
+            outline:none; height:50px;
+            text-transform:uppercase;
+            transition: border-color 0.2s;
+        }
+        .coin-input:focus { border-color:var(--blue); }
+        .analyze-btn {
+            background:linear-gradient(135deg,var(--blue),#2563eb);
+            border:none; border-radius:13px;
+            padding:0 22px; color:#fff;
+            font-family:'Space Grotesk',sans-serif;
+            font-weight:700; font-size:0.85rem;
+            cursor:pointer; height:50px;
+            box-shadow:0 4px 14px rgba(59,130,246,0.4);
+            transition: transform 0.15s;
+            white-space:nowrap;
+        }
+        .analyze-btn:active { transform:scale(0.96); }
 
-        /* --- Dashboard --- */
-        .dashboard { display: grid; grid-template-columns: 1fr; gap: 10px; width: 100%; }
-        @media (min-width: 1024px) { .dashboard { grid-template-columns: 0.8fr 1.3fr 1fr 0.9fr; } }
+        /* MARKET HERO */
+        .market-hero {
+            background:var(--surface); border:1px solid var(--border);
+            border-radius:20px; padding:18px; position:relative; overflow:hidden;
+        }
+        .market-hero::before {
+            content:''; position:absolute; top:0; left:0; right:0; height:3px;
+            background:linear-gradient(90deg,var(--accent),transparent);
+            transition: background 0.6s;
+        }
+        .market-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+        .market-symbol { font-family:'Space Mono',monospace; font-size:0.85rem; font-weight:700; color:var(--gold); }
+        .price-pill { font-size:0.68rem; font-weight:700; padding:4px 11px; border-radius:100px; font-family:'Space Mono',monospace; }
+        .price-pill.up { background:rgba(16,185,129,0.12); color:var(--green); }
+        .price-pill.dn { background:rgba(244,63,94,0.12); color:var(--red); }
+        .market-price { font-family:'Space Mono',monospace; font-size:2.5rem; font-weight:700; letter-spacing:-2px; line-height:1; margin-bottom:16px; }
+        .hl-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+        .hl-box { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:10px 12px; }
+        .hl-l { font-size:0.5rem; color:var(--text3); text-transform:uppercase; letter-spacing:1px; font-weight:600; margin-bottom:3px; }
+        .hl-v { font-family:'Space Mono',monospace; font-size:0.82rem; font-weight:700; }
 
-        .card { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 15px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.4); width: 100%; }
-        .center-card { text-align: center; border-top: 4px solid var(--glow-color); }
+        /* SIGNAL BANNER */
+        .signal-banner {
+            border-radius:18px; padding:18px 20px;
+            text-align:center; font-weight:700; font-size:1.05rem;
+            line-height:1.3; transition:all 0.3s; border:1.5px solid transparent;
+        }
+        .signal-wait { background:rgba(245,158,11,0.07); color:var(--gold); border-color:rgba(245,158,11,0.2); }
+        .signal-long { background:linear-gradient(135deg,rgba(16,185,129,0.18),rgba(16,185,129,0.05)); color:#fff; border-color:rgba(16,185,129,0.5); box-shadow:0 0 28px rgba(16,185,129,0.15); animation:pulse 1.3s ease-in-out infinite; }
+        .signal-short { background:linear-gradient(135deg,rgba(244,63,94,0.18),rgba(244,63,94,0.05)); color:#fff; border-color:rgba(244,63,94,0.5); box-shadow:0 0 28px rgba(244,63,94,0.15); animation:pulse 1.3s ease-in-out infinite; }
+        @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.015)} }
+        .signal-sub { font-size:0.6rem; font-weight:400; opacity:0.7; margin-top:4px; }
 
-        .price-text { font-size: 2rem; font-weight: 800; font-family: 'JetBrains Mono'; line-height: 1.1; margin: 4px 0; }
-        
-        .htf-status-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 10px; }
-        .htf-box { background: rgba(0,0,0,0.2); padding: 6px; border-radius: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.02); }
-        .htf-label { font-size: 0.45rem; color: var(--text-secondary); margin-bottom: 2px; text-transform: uppercase; }
-        .htf-val { font-size: 0.6rem; font-weight: 800; padding: 2px 4px; border-radius: 4px; display: block; }
+        /* CYCLE CARD */
+        .cycle-card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:18px; display:flex; align-items:center; gap:20px; }
+        .timer-wrap { position:relative; width:100px; height:100px; flex-shrink:0; }
+        .timer-svg { width:100%; height:100%; transform:rotate(-90deg); }
+        circle.ring-bg { fill:none; stroke:rgba(255,255,255,0.04); stroke-width:7; }
+        circle.ring-prog { fill:none; stroke:var(--accent); stroke-width:7; stroke-linecap:round; stroke-dasharray:270; stroke-dashoffset:0; transition: stroke-dashoffset 1s linear, stroke 0.6s; filter:drop-shadow(0 0 5px var(--accent)); }
+        .timer-inner { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+        .timer-num { font-family:'Space Mono',monospace; font-size:1.3rem; font-weight:700; line-height:1; }
+        .timer-lbl { font-size:0.44rem; color:var(--text3); text-transform:uppercase; letter-spacing:1px; margin-top:3px; }
+        .cycle-info { flex:1; }
+        .cycle-strat { font-size:0.54rem; font-weight:600; color:var(--accent); letter-spacing:2px; text-transform:uppercase; opacity:0.85; margin-bottom:3px; transition:color 0.6s; }
+        .cycle-mode { font-size:2.2rem; font-weight:700; color:var(--accent); letter-spacing:-1px; line-height:1; transition:color 0.6s; }
+        .cycle-time { font-family:'Space Mono',monospace; font-size:0.58rem; color:var(--text3); margin-top:8px; }
 
-        .agent-score-circle { width: 80px; height: 80px; margin: 0 auto 10px; position: relative; }
-        .agent-val { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.4rem; font-weight: 800; color: var(--accent-gold); font-family: 'JetBrains Mono'; }
-        
-        .reasoning-list { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
-        .reason-item { font-size: 0.65rem; color: var(--text-secondary); padding: 5px 8px; background: rgba(255,255,255,0.02); border-radius: 8px; border-left: 2px solid var(--accent-gold); }
+        /* SEC TITLE */
+        .sec-title { font-size:0.54rem; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:2px; margin-bottom:2px; display:flex; align-items:center; gap:6px; }
+        .sec-title::before { content:''; width:3px; height:3px; border-radius:50%; background:var(--accent); }
 
-        .trade-planner { margin-top: 10px; padding: 10px; background: rgba(16, 185, 129, 0.05); border-radius: 12px; border: 1px dashed rgba(16, 185, 129, 0.2); }
-        .plan-row { display: flex; justify-content: space-between; font-size: 0.7rem; margin-bottom: 3px; font-family: 'JetBrains Mono'; }
+        /* AGENT CARD */
+        .agent-card { background:var(--surface); border:1px solid var(--border); border-top:3px solid var(--gold); border-radius:20px; padding:18px; }
+        .agent-top { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:10px; }
+        .agent-score-num { font-family:'Space Mono',monospace; font-size:2.8rem; font-weight:700; color:var(--gold); line-height:1; }
+        .agent-score-meta { text-align:right; }
+        .agent-score-lbl { font-size:0.5rem; color:var(--text3); text-transform:uppercase; letter-spacing:1px; }
+        .agent-state { font-size:0.68rem; font-weight:700; color:var(--gold); }
+        .score-track { height:4px; background:rgba(255,255,255,0.05); border-radius:100px; overflow:hidden; margin-bottom:14px; }
+        .score-fill { height:100%; width:0%; background:linear-gradient(90deg,var(--gold),#ef4444); border-radius:100px; transition: width 1s cubic-bezier(0.4,0,0.2,1); }
+        .reasoning { background:rgba(0,0,0,0.3); border:1px solid var(--border); border-left:3px solid var(--gold); border-radius:12px; padding:12px 14px; font-size:0.68rem; line-height:1.65; color:var(--text2); margin-bottom:12px; }
+        .reasoning strong { color:var(--text); }
+        .cond-list { display:flex; flex-direction:column; gap:7px; }
+        .cond-row { display:flex; align-items:center; gap:10px; padding:10px 13px; background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:12px; }
+        .cond-icon { width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.55rem; font-weight:700; flex-shrink:0; }
+        .cond-icon.ok { background:rgba(16,185,129,0.15); color:var(--green); }
+        .cond-icon.no { background:rgba(255,255,255,0.05); color:var(--text3); }
+        .cond-text { font-size:0.67rem; color:var(--text2); }
 
-        .timer-text-big { font-size: 2.4rem; font-weight: 800; font-family: 'JetBrains Mono'; margin: 5px 0; color: var(--text-primary); }
+        /* TECH CARD */
+        .tech-card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:18px; }
+        .ind-row { display:flex; align-items:center; justify-content:space-between; padding:13px 14px; background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:13px; margin-bottom:8px; }
+        .ind-row:last-child { margin-bottom:0; }
+        .ind-left { display:flex; align-items:center; gap:11px; }
+        .dot { width:9px; height:9px; border-radius:50%; background:var(--text3); transition:all 0.4s; flex-shrink:0; }
+        .dot.active { background:var(--green); box-shadow:0 0 10px rgba(16,185,129,0.5); }
+        .dot.warn   { background:var(--red);   box-shadow:0 0 10px rgba(244,63,94,0.5); }
+        .ind-name { font-size:0.78rem; font-weight:500; color:var(--text2); }
+        .ind-right { display:flex; align-items:center; gap:8px; }
+        .ind-val { font-family:'Space Mono',monospace; font-size:0.82rem; font-weight:700; }
+        .ind-badge { font-size:0.5rem; font-weight:700; padding:3px 8px; border-radius:100px; }
+        .b-green { background:rgba(16,185,129,0.12); color:var(--green); }
+        .b-red   { background:rgba(244,63,94,0.12);  color:var(--red); }
+        .b-gray  { background:rgba(255,255,255,0.05); color:var(--text2); }
+        .update-row { display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding:10px 13px; background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:12px; }
+        .update-lbl { font-size:0.5rem; color:var(--text3); text-transform:uppercase; letter-spacing:1px; }
+        .update-val { font-family:'Space Mono',monospace; font-size:0.6rem; color:var(--text2); }
 
-        #match-status { font-size: 1rem; font-weight: 800; padding: 15px; border-radius: 18px; text-align: center; margin-top: 10px; }
-        .match-ok-short { background: linear-gradient(135deg, #ef4444, #991b1b); color: white; animation: pulse 1s infinite; }
-        .match-ok-long { background: linear-gradient(135deg, #10b981, #065f46); color: white; animation: pulse 1s infinite; }
-        .match-wait { background: rgba(255,255,255,0.02); color: var(--text-secondary); border: 1px solid rgba(255,255,255,0.05); }
+        /* SETTINGS */
+        .settings-section { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:18px; }
+        .settings-title { font-size:0.54rem; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:2px; margin-bottom:14px; }
+        .setting-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 0; border-bottom:1px solid var(--border); }
+        .setting-row:last-child { border-bottom:none; padding-bottom:0; }
+        .setting-name { font-size:0.82rem; font-weight:600; }
+        .setting-sub { font-size:0.6rem; color:var(--text3); margin-top:2px; }
+        .setting-control { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:9px 12px; color:var(--text); font-family:'Space Mono',monospace; font-size:0.72rem; outline:none; -webkit-appearance:none; appearance:none; min-width:110px; text-align-last:right; }
+        .setting-control option { background:#0d1524; }
 
-        .indicator-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; background: rgba(0,0,0,0.15); padding: 8px 12px; border-radius: 12px; }
-        .ind-label { font-size: 0.7rem; font-weight: 600; }
-        .ind-val { font-family: 'JetBrains Mono'; font-weight: 700; font-size: 0.75rem; }
+        /* Toggle */
+        .toggle { position:relative; width:46px; height:26px; flex-shrink:0; }
+        .toggle input { opacity:0; width:0; height:0; position:absolute; }
+        .toggle-track { position:absolute; inset:0; background:rgba(255,255,255,0.08); border:1px solid var(--border); border-radius:100px; cursor:pointer; transition:all 0.3s; }
+        .toggle input:checked + .toggle-track { background:var(--green); border-color:var(--green); }
+        .toggle-thumb { position:absolute; top:4px; left:4px; width:16px; height:16px; background:#fff; border-radius:50%; transition:transform 0.3s; pointer-events:none; box-shadow:0 1px 3px rgba(0,0,0,0.4); }
+        .toggle input:checked ~ .toggle-thumb { transform:translateX(20px); }
 
-        .indicator-dot { width: 6px; height: 6px; border-radius: 50%; background: #334155; display: inline-block; margin-left: 6px; vertical-align: middle; }
-        .indicator-dot.active { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
-        .indicator-dot.warning { background: var(--accent-red); box-shadow: 0 0 8px var(--accent-red); }
+        /* BOTTOM NAV */
+        .bottom-nav {
+            position:fixed; bottom:0; left:0; right:0; z-index:100;
+            height: calc(var(--bottom-h) + var(--safe-bottom));
+            background:rgba(6,9,16,0.97);
+            backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+            border-top:1px solid var(--border);
+            display:flex; align-items:flex-start; padding-top:6px;
+            padding-bottom: var(--safe-bottom);
+        }
+        .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:8px 0; cursor:pointer; }
+        .nav-icon { font-size:1.25rem; transition:transform 0.2s; }
+        .nav-label { font-size:0.48rem; font-weight:600; color:var(--text3); letter-spacing:0.5px; text-transform:uppercase; transition:color 0.2s; }
+        .nav-dot { width:3px; height:3px; border-radius:50%; background:transparent; margin-top:1px; transition:background 0.2s; }
+        .nav-item.active .nav-label { color:var(--accent); }
+        .nav-item.active .nav-icon { transform:scale(1.15); }
+        .nav-item.active .nav-dot { background:var(--accent); }
 
-        .progress-bar-small { width: 100%; height: 3px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-top: 4px; }
-        .progress-fill-small { height: 100%; width: 0%; background: var(--accent-blue); transition: 0.5s; border-radius: 10px; }
+        /* TOAST */
+        .toast {
+            position:fixed;
+            bottom:calc(var(--bottom-h) + var(--safe-bottom) + 12px);
+            right:14px;
+            background:var(--surface); border:1px solid var(--accent);
+            border-radius:16px; padding:13px 16px;
+            font-size:0.72rem; color:var(--text);
+            box-shadow:0 10px 40px rgba(0,0,0,0.6);
+            z-index:200; max-width:220px;
+            transform:translateY(20px) scale(0.95); opacity:0;
+            transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+        .toast.show { transform:translateY(0) scale(1); opacity:1; }
+        .toast-title { font-weight:700; margin-bottom:2px; }
+        .toast-sub { color:var(--text2); font-size:0.6rem; }
 
-        footer { margin-top: 15px; color: var(--text-secondary); font-size: 0.55rem; letter-spacing: 1px; text-align: center; padding-bottom: 15px; }
-
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+        ::-webkit-scrollbar { width:3px; }
+        ::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.08); border-radius:3px; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <div class="logo">
-                <h1>CycleMaster <span style="font-size: 0.5rem; color: var(--accent-gold); border: 1px solid var(--accent-gold); padding: 1px 4px; border-radius: 4px; vertical-align: middle;">ULTIMATE MOBILE</span></h1>
+<div class="header">
+    <div class="logo">
+        <div class="logo-icon">📡</div>
+        <div>
+            <span class="logo-name">CycleMaster</span>
+            <span class="badge-ai">AI PRO</span>
+        </div>
+    </div>
+    <div class="header-right">
+        <div class="live-pill"><div class="live-dot"></div>CANLI</div>
+        <div class="icon-btn" id="sound-btn" onclick="toggleSound()">🔇</div>
+    </div>
+</div>
+
+<div class="content">
+
+    <!-- PİYASA -->
+    <div class="page active" id="page-market">
+        <div class="coin-bar">
+            <input type="text" id="coin-input" class="coin-input" value="BTCUSDT"
+                onkeydown="if(event.key==='Enter'){updateCoin();this.blur()}"
+                autocomplete="off" autocorrect="off" spellcheck="false" placeholder="BTCUSDT">
+            <button class="analyze-btn" onclick="updateCoin()">▶ ANALİZ</button>
+        </div>
+
+        <div class="market-hero">
+            <div class="market-top">
+                <span class="market-symbol" id="display-symbol">BTCUSDT</span>
+                <span id="price-change" class="price-pill">%0.00</span>
             </div>
-            
-            <div class="controls-area">
-                <div class="ctrl-group">
-                    <span class="ctrl-label">Coin</span>
-                    <input type="text" id="coin-input" class="search-input" value="BTCUSDT">
-                </div>
-                <div class="ctrl-group">
-                    <span class="ctrl-label">Profil</span>
-                    <select id="profile-select" class="select-input" onchange="applyProfile()">
-                        <option value="scalper">⚡ SCALPER</option>
-                        <option value="trader" selected>🎯 TRADER</option>
-                        <option value="swing">🛡️ SWING</option>
-                    </select>
-                </div>
-                <div class="ctrl-group">
-                    <span class="ctrl-label">Döngü</span>
-                    <select id="cycle-select" class="select-input" onchange="updateSettings()">
-                        <option value="5">5dk</option><option value="15">15dk</option><option value="30">30dk</option>
-                    </select>
-                </div>
-                <div class="ctrl-group">
-                    <span class="ctrl-label">TF</span>
-                    <select id="tf-select" class="select-input" onchange="updateSettings()">
-                        <option value="1m">1m</option><option value="5m">5m</option><option value="15m">15m</option>
-                    </select>
-                </div>
-                <button class="sound-btn" id="sound-toggle" onclick="toggleSound()">🔊 SES</button>
-                <button class="search-btn" onclick="updateCoin()">ANALİZ ET</button>
-            </div>
-        </header>
-
-        <div class="dashboard">
-            <!-- Market Status Card -->
-            <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span id="display-symbol" style="font-size: 0.9rem; font-weight: 800; color: var(--accent-gold);">BTCUSDT</span>
-                    <span id="price-change-pct" style="font-weight:700; font-size:0.75rem;">+%0.00</span>
-                </div>
-                <div class="price-text" id="display-price">0.00</div>
-                
-                <div class="htf-status-grid">
-                    <div class="htf-box"><div class="htf-label">1G Trend</div><span id="htf-1d" class="htf-val">-</span></div>
-                    <div class="htf-box"><div class="htf-label">4S Trend</div><span id="htf-4h" class="htf-val">-</span></div>
-                    <div class="htf-box"><div class="htf-label">1S Trend</div><span id="htf-1h" class="htf-val">-</span></div>
-                </div>
-
-                <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:0.55rem; color:var(--text-secondary);">RİSK (ATR)</span>
-                    <span id="volatility-status" style="font-size:0.6rem; font-weight:800;">DÜŞÜK</span>
-                </div>
-                <div class="progress-bar-small"><div id="vol-fill" class="progress-fill-small"></div></div>
-            </div>
-
-            <!-- Agent Intelligence -->
-            <div class="card" style="border-top: 3px solid var(--accent-gold);">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <span style="font-size:0.6rem; color:var(--accent-gold); font-weight:800;">🧠 KARAR VERİCİ</span>
-                    <span id="agent-verdict" style="font-size:0.6rem; font-weight:800;">BEKLEMEDE</span>
-                </div>
-                
-                <div style="display:flex; align-items:center; gap:12px;">
-                    <div class="agent-score-circle">
-                        <svg width="80" height="80" viewBox="0 0 100 100">
-                            <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="6"/>
-                            <circle id="score-circle" cx="50" cy="50" r="45" fill="none" stroke="var(--accent-gold)" stroke-width="6" stroke-dasharray="283" stroke-dashoffset="283" stroke-linecap="round" style="transition:1.5s;"/>
-                        </svg>
-                        <div class="agent-val" id="agent-score">0%</div>
-                    </div>
-                    <div id="agent-reasoning" class="reasoning-list" style="flex:1;">
-                        <div class="reason-item">Analiz bekleniyor...</div>
-                    </div>
-                </div>
-
-                <div id="trade-plan-box" class="trade-planner" style="display:none;">
-                    <div class="plan-row"><span>Giriş:</span><span id="plan-entry">-</span></div>
-                    <div class="plan-row"><span>TP:</span><span id="plan-tp" style="color:var(--accent-green);">-</span></div>
-                    <div class="plan-row"><span>SL:</span><span id="plan-sl" style="color:var(--accent-red);">-</span></div>
-                </div>
-            </div>
-
-            <!-- Execution Center -->
-            <div class="card center-card">
-                <div style="font-size:0.7rem; font-weight:800; color:var(--glow-color);" id="mode-text">---</div>
-                <div class="timer-text-big" id="timer-display">00:00</div>
-                <div style="font-size:0.5rem; color:var(--text-secondary); margin-bottom:8px;">SIRADAKİ DÖNGÜ</div>
-                <div id="match-status" class="match-wait">VERİ BEKLENİYOR</div>
-            </div>
-
-            <!-- Technical Gauges -->
-            <div class="card">
-                <div class="indicator-row"><span class="ind-label">Stoch RSI</span><div><span class="ind-val" id="stoch-rsi-val">-</span><div id="stoch-dot" class="indicator-dot"></div></div></div>
-                <div class="indicator-row"><span class="ind-label">Hacim Gücü</span><div><span class="ind-val" id="volume-power-val">-</span><div id="vol-dot" class="indicator-dot"></div></div></div>
-                <div class="indicator-row"><span class="ind-label">Bollinger</span><div><span class="ind-val" id="bb-status">-</span><div id="bb-dot" class="indicator-dot"></div></div></div>
+            <div class="market-price" id="display-price">—</div>
+            <div class="hl-row">
+                <div class="hl-box"><div class="hl-l">24S Yüksek</div><div class="hl-v" id="h24">—</div></div>
+                <div class="hl-box"><div class="hl-l">24S Düşük</div><div class="hl-v" id="l24">—</div></div>
             </div>
         </div>
 
-        <footer>
-            STATUS: ACTIVE | <span id="current-time">00:00:00</span>
-        </footer>
+        <div id="signal-banner" class="signal-banner signal-wait">
+            ⏳ VERİ BEKLENİYOR
+            <div class="signal-sub">Analiz başlatılıyor…</div>
+        </div>
+
+        <div class="cycle-card">
+            <div class="timer-wrap">
+                <svg class="timer-svg" viewBox="0 0 100 100">
+                    <circle class="ring-bg" cx="50" cy="50" r="43"/>
+                    <circle class="ring-prog" id="progress-circle" cx="50" cy="50" r="43"/>
+                </svg>
+                <div class="timer-inner">
+                    <div class="timer-num" id="timer-display">00:00</div>
+                    <div class="timer-lbl">kalan</div>
+                </div>
+            </div>
+            <div class="cycle-info">
+                <div class="cycle-strat" id="strategy-name">DAY TRADER MODE</div>
+                <div class="cycle-mode" id="mode-text">---</div>
+                <div class="cycle-time" id="current-time">00:00:00</div>
+            </div>
+        </div>
     </div>
 
-    <audio id="alert-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
+    <!-- AJAN -->
+    <div class="page" id="page-agent">
+        <div class="sec-title">Karar Verici Ajan</div>
+        <div class="agent-card">
+            <div class="agent-top">
+                <div class="agent-score-num" id="agent-score">0%</div>
+                <div class="agent-score-meta">
+                    <div class="agent-score-lbl">GÜVEN SKORU</div>
+                    <div class="agent-state" id="agent-state">Bekleniyor</div>
+                </div>
+            </div>
+            <div class="score-track"><div class="score-fill" id="agent-score-fill"></div></div>
+            <div class="reasoning" id="agent-reasoning">Analiz bekleniyor...</div>
+            <div class="cond-list">
+                <div class="cond-row"><div class="cond-icon no" id="cond-stoch">·</div><span class="cond-text" id="cond-stoch-text">Stoch RSI bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-bb">·</div><span class="cond-text" id="cond-bb-text">Bollinger bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-rsi">·</div><span class="cond-text" id="cond-rsi-text">RSI bekleniyor</span></div>
+            </div>
+        </div>
+    </div>
 
-    <script>
-        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(()=>{}); }); }
+    <!-- TEKNİK -->
+    <div class="page" id="page-tech">
+        <div class="sec-title">Teknik Tarama</div>
+        <div class="tech-card">
+            <div class="ind-row">
+                <div class="ind-left"><div id="stoch-dot" class="dot"></div><span class="ind-name">Stoch RSI</span></div>
+                <div class="ind-right"><span class="ind-val" id="stoch-rsi-val">—</span><span class="ind-badge b-gray" id="stoch-badge">—</span></div>
+            </div>
+            <div class="ind-row">
+                <div class="ind-left"><div id="bb-dot" class="dot"></div><span class="ind-name">Bollinger</span></div>
+                <div class="ind-right"><span class="ind-val" id="bb-status">—</span><span class="ind-badge b-gray" id="bb-badge">—</span></div>
+            </div>
+            <div class="ind-row">
+                <div class="ind-left"><div id="rsi-dot" class="dot"></div><span class="ind-name">RSI (14)</span></div>
+                <div class="ind-right"><span class="ind-val" id="rsi-val">—</span><span class="ind-badge b-gray" id="rsi-badge">—</span></div>
+            </div>
+            <div class="update-row">
+                <span class="update-lbl">Son Güncelleme</span>
+                <span class="update-val" id="last-update">—</span>
+            </div>
+        </div>
+    </div>
 
-        let currentCoin = "BTCUSDT", cycleMinutes = 15, analysisTF = "5m", lastMode = null;
-        let rsiValue = 50, stochRsiValue = 50, bbStatus = "Mid", volumePower = 1.0, atrValue = 0;
-        let htfTrends = { "1d": "NONE", "4h": "NONE", "1h": "NONE" };
-        let isSoundEnabled = false, alertPlayedInThisWindow = false;
+    <!-- AYARLAR -->
+    <div class="page" id="page-settings">
+        <div class="sec-title">Ayarlar</div>
+        <div class="settings-section">
+            <div class="settings-title">Strateji Profili</div>
+            <div class="setting-row">
+                <div><div class="setting-name">Profil</div><div class="setting-sub">Hazır strateji seçin</div></div>
+                <select id="profile-select" class="setting-control" onchange="applyProfile()">
+                    <option value="scalper">⚡ Scalper</option>
+                    <option value="trader" selected>🎯 Day Trader</option>
+                    <option value="swing">🛡️ Swing</option>
+                    <option value="custom">⚙️ Özel</option>
+                </select>
+            </div>
+            <div class="setting-row">
+                <div><div class="setting-name">Döngü Süresi</div><div class="setting-sub">Long/Short değişim aralığı</div></div>
+                <select id="cycle-select" class="setting-control" onchange="updateSettings()">
+                    <option value="1">1 dk</option><option value="3">3 dk</option><option value="5">5 dk</option>
+                    <option value="10">10 dk</option><option value="15" selected>15 dk</option>
+                    <option value="30">30 dk</option><option value="60">60 dk</option>
+                </select>
+            </div>
+            <div class="setting-row">
+                <div><div class="setting-name">Analiz TF</div><div class="setting-sub">Teknik analiz zaman dilimi</div></div>
+                <select id="tf-select" class="setting-control" onchange="updateSettings()">
+                    <option value="1m">1m</option><option value="3m">3m</option><option value="5m" selected>5m</option>
+                    <option value="15m">15m</option><option value="30m">30m</option>
+                    <option value="1h">1h</option><option value="4h">4h</option>
+                </select>
+            </div>
+        </div>
+        <div class="settings-section">
+            <div class="settings-title">Tercihler</div>
+            <div class="setting-row">
+                <div><div class="setting-name">Ses Uyarısı</div><div class="setting-sub">Sinyal gelince ses çal</div></div>
+                <label class="toggle">
+                    <input type="checkbox" id="sound-checkbox" onchange="toggleSoundFromCb()">
+                    <div class="toggle-track"></div>
+                    <div class="toggle-thumb"></div>
+                </label>
+            </div>
+        </div>
+    </div>
 
-        const profiles = {
-            scalper: { cycle: 5, tf: "1m", name: "⚡ SCALPER" },
-            trader: { cycle: 15, tf: "5m", name: "🎯 TRADER" },
-            swing: { cycle: 30, tf: "15m", name: "🛡️ SWING" }
-        };
+</div>
 
-        function applyProfile() {
-            const p = profiles[document.getElementById('profile-select').value];
-            cycleMinutes = p.cycle; analysisTF = p.tf;
-            document.getElementById('cycle-select').value = cycleMinutes;
-            document.getElementById('tf-select').value = analysisTF;
-            updateSettings();
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+    <div class="nav-item active" id="nav-market" onclick="goTo('market')">
+        <div class="nav-icon">📈</div>
+        <div class="nav-label">Piyasa</div>
+        <div class="nav-dot"></div>
+    </div>
+    <div class="nav-item" id="nav-agent" onclick="goTo('agent')">
+        <div class="nav-icon">🧠</div>
+        <div class="nav-label">Ajan</div>
+        <div class="nav-dot"></div>
+    </div>
+    <div class="nav-item" id="nav-tech" onclick="goTo('tech')">
+        <div class="nav-icon">📊</div>
+        <div class="nav-label">Teknik</div>
+        <div class="nav-dot"></div>
+    </div>
+    <div class="nav-item" id="nav-settings" onclick="goTo('settings')">
+        <div class="nav-icon">⚙️</div>
+        <div class="nav-label">Ayarlar</div>
+        <div class="nav-dot"></div>
+    </div>
+</nav>
+
+<div class="toast" id="toast">
+    <div class="toast-title" id="toast-title">🔔 Sinyal!</div>
+    <div class="toast-sub" id="toast-sub">Yeni işlem sinyali.</div>
+</div>
+
+<audio id="alert-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
+
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+
+let currentCoin="BTCUSDT", cycleMinutes=15, analysisTF="5m", lastMode=null;
+let rsiValue=50, stochRsiValue=50, bbStatus="Mid";
+let isSoundEnabled=false, alertPlayedInThisWindow=false;
+let toastTimer=null;
+
+const profiles={
+    scalper:{cycle:5,tf:"1m",name:"⚡ SCALPER MODE"},
+    trader:{cycle:15,tf:"5m",name:"🎯 DAY TRADER MODE"},
+    swing:{cycle:30,tf:"15m",name:"🛡️ SWING MODE"}
+};
+
+function goTo(page){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    document.getElementById('page-'+page).classList.add('active');
+    document.getElementById('nav-'+page).classList.add('active');
+    window.scrollTo(0,0);
+}
+
+function toggleSound(){ isSoundEnabled=!isSoundEnabled; syncSoundUI(); saveToMemory(); }
+function toggleSoundFromCb(){ isSoundEnabled=document.getElementById('sound-checkbox').checked; syncSoundUI(); saveToMemory(); }
+function syncSoundUI(){
+    document.getElementById('sound-btn').textContent=isSoundEnabled?'🔊':'🔇';
+    document.getElementById('sound-btn').className=isSoundEnabled?'icon-btn active':'icon-btn';
+    document.getElementById('sound-checkbox').checked=isSoundEnabled;
+}
+
+function showToast(title,sub){
+    const t=document.getElementById('toast');
+    document.getElementById('toast-title').textContent=title;
+    document.getElementById('toast-sub').textContent=sub;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer=setTimeout(()=>t.classList.remove('show'),4000);
+}
+
+function applyProfile(){
+    const k=document.getElementById('profile-select').value;
+    if(k==='custom') return;
+    const p=profiles[k];
+    cycleMinutes=p.cycle; analysisTF=p.tf;
+    document.getElementById('cycle-select').value=cycleMinutes;
+    document.getElementById('tf-select').value=analysisTF;
+    document.getElementById('strategy-name').textContent=p.name;
+    saveToMemory(); fetchTechnical();
+}
+
+function updateSettings(){
+    cycleMinutes=parseInt(document.getElementById('cycle-select').value);
+    analysisTF=document.getElementById('tf-select').value;
+    const found=Object.values(profiles).find(p=>p.cycle==cycleMinutes&&p.tf==analysisTF);
+    document.getElementById('strategy-name').textContent=found?found.name:"⚙️ ÖZEL MOD";
+    saveToMemory(); fetchTechnical();
+}
+
+function updateCoin(){
+    const v=document.getElementById('coin-input').value.toUpperCase().trim();
+    if(!v) return;
+    currentCoin=v.includes("USDT")?v:v+"USDT";
+    document.getElementById('coin-input').value=currentCoin;
+    document.getElementById('display-symbol').textContent=currentCoin;
+    saveToMemory(); fetchData();
+}
+
+async function fetchData(){ fetchPrice(); fetchTechnical(); }
+
+async function fetchPrice(){
+    try{
+        const r=await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${currentCoin}`);
+        const d=await r.json();
+        if(!d.lastPrice) return;
+        const p=parseFloat(d.lastPrice);
+        document.getElementById('display-price').textContent=p>1?p.toLocaleString('tr-TR'):p.toFixed(6);
+        const c=parseFloat(d.priceChangePercent);
+        const el=document.getElementById('price-change');
+        el.textContent=(c>=0?"+":"")+c.toFixed(2)+"%";
+        el.className='price-pill '+(c>=0?'up':'dn');
+        document.getElementById('h24').textContent=parseFloat(d.highPrice).toLocaleString('tr-TR');
+        document.getElementById('l24').textContent=parseFloat(d.lowPrice).toLocaleString('tr-TR');
+    }catch(e){}
+}
+
+async function fetchTechnical(){
+    try{
+        const r=await fetch(`https://api.binance.com/api/v3/klines?symbol=${currentCoin}&interval=${analysisTF}&limit=300`);
+        const k=await r.json();
+        const closes=k.map(x=>parseFloat(x[4]));
+        if(closes.length<50) return;
+
+        const rsiSeries=calcRSI(closes,14);
+        rsiValue=rsiSeries[rsiSeries.length-1];
+        document.getElementById('rsi-val').textContent=rsiValue.toFixed(1);
+
+        const stochSeries=calcStochRSI(rsiSeries,14);
+        stochRsiValue=stochSeries[stochSeries.length-1];
+        document.getElementById('stoch-rsi-val').textContent=stochRsiValue.toFixed(1);
+
+        const{upper,lower}=calcBB(closes);
+        const lp=closes[closes.length-1];
+        bbStatus=lp>=upper*0.995?"Top":lp<=lower*1.005?"Bottom":"Mid";
+        document.getElementById('bb-status').textContent=bbStatus==="Top"?"ÜST BAND":bbStatus==="Bottom"?"ALT BAND":"ORTA";
+
+        updateBadges();
+        document.getElementById('last-update').textContent=new Date().toLocaleTimeString('tr-TR');
+        runAgent();
+    }catch(e){}
+}
+
+function updateBadges(){
+    const setBadge=(id,val,hi,lo)=>{
+        const el=document.getElementById(id);
+        if(val>hi){el.textContent="AŞIRI ALIM";el.className="ind-badge b-red";}
+        else if(val<lo){el.textContent="AŞIRI SATIM";el.className="ind-badge b-green";}
+        else{el.textContent="NÖTR";el.className="ind-badge b-gray";}
+    };
+    setBadge('rsi-badge',rsiValue,70,30);
+    setBadge('stoch-badge',stochRsiValue,80,20);
+    const bb=document.getElementById('bb-badge');
+    if(bbStatus==="Top"){bb.textContent="ÜST";bb.className="ind-badge b-red";}
+    else if(bbStatus==="Bottom"){bb.textContent="ALT";bb.className="ind-badge b-green";}
+    else{bb.textContent="ORTA";bb.className="ind-badge b-gray";}
+}
+
+function calcRSI(c,p=14){
+    let g=[],l=[];
+    for(let i=1;i<c.length;i++){const d=c[i]-c[i-1];g.push(Math.max(0,d));l.push(Math.max(0,-d));}
+    let ag=g.slice(0,p).reduce((a,b)=>a+b)/p,al=l.slice(0,p).reduce((a,b)=>a+b)/p;
+    const r=[];
+    for(let i=p;i<g.length;i++){ag=((ag*(p-1))+g[i])/p;al=((al*(p-1))+l[i])/p;r.push(al===0?100:100-(100/(1+ag/al)));}
+    return r;
+}
+
+function calcStochRSI(r,p=14){
+    const s=[];
+    for(let i=p;i<=r.length;i++){const sl=r.slice(i-p,i),c=r[i-1],mn=Math.min(...sl),mx=Math.max(...sl);s.push(mx===mn?50:((c-mn)/(mx-mn))*100);}
+    return s;
+}
+
+function calcBB(c,p=20,d=2){
+    const s=c.slice(-p),m=s.reduce((a,b)=>a+b)/p;
+    const sd=Math.sqrt(s.reduce((a,b)=>a+Math.pow(b-m,2),0)/p);
+    return{upper:m+sd*d,lower:m-sd*d};
+}
+
+function updateCycle(){
+    const now=new Date();
+    const ts=now.toLocaleTimeString('tr-TR');
+    document.getElementById('current-time').textContent=ts;
+
+    const totalMin=now.getHours()*60+now.getMinutes();
+    const mode=(Math.floor(totalMin/cycleMinutes)%2===0)?'SHORT':'LONG';
+    if(mode!==lastMode){lastMode=mode;alertPlayedInThisWindow=false;handleModeChange(mode);}
+
+    const sec=now.getSeconds();
+    const left=((cycleMinutes-(now.getMinutes()%cycleMinutes)-1)*60)+(60-sec);
+    document.getElementById('timer-display').textContent=`${Math.floor(left/60).toString().padStart(2,'0')}:${(left%60).toString().padStart(2,'0')}`;
+    document.getElementById('progress-circle').style.strokeDashoffset=270*(1-left/(cycleMinutes*60));
+}
+
+function handleModeChange(m){
+    document.body.className=m==='SHORT'?'mode-short':'mode-long';
+    document.getElementById('mode-text').textContent=m;
+    runAgent();
+}
+
+function runAgent(){
+    const stochOk=lastMode==='SHORT'?stochRsiValue>80:stochRsiValue<20;
+    const bbOk=lastMode==='SHORT'?bbStatus==="Top":bbStatus==="Bottom";
+    const rsiOk=lastMode==='SHORT'?rsiValue>55:rsiValue<45;
+
+    let score=0;
+    if(stochOk) score+=40;
+    if(bbOk) score+=30;
+    if(rsiOk) score+=20;
+    if(score>=70) score+=10;
+
+    document.getElementById('agent-score').textContent=score+"%";
+    document.getElementById('agent-score-fill').style.width=score+"%";
+
+    const stateEl=document.getElementById('agent-state');
+    if(score>=75){stateEl.textContent=lastMode==='SHORT'?'🔴 Sat Sinyali':'🟢 Al Sinyali';stateEl.style.color=lastMode==='SHORT'?'var(--red)':'var(--green)';}
+    else{stateEl.textContent='⏳ Bekleniyor';stateEl.style.color='var(--gold)';}
+
+    const reasons=[];
+    if(stochOk) reasons.push(`Stoch RSI ${stochRsiValue.toFixed(1)} — onaylı`);
+    if(bbOk) reasons.push(`Bollinger ${bbStatus==='Top'?'üst':'alt'} bant teması`);
+    if(rsiOk) reasons.push(`RSI ${rsiValue.toFixed(1)} — trend uyumlu`);
+
+    const rBox=document.getElementById('agent-reasoning');
+    rBox.innerHTML=score>=75
+        ?`<strong style="color:${lastMode==='SHORT'?'var(--red)':'var(--green)'}">GİRİŞ UYGUN ✓</strong><br>${reasons.join('<br>')}`
+        :`<strong>BEKLE.</strong><br>Şartlar oluşmadı (${score}%). ${reasons.length?reasons.join(', ')+'.':'Hiçbir koşul karşılanmıyor.'}`;
+
+    const setC=(id,textId,ok,text)=>{
+        const el=document.getElementById(id);
+        el.className='cond-icon '+(ok?'ok':'no');
+        el.textContent=ok?'✓':'·';
+        document.getElementById(textId).textContent=text;
+    };
+    setC('cond-stoch','cond-stoch-text',stochOk,stochOk?`Stoch RSI ${stochRsiValue.toFixed(1)} ✓`:`Stoch RSI ${stochRsiValue.toFixed(1)} — şart yok`);
+    setC('cond-bb','cond-bb-text',bbOk,bbOk?`Bollinger ${bbStatus==='Top'?'üst':'alt'} band ✓`:'Bollinger şartı yok');
+    setC('cond-rsi','cond-rsi-text',rsiOk,rsiOk?`RSI ${rsiValue.toFixed(1)} ✓`:`RSI ${rsiValue.toFixed(1)} — şart yok`);
+
+    document.getElementById('stoch-dot').className='dot '+(stochOk?'active':'warn');
+    document.getElementById('bb-dot').className='dot '+(bbOk?'active':'warn');
+    document.getElementById('rsi-dot').className='dot '+(rsiOk?'active':'warn');
+
+    const banner=document.getElementById('signal-banner');
+    if(score>=75){
+        const cls=lastMode==='SHORT'?'signal-short':'signal-long';
+        const txt=lastMode==='SHORT'?'🔥 ŞİMDİ SATIŞ YAP':'🚀 ŞİMDİ ALIM YAP';
+        banner.innerHTML=`${txt}<div class="signal-sub">${currentCoin} · Güven: ${score}%</div>`;
+        banner.className='signal-banner '+cls;
+        if(isSoundEnabled&&!alertPlayedInThisWindow){
+            document.getElementById('alert-sound').play().catch(()=>{});
+            alertPlayedInThisWindow=true;
         }
+        showToast(lastMode==='SHORT'?'🔥 Satış Sinyali':'🚀 Alım Sinyali',`${currentCoin} · Güven: ${score}%`);
+    }else{
+        banner.innerHTML=`⏳ ŞARTLAR BEKLENİYOR<div class="signal-sub">Güven skoru: ${score}%</div>`;
+        banner.className='signal-banner signal-wait';
+    }
+}
 
-        function loadFromMemory() {
-            const mC = localStorage.getItem('cycle_coin'), mMi = localStorage.getItem('cycle_min'), mTF = localStorage.getItem('cycle_tf'), mS = localStorage.getItem('cycle_sound');
-            if(mC) currentCoin = mC; if(mMi) cycleMinutes = parseInt(mMi); if(mTF) analysisTF = mTF;
-            if(mS === 'true') { isSoundEnabled = true; document.getElementById('sound-toggle').className = "sound-btn active"; }
-            document.getElementById('coin-input').value = currentCoin; document.getElementById('cycle-select').value = cycleMinutes;
-            document.getElementById('tf-select').value = analysisTF; document.getElementById('display-symbol').textContent = currentCoin;
-        }
+function saveToMemory(){
+    localStorage.setItem('cm_coin',currentCoin);
+    localStorage.setItem('cm_min',cycleMinutes);
+    localStorage.setItem('cm_tf',analysisTF);
+    localStorage.setItem('cm_sound',isSoundEnabled);
+}
 
-        function saveToMemory() {
-            localStorage.setItem('cycle_coin', currentCoin); localStorage.setItem('cycle_min', cycleMinutes);
-            localStorage.setItem('cycle_tf', analysisTF); localStorage.setItem('cycle_sound', isSoundEnabled);
-        }
+function loadFromMemory(){
+    const c=localStorage.getItem('cm_coin'),m=localStorage.getItem('cm_min');
+    const t=localStorage.getItem('cm_tf'),s=localStorage.getItem('cm_sound');
+    if(c) currentCoin=c;
+    if(m) cycleMinutes=parseInt(m);
+    if(t) analysisTF=t;
+    if(s==='true'){isSoundEnabled=true;syncSoundUI();}
+    document.getElementById('coin-input').value=currentCoin;
+    document.getElementById('cycle-select').value=cycleMinutes;
+    document.getElementById('tf-select').value=analysisTF;
+    document.getElementById('display-symbol').textContent=currentCoin;
+    const found=Object.values(profiles).find(p=>p.cycle==cycleMinutes&&p.tf==analysisTF);
+    document.getElementById('strategy-name').textContent=found?found.name:"⚙️ ÖZEL MOD";
+}
 
-        function toggleSound() {
-            isSoundEnabled = !isSoundEnabled; saveToMemory();
-            document.getElementById('sound-toggle').className = isSoundEnabled ? "sound-btn active" : "sound-btn";
-            if(isSoundEnabled) { const a = document.getElementById('alert-sound'); a.play().then(()=>a.pause()).catch(()=>{}); }
-        }
-
-        function updateSettings() {
-            cycleMinutes = parseInt(document.getElementById('cycle-select').value); analysisTF = document.getElementById('tf-select').value;
-            saveToMemory(); fetchData();
-        }
-
-        function updateCoin() {
-            const i = document.getElementById('coin-input').value.toUpperCase();
-            if(i) { currentCoin = i.includes("USDT") ? i : i + "USDT"; document.getElementById('display-symbol').textContent = currentCoin; saveToMemory(); fetchData(); }
-        }
-
-        async function fetchData() { fetchPrice(); fetchTechnical(); fetchHTF(); }
-
-        async function fetchPrice() {
-            try {
-                const r = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${currentCoin}`);
-                const d = await r.json();
-                if(d.lastPrice) {
-                    const p = parseFloat(d.lastPrice); document.getElementById('display-price').textContent = p > 1 ? p.toLocaleString() : p.toFixed(6);
-                    const c = parseFloat(d.priceChangePercent); const e = document.getElementById('price-change-pct');
-                    e.textContent = (c>=0?"+":"")+c.toFixed(2)+"%"; e.style.color = c>=0?"#10b981":"#ef4444";
-                }
-            } catch(e){}
-        }
-
-        async function fetchHTF() {
-            const intervals = ["1d", "4h", "1h"];
-            for(let interval of intervals) {
-                try {
-                    const r = await fetch(`https://api.binance.com/api/v3/klines?symbol=${currentCoin}&interval=${interval}&limit=50`);
-                    const k = await r.json();
-                    const closes = k.map(x => parseFloat(x[4]));
-                    const sma20 = closes.slice(-20).reduce((a,b)=>a+b)/20;
-                    const trend = (closes[closes.length-1] > sma20) ? "BULL" : "BEAR";
-                    htfTrends[interval] = trend;
-                    const el = document.getElementById(`htf-${interval}`);
-                    el.textContent = trend === "BULL" ? "BOĞA" : "AYI";
-                    el.style.color = trend === "BULL" ? "var(--accent-green)" : "var(--accent-red)";
-                } catch(e){}
-            }
-        }
-
-        async function fetchTechnical() {
-            try {
-                const r = await fetch(`https://api.binance.com/api/v3/klines?symbol=${currentCoin}&interval=${analysisTF}&limit=100`);
-                const k = await r.json();
-                const closes = k.map(x => parseFloat(x[4]));
-                const highs = k.map(x => parseFloat(x[2]));
-                const lows = k.map(x => parseFloat(x[3]));
-                const volumes = k.map(x => parseFloat(x[5]));
-
-                const rsiSeries = calculateRSI(closes, 14); rsiValue = rsiSeries[rsiSeries.length-1];
-                stochRsiValue = calculateStochRSI(rsiSeries, 14);
-                const avgVol = volumes.slice(-20).reduce((a,b)=>a+b)/20;
-                volumePower = volumes[volumes.length-1] / avgVol;
-                atrValue = calculateATR(highs, lows, closes, 14);
-                
-                const volPct = (atrValue / closes[closes.length-1]) * 1000;
-                document.getElementById('vol-fill').style.width = Math.min(volPct*10, 100) + "%";
-                document.getElementById('volatility-status').textContent = volPct > 5 ? "YÜKSEK" : (volPct > 2 ? "ORTA" : "DÜŞÜK");
-                document.getElementById('volatility-status').style.color = volPct > 5 ? "var(--accent-red)" : (volPct > 2 ? "var(--accent-gold)" : "var(--accent-green)");
-
-                const { upper, lower } = calculateBB(closes); const lp = closes[closes.length - 1];
-                if (lp >= upper * 0.995) bbStatus = "Top"; else if (lp <= lower * 1.005) bbStatus = "Bottom"; else bbStatus = "Mid";
-                
-                // Update small UI elements
-                document.getElementById('stoch-rsi-val').textContent = stochRsiValue.toFixed(0);
-                document.getElementById('volume-power-val').textContent = "x" + volumePower.toFixed(1);
-                document.getElementById('bb-status').textContent = bbStatus==="Top"?"ÜST":(bbStatus==="Bottom"?"ALT":"ORTA");
-
-                runAgentDecision(lp);
-            } catch(e){}
-        }
-
-        function calculateRSI(c, p) {
-            let g = [], l = [];
-            for(let i=1; i<c.length; i++){ let d=c[i]-c[i-1]; g.push(Math.max(0,d)); l.push(Math.max(0,-d)); }
-            let r = []; let ag = g.slice(0,p).reduce((a,b)=>a+b)/p, al = l.slice(0,p).reduce((a,b)=>a+b)/p;
-            for(let i=p; i<g.length; i++){ ag=(ag*(p-1)+g[i])/p; al=(al*(p-1)+l[i])/p; r.push(100-(100/(1+ag/al))); }
-            return r;
-        }
-
-        function calculateStochRSI(r, p) {
-            const s = r.slice(-p); const min = Math.min(...s), max = Math.max(...s);
-            return max===min ? 50 : ((r[r.length-1]-min)/(max-min))*100;
-        }
-
-        function calculateATR(h, l, c, p) {
-            let trs = [];
-            for(let i=1; i<c.length; i++) { trs.push(Math.max(h[i]-l[i], Math.abs(h[i]-c[i-1]), Math.abs(l[i]-c[i-1]))); }
-            return trs.slice(-p).reduce((a,b)=>a+b)/p;
-        }
-
-        function calculateBB(c, p=20, d=2) {
-            const s = c.slice(-p); const m = s.reduce((a,b)=>a+b)/p;
-            const sd = Math.sqrt(s.reduce((a,b)=>a+Math.pow(b-m,2),0)/p);
-            return { upper: m+(sd*d), lower: m-(sd*d) };
-        }
-
-        function updateCycle() {
-            const now = new Date(); const min = now.getMinutes(), sec = now.getSeconds();
-            document.getElementById('current-time').textContent = now.toLocaleTimeString('tr-TR');
-            const currentMode = (Math.floor(((now.getHours()*60)+min) / cycleMinutes) % 2 === 0) ? 'SHORT' : 'LONG';
-            if (currentMode !== lastMode) { lastMode = currentMode; alertPlayedInThisWindow = false; handleModeChange(currentMode); }
-            const sr = ((cycleMinutes-(min%cycleMinutes)-1)*60)+(60-sec);
-            document.getElementById('timer-display').textContent = `${Math.floor(sr/60).toString().padStart(2,'0')}:${(sr%60).toString().padStart(2,'0')}`;
-            document.getElementById('progress-circle').style.strokeDashoffset = 283*(1-(sr/(cycleMinutes*60)));
-        }
-
-        function handleModeChange(m) {
-            document.body.className = m === 'SHORT' ? 'mode-short' : 'mode-long';
-            document.getElementById('mode-text').textContent = m;
-            fetchData();
-        }
-
-        function runAgentDecision(price) {
-            const scoreEl = document.getElementById('agent-score');
-            const circle = document.getElementById('score-circle');
-            const reasonEl = document.getElementById('agent-reasoning');
-            const statusBox = document.getElementById('match-status');
-            const planBox = document.getElementById('trade-plan-box');
-            
-            let score = 0, reasons = [];
-            let stochOk = lastMode === 'SHORT' ? stochRsiValue > 80 : stochRsiValue < 20;
-            let bbOk = lastMode === 'SHORT' ? bbStatus === "Top" : bbStatus === "Bottom";
-            if(stochOk) score += 25;
-            if(bbOk) score += 15;
-            if(volumePower > 1.2) score += 20;
-            
-            let targetHtf = (lastMode === 'LONG') ? "BULL" : "BEAR";
-            if(htfTrends["1d"] === targetHtf) score += 20;
-            if(htfTrends["4h"] === targetHtf) score += 10;
-            if(htfTrends["1h"] === targetHtf) score += 10;
-
-            scoreEl.textContent = score + "%";
-            circle.style.strokeDashoffset = 283 - (283 * score / 100);
-            document.getElementById('agent-verdict').textContent = score >= 75 ? "GİRİŞ UYGUN" : "BEKLEMEDE";
-            
-            reasonEl.innerHTML = score >= 75 ? `<div class="reason-item">Şartlar ve Trend Uyumlu.</div>` : `<div class="reason-item" style="border-left-color:var(--accent-red)">Yeterli onay yok (${score}%).</div>`;
-
-            if (score >= 75) {
-                statusBox.textContent = lastMode === 'SHORT' ? "SATIŞ YAP" : "ALIM YAP";
-                statusBox.className = lastMode === 'SHORT' ? "match-ok-short" : "match-ok-long";
-                planBox.style.display = "block";
-                document.getElementById('plan-entry').textContent = price.toLocaleString();
-                const tpDist = atrValue * 2.5; const slDist = atrValue * 1.5;
-                if(lastMode === 'LONG') {
-                    document.getElementById('plan-tp').textContent = (price + tpDist).toLocaleString();
-                    document.getElementById('plan-sl').textContent = (price - slDist).toLocaleString();
-                } else {
-                    document.getElementById('plan-tp').textContent = (price - tpDist).toLocaleString();
-                    document.getElementById('plan-sl').textContent = (price + slDist).toLocaleString();
-                }
-                if(isSoundEnabled && !alertPlayedInThisWindow) { document.getElementById('alert-sound').play().catch(()=>{}); alertPlayedInThisWindow = true; }
-            } else {
-                statusBox.textContent = "BEKLENİYOR"; statusBox.className = "match-wait";
-                planBox.style.display = "none";
-            }
-            
-            document.getElementById('stoch-dot').className = "indicator-dot " + (stochOk ? "active" : "warning");
-            document.getElementById('vol-dot').className = "indicator-dot " + (volumePower > 1.2 ? "active" : "warning");
-            document.getElementById('bb-dot').className = "indicator-dot " + (bbOk ? "active" : "warning");
-        }
-
-        loadFromMemory(); setInterval(updateCycle, 1000); setInterval(fetchPrice, 3000); 
-        setInterval(fetchTechnical, 15000); setInterval(fetchHTF, 60000);
-        updateCycle(); fetchData();
-    </script>
+loadFromMemory();
+setInterval(updateCycle,1000);
+setInterval(fetchPrice,3000);
+setInterval(fetchTechnical,15000);
+updateCycle(); fetchData();
+</script>
 </body>
 </html>
