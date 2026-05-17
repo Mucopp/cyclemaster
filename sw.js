@@ -1,14 +1,13 @@
-const CACHE_NAME = 'cyclemaster-v1';
+const CACHE_NAME = 'cyclemaster-v2';
 const STATIC_ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './icon-192.png',
-  './icon-512.png',
-  'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap'
+  './icon-512.png'
 ];
 
-// Install: cache static assets
+// ── INSTALL ──
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
@@ -18,7 +17,7 @@ self.addEventListener('install', event => {
   self.skipWaiting();
 });
 
-// Activate: clean old caches
+// ── ACTIVATE ──
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -28,24 +27,26 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// Fetch strategy:
-// - Binance API: network first, no cache (always live data)
-// - Everything else: cache first, fallback to network
+// ── FETCH ──
 self.addEventListener('fetch', event => {
   const url = event.request.url;
 
-  // Binance API — always network, never cache
-  if (url.includes('binance.com')) {
-    event.respondWith(fetch(event.request).catch(() => new Response('{}', { headers: { 'Content-Type': 'application/json' } })));
+  // Binance API — her zaman canlı, cache'leme
+  if (url.includes('binance.com') || url.includes('fonts.googleapis') || url.includes('fonts.gstatic')) {
+    event.respondWith(
+      fetch(event.request).catch(() => new Response('{}', {
+        headers: { 'Content-Type': 'application/json' }
+      }))
+    );
     return;
   }
 
-  // Fonts & static — cache first
+  // Statik dosyalar — cache first
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
       return fetch(event.request).then(response => {
-        if (response && response.status === 200 && response.type !== 'opaque') {
+        if (response && response.status === 200) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         }
@@ -55,23 +56,36 @@ self.addEventListener('fetch', event => {
   );
 });
 
-// Background sync placeholder (for future alert system)
-self.addEventListener('sync', event => {
-  if (event.tag === 'check-signals') {
-    // future: background signal check
-  }
-});
-
-// Push notification support (for future use)
+// ── BİLDİRİM: Push (sunucudan gelen) ──
 self.addEventListener('push', event => {
   if (!event.data) return;
-  const data = event.data.json();
-  self.registration.showNotification(data.title || 'CycleMaster Pro', {
-    body: data.body || 'Yeni sinyal!',
-    icon: '/icon-192.png',
-    badge: '/icon-192.png',
-    tag: 'signal',
-    renotify: true,
-    vibrate: [200, 100, 200]
-  });
+  let data = { title: 'CycleMaster Pro', body: 'Yeni sinyal!' };
+  try { data = event.data.json(); } catch(e) {}
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: './icon-192.png',
+      badge: './icon-192.png',
+      tag: 'cyclemaster-signal',
+      renotify: true,
+      vibrate: [200, 100, 200, 100, 200],
+      requireInteraction: false
+    })
+  );
+});
+
+// ── BİLDİRİM: Tıklanınca uygulamayı aç ──
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+      // Uygulama zaten açıksa öne getir
+      for (const client of clientList) {
+        if ('focus' in client) return client.focus();
+      }
+      // Değilse yeni sekme aç
+      if (clients.openWindow) return clients.openWindow('./');
+    })
+  );
 });
