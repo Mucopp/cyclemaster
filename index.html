@@ -424,6 +424,10 @@
                 <div class="cond-row"><div class="cond-icon no" id="cond-stoch">·</div><span class="cond-text" id="cond-stoch-text">Stoch RSI bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-bb">·</div><span class="cond-text" id="cond-bb-text">Bollinger bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-rsi">·</div><span class="cond-text" id="cond-rsi-text">RSI bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-ema">·</div><span class="cond-text" id="cond-ema-text">EMA 9/21/50 bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-vwap">·</div><span class="cond-text" id="cond-vwap-text">VWAP bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-obv">·</div><span class="cond-text" id="cond-obv-text">OBV bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-mfi">·</div><span class="cond-text" id="cond-mfi-text">MFI bekleniyor</span></div>
             </div>
         </div>
     </div>
@@ -443,6 +447,22 @@
             <div class="ind-row">
                 <div class="ind-left"><div id="rsi-dot" class="dot"></div><span class="ind-name">RSI (14)</span></div>
                 <div class="ind-right"><span class="ind-val" id="rsi-val">—</span><span class="ind-badge b-gray" id="rsi-badge">—</span></div>
+            </div>
+            <div class="ind-row">
+                <div class="ind-left"><div id="ema-dot" class="dot"></div><span class="ind-name">EMA (9/21/50)</span></div>
+                <div class="ind-right"><span class="ind-val" id="ema-val">—</span><span class="ind-badge b-gray" id="ema-badge">—</span></div>
+            </div>
+            <div class="ind-row">
+                <div class="ind-left"><div id="vwap-dot" class="dot"></div><span class="ind-name">VWAP</span></div>
+                <div class="ind-right"><span class="ind-val" id="vwap-val">—</span><span class="ind-badge b-gray" id="vwap-badge">—</span></div>
+            </div>
+            <div class="ind-row">
+                <div class="ind-left"><div id="obv-dot" class="dot"></div><span class="ind-name">OBV</span></div>
+                <div class="ind-right"><span class="ind-val" id="obv-val">—</span><span class="ind-badge b-gray" id="obv-badge">—</span></div>
+            </div>
+            <div class="ind-row">
+                <div class="ind-left"><div id="mfi-dot" class="dot"></div><span class="ind-name">MFI (14)</span></div>
+                <div class="ind-right"><span class="ind-val" id="mfi-val">—</span><span class="ind-badge b-gray" id="mfi-badge">—</span></div>
             </div>
             <div class="update-row">
                 <span class="update-lbl">Son Güncelleme</span>
@@ -488,6 +508,14 @@
                 <div><div class="setting-name">Ses Uyarısı</div><div class="setting-sub">Sinyal gelince ses çal</div></div>
                 <label class="toggle">
                     <input type="checkbox" id="sound-checkbox" onchange="toggleSoundFromCb()">
+                    <div class="toggle-track"></div>
+                    <div class="toggle-thumb"></div>
+                </label>
+            </div>
+            <div class="setting-row">
+                <div><div class="setting-name">Sistem Bildirimleri</div><div class="setting-sub">Cihaz üst panelinde sinyal göster</div></div>
+                <label class="toggle">
+                    <input type="checkbox" id="notification-checkbox" onchange="toggleNotificationsFromCb()">
                     <div class="toggle-track"></div>
                     <div class="toggle-thumb"></div>
                 </label>
@@ -556,7 +584,12 @@ if ('serviceWorker' in navigator) {
 
 let currentCoin="BTCUSDT", cycleMinutes=15, analysisTF="5m", lastMode=null;
 let rsiValue=50, stochRsiValue=50, bbStatus="Mid";
-let isSoundEnabled=false, alertPlayedInThisWindow=false;
+let ema9Val=0, ema21Val=0, ema50Val=0;
+let vwapVal=0;
+let obvVal=0, obvMAVal=0;
+let mfiVal=50;
+let lastPrice=0;
+let isSoundEnabled=false, alertPlayedInThisWindow=false, isNotificationEnabled=false;
 let toastTimer=null;
 
 const profiles={
@@ -573,12 +606,79 @@ function goTo(page){
     window.scrollTo(0,0);
 }
 
-function toggleSound(){ isSoundEnabled=!isSoundEnabled; syncSoundUI(); saveToMemory(); }
-function toggleSoundFromCb(){ isSoundEnabled=document.getElementById('sound-checkbox').checked; syncSoundUI(); saveToMemory(); }
+function toggleSound(){ 
+    isSoundEnabled=!isSoundEnabled; 
+    syncSoundUI(); 
+    saveToMemory(); 
+    if(isSoundEnabled) {
+        const audio = document.getElementById('alert-sound');
+        if (audio) audio.play().catch(()=>{});
+    }
+}
+function toggleSoundFromCb(){ 
+    isSoundEnabled=document.getElementById('sound-checkbox').checked; 
+    syncSoundUI(); 
+    saveToMemory(); 
+    if(isSoundEnabled) {
+        const audio = document.getElementById('alert-sound');
+        if (audio) audio.play().catch(()=>{});
+    }
+}
 function syncSoundUI(){
     document.getElementById('sound-btn').textContent=isSoundEnabled?'🔊':'🔇';
     document.getElementById('sound-btn').className=isSoundEnabled?'icon-btn active':'icon-btn';
     document.getElementById('sound-checkbox').checked=isSoundEnabled;
+}
+function toggleNotificationsFromCb() {
+    const cb = document.getElementById('notification-checkbox');
+    if (cb.checked) {
+        if (!('Notification' in window)) {
+            showToast("⚠️ Desteklenmiyor", "Bu cihazda sistem bildirimleri desteklenmiyor.");
+            cb.checked = false;
+            return;
+        }
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                isNotificationEnabled = true;
+                showToast("🔔 Bildirimler Aktif", "Sinyaller cihaz üst panelinde görünecek.");
+                sendSystemNotification("CycleMaster Pro 🔔", "Sistem bildirimleri başarıyla aktif edildi!");
+            } else {
+                isNotificationEnabled = false;
+                showToast("❌ İzin Verilmedi", "Bildirim gönderme izni reddedildi.");
+                cb.checked = false;
+            }
+            saveToMemory();
+        });
+    } else {
+        isNotificationEnabled = false;
+        showToast("🔕 Bildirimler Kapatıldı", "Sistem bildirimleri devre dışı.");
+        saveToMemory();
+    }
+}
+function syncNotificationUI() {
+    const cb = document.getElementById('notification-checkbox');
+    if (cb) cb.checked = isNotificationEnabled;
+}
+function sendSystemNotification(title, body) {
+    if (!('Notification' in window)) return;
+    if (Notification.permission !== 'granted') return;
+    
+    const options = {
+        body: body,
+        icon: 'icon-192.png',
+        badge: 'icon-192.png',
+        vibrate: [200, 100, 200]
+    };
+    
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.ready.then(reg => {
+            reg.showNotification(title, options).catch(() => {
+                new Notification(title, options);
+            });
+        });
+    } else {
+        new Notification(title, options);
+    }
 }
 
 function showToast(title,sub){
@@ -626,6 +726,7 @@ async function fetchPrice(){
         const d=await r.json();
         if(!d.lastPrice) return;
         const p=parseFloat(d.lastPrice);
+        lastPrice=p;
         document.getElementById('display-price').textContent=p>1?p.toLocaleString('tr-TR'):p.toFixed(6);
         const c=parseFloat(d.priceChangePercent);
         const el=document.getElementById('price-change');
@@ -641,6 +742,9 @@ async function fetchTechnical(){
         const r=await fetch(`https://api.binance.com/api/v3/klines?symbol=${currentCoin}&interval=${analysisTF}&limit=300`);
         const k=await r.json();
         const closes=k.map(x=>parseFloat(x[4]));
+        const highs=k.map(x=>parseFloat(x[2]));
+        const lows=k.map(x=>parseFloat(x[3]));
+        const volumes=k.map(x=>parseFloat(x[5]));
         if(closes.length<50) return;
 
         const rsiSeries=calcRSI(closes,14);
@@ -653,16 +757,50 @@ async function fetchTechnical(){
 
         const{upper,lower}=calcBB(closes);
         const lp=closes[closes.length-1];
+        lastPrice=lp;
         bbStatus=lp>=upper*0.995?"Top":lp<=lower*1.005?"Bottom":"Mid";
         document.getElementById('bb-status').textContent=bbStatus==="Top"?"ÜST BAND":bbStatus==="Bottom"?"ALT BAND":"ORTA";
 
-        updateBadges();
+        // EMA 9/21/50
+        const ema9Series=calcEMA(closes,9);
+        const ema21Series=calcEMA(closes,21);
+        const ema50Series=calcEMA(closes,50);
+        ema9Val=ema9Series[ema9Series.length-1];
+        ema21Val=ema21Series[ema21Series.length-1];
+        ema50Val=ema50Series[ema50Series.length-1];
+        const fmtPrice=(v)=>v.toLocaleString('tr-TR',{minimumFractionDigits:1,maximumFractionDigits:1});
+        document.getElementById('ema-val').textContent=`9: ${fmtPrice(ema9Val)} | 21: ${fmtPrice(ema21Val)} | 50: ${fmtPrice(ema50Val)}`;
+
+        // VWAP
+        const vwapSeries=calcVWAP(k);
+        vwapVal=vwapSeries[vwapSeries.length-1];
+        document.getElementById('vwap-val').textContent=fmtPrice(vwapVal);
+
+        // OBV
+        const obvSeries=calcOBV(closes,volumes);
+        const obvMASeries=calcSMA(obvSeries,20);
+        obvVal=obvSeries[obvSeries.length-1];
+        obvMAVal=obvMASeries[obvMASeries.length-1];
+        const fmtVol=(v)=>{
+            const absV=Math.abs(v);
+            if(absV>=1e6) return (v/1e6).toFixed(2)+'M';
+            if(absV>=1e3) return (v/1e3).toFixed(1)+'K';
+            return v.toFixed(0);
+        };
+        document.getElementById('obv-val').textContent=fmtVol(obvVal);
+
+        // MFI
+        const mfiSeries=calcMFI(highs,lows,closes,volumes,14);
+        mfiVal=mfiSeries[mfiSeries.length-1];
+        document.getElementById('mfi-val').textContent=mfiVal.toFixed(1);
+
+        updateBadges(lp);
         document.getElementById('last-update').textContent=new Date().toLocaleTimeString('tr-TR');
         runAgent();
     }catch(e){}
 }
 
-function updateBadges(){
+function updateBadges(lp){
     const setBadge=(id,val,hi,lo)=>{
         const el=document.getElementById(id);
         if(val>hi){el.textContent="AŞIRI ALIM";el.className="ind-badge b-red";}
@@ -675,6 +813,25 @@ function updateBadges(){
     if(bbStatus==="Top"){bb.textContent="ÜST";bb.className="ind-badge b-red";}
     else if(bbStatus==="Bottom"){bb.textContent="ALT";bb.className="ind-badge b-green";}
     else{bb.textContent="ORTA";bb.className="ind-badge b-gray";}
+
+    // EMA Badge
+    const emaB=document.getElementById('ema-badge');
+    if(ema9Val>ema21Val&&ema21Val>ema50Val){emaB.textContent="BOĞA";emaB.className="ind-badge b-green";}
+    else if(ema9Val<ema21Val&&ema21Val<ema50Val){emaB.textContent="AYI";emaB.className="ind-badge b-red";}
+    else{emaB.textContent="KARIŞIK";emaB.className="ind-badge b-gray";}
+
+    // VWAP Badge
+    const vwapB=document.getElementById('vwap-badge');
+    if(lp>vwapVal){vwapB.textContent="BOĞA";vwapB.className="ind-badge b-green";}
+    else{vwapB.textContent="AYI";vwapB.className="ind-badge b-red";}
+
+    // OBV Badge
+    const obvB=document.getElementById('obv-badge');
+    if(obvVal>obvMAVal){obvB.textContent="BOĞA";obvB.className="ind-badge b-green";}
+    else{obvB.textContent="AYI";obvB.className="ind-badge b-red";}
+
+    // MFI Badge
+    setBadge('mfi-badge',mfiVal,80,20);
 }
 
 function calcRSI(c,p=14){
@@ -696,6 +853,92 @@ function calcBB(c,p=20,d=2){
     const s=c.slice(-p),m=s.reduce((a,b)=>a+b)/p;
     const sd=Math.sqrt(s.reduce((a,b)=>a+Math.pow(b-m,2),0)/p);
     return{upper:m+sd*d,lower:m-sd*d};
+}
+
+function calcEMA(c, p) {
+    if (c.length < p) return [];
+    const k = 2 / (p + 1);
+    const r = new Array(c.length).fill(0);
+    let sma = 0;
+    for (let i = 0; i < p; i++) sma += c[i];
+    sma = sma / p;
+    r[p - 1] = sma;
+    for (let i = p; i < c.length; i++) {
+        r[i] = (c[i] - r[i - 1]) * k + r[i - 1];
+    }
+    return r;
+}
+
+function calcVWAP(klines) {
+    let sumPV = 0, sumV = 0;
+    const vwapSeries = [];
+    let lastDay = null;
+    for (let i = 0; i < klines.length; i++) {
+        const time = parseInt(klines[i][0]);
+        const high = parseFloat(klines[i][2]);
+        const low = parseFloat(klines[i][3]);
+        const close = parseFloat(klines[i][4]);
+        const volume = parseFloat(klines[i][5]);
+        const tp = (high + low + close) / 3;
+        const currentDay = new Date(time).getUTCDate();
+        if (lastDay !== null && currentDay !== lastDay) {
+            sumPV = 0;
+            sumV = 0;
+        }
+        lastDay = currentDay;
+        sumPV += tp * volume;
+        sumV += volume;
+        vwapSeries.push(sumV === 0 ? tp : sumPV / sumV);
+    }
+    return vwapSeries;
+}
+
+function calcOBV(closes, volumes) {
+    const obvSeries = [0];
+    let currentObv = 0;
+    for (let i = 1; i < closes.length; i++) {
+        if (closes[i] > closes[i - 1]) currentObv += volumes[i];
+        else if (closes[i] < closes[i - 1]) currentObv -= volumes[i];
+        obvSeries.push(currentObv);
+    }
+    return obvSeries;
+}
+
+function calcSMA(series, period) {
+    const r = [];
+    for (let i = 0; i < series.length; i++) {
+        if (i < period - 1) {
+            r.push(series[i]);
+            continue;
+        }
+        let sum = 0;
+        for (let j = i - period + 1; j <= i; j++) sum += series[j];
+        r.push(sum / period);
+    }
+    return r;
+}
+
+function calcMFI(highs, lows, closes, volumes, p = 14) {
+    const tp = [], rmf = [];
+    for (let i = 0; i < closes.length; i++) {
+        tp.push((highs[i] + lows[i] + closes[i]) / 3);
+        rmf.push(tp[i] * volumes[i]);
+    }
+    const mfiSeries = [];
+    for (let i = 0; i < closes.length; i++) {
+        if (i < p) {
+            mfiSeries.push(50);
+            continue;
+        }
+        let posFlow = 0, negFlow = 0;
+        for (let j = i - p + 1; j <= i; j++) {
+            if (tp[j] > tp[j - 1]) posFlow += rmf[j];
+            else if (tp[j] < tp[j - 1]) negFlow += rmf[j];
+        }
+        if (negFlow === 0) mfiSeries.push(100);
+        else mfiSeries.push(100 - (100 / (1 + posFlow / negFlow)));
+    }
+    return mfiSeries;
 }
 
 function updateCycle(){
@@ -723,12 +966,19 @@ function runAgent(){
     const stochOk=lastMode==='SHORT'?stochRsiValue>80:stochRsiValue<20;
     const bbOk=lastMode==='SHORT'?bbStatus==="Top":bbStatus==="Bottom";
     const rsiOk=lastMode==='SHORT'?rsiValue>55:rsiValue<45;
+    const emaOk=lastMode==='SHORT'?(ema9Val<ema21Val&&ema21Val<ema50Val):(ema9Val>ema21Val&&ema21Val>ema50Val);
+    const vwapOk=lastMode==='SHORT'?(vwapVal>0&&lastPrice<vwapVal):(vwapVal>0&&lastPrice>vwapVal);
+    const obvOk=lastMode==='SHORT'?obvVal<obvMAVal:obvVal>obvMAVal;
+    const mfiOk=lastMode==='SHORT'?mfiVal>55:mfiVal<45;
 
     let score=0;
-    if(stochOk) score+=40;
-    if(bbOk) score+=30;
-    if(rsiOk) score+=20;
-    if(score>=70) score+=10;
+    if(stochOk) score+=20;
+    if(bbOk) score+=15;
+    if(rsiOk) score+=15;
+    if(emaOk) score+=15;
+    if(vwapOk) score+=15;
+    if(obvOk) score+=10;
+    if(mfiOk) score+=10;
 
     document.getElementById('agent-score').textContent=score+"%";
     document.getElementById('agent-score-fill').style.width=score+"%";
@@ -741,6 +991,10 @@ function runAgent(){
     if(stochOk) reasons.push(`Stoch RSI ${stochRsiValue.toFixed(1)} — onaylı`);
     if(bbOk) reasons.push(`Bollinger ${bbStatus==='Top'?'üst':'alt'} bant teması`);
     if(rsiOk) reasons.push(`RSI ${rsiValue.toFixed(1)} — trend uyumlu`);
+    if(emaOk) reasons.push(`EMA ${lastMode==='SHORT'?'ayı':'boğa'} dizilimi onaylı`);
+    if(vwapOk) reasons.push(`Fiyat VWAP ${lastMode==='SHORT'?'altında':'üstünde'}`);
+    if(obvOk) reasons.push(`OBV ${lastMode==='SHORT'?'düşen':'yükselen'} hacim trendi`);
+    if(mfiOk) reasons.push(`MFI ${mfiVal.toFixed(1)} — trend uyumlu`);
 
     const rBox=document.getElementById('agent-reasoning');
     rBox.innerHTML=score>=75
@@ -756,10 +1010,18 @@ function runAgent(){
     setC('cond-stoch','cond-stoch-text',stochOk,stochOk?`Stoch RSI ${stochRsiValue.toFixed(1)} ✓`:`Stoch RSI ${stochRsiValue.toFixed(1)} — şart yok`);
     setC('cond-bb','cond-bb-text',bbOk,bbOk?`Bollinger ${bbStatus==='Top'?'üst':'alt'} band ✓`:'Bollinger şartı yok');
     setC('cond-rsi','cond-rsi-text',rsiOk,rsiOk?`RSI ${rsiValue.toFixed(1)} ✓`:`RSI ${rsiValue.toFixed(1)} — şart yok`);
+    setC('cond-ema','cond-ema-text',emaOk,emaOk?`EMA 9/21/50 ${lastMode==='SHORT'?'ayı':'boğa'} dizilimi ✓`:'EMA dizilim şartı yok');
+    setC('cond-vwap','cond-vwap-text',vwapOk,vwapOk?`Fiyat VWAP ${lastMode==='SHORT'?'altında':'üstünde'} ✓`:'VWAP şartı yok');
+    setC('cond-obv','cond-obv-text',obvOk,obvOk?`OBV hacim yönü ✓`:'OBV hacim şartı yok');
+    setC('cond-mfi','cond-mfi-text',mfiOk,mfiOk?`MFI ${mfiVal.toFixed(1)} ✓`:`MFI ${mfiVal.toFixed(1)} — şart yok`);
 
     document.getElementById('stoch-dot').className='dot '+(stochOk?'active':'warn');
     document.getElementById('bb-dot').className='dot '+(bbOk?'active':'warn');
     document.getElementById('rsi-dot').className='dot '+(rsiOk?'active':'warn');
+    document.getElementById('ema-dot').className='dot '+(emaOk?'active':'warn');
+    document.getElementById('vwap-dot').className='dot '+(vwapOk?'active':'warn');
+    document.getElementById('obv-dot').className='dot '+(obvOk?'active':'warn');
+    document.getElementById('mfi-dot').className='dot '+(mfiOk?'active':'warn');
 
     const banner=document.getElementById('signal-banner');
     if(score>=75){
@@ -769,6 +1031,14 @@ function runAgent(){
         banner.className='signal-banner '+cls;
         if(isSoundEnabled&&!alertPlayedInThisWindow){
             document.getElementById('alert-sound').play().catch(()=>{});
+        }
+        if(isNotificationEnabled&&!alertPlayedInThisWindow){
+            sendSystemNotification(
+                lastMode==='SHORT'?'🔴 Satış Sinyali!':'🟢 Alım Sinyali!',
+                `${currentCoin} · Güven: ${score}% · ${reasons.length} onay alındı.`
+            );
+        }
+        if(!alertPlayedInThisWindow){
             alertPlayedInThisWindow=true;
         }
         showToast(lastMode==='SHORT'?'🔥 Satış Sinyali':'🚀 Alım Sinyali',`${currentCoin} · Güven: ${score}%`);
@@ -783,15 +1053,18 @@ function saveToMemory(){
     localStorage.setItem('cm_min',cycleMinutes);
     localStorage.setItem('cm_tf',analysisTF);
     localStorage.setItem('cm_sound',isSoundEnabled);
+    localStorage.setItem('cm_notify',isNotificationEnabled);
 }
 
 function loadFromMemory(){
     const c=localStorage.getItem('cm_coin'),m=localStorage.getItem('cm_min');
     const t=localStorage.getItem('cm_tf'),s=localStorage.getItem('cm_sound');
+    const n=localStorage.getItem('cm_notify');
     if(c) currentCoin=c;
     if(m) cycleMinutes=parseInt(m);
     if(t) analysisTF=t;
     if(s==='true'){isSoundEnabled=true;syncSoundUI();}
+    if(n==='true'){isNotificationEnabled=true;syncNotificationUI();}
     document.getElementById('coin-input').value=currentCoin;
     document.getElementById('cycle-select').value=cycleMinutes;
     document.getElementById('tf-select').value=analysisTF;
@@ -846,6 +1119,21 @@ window.addEventListener('appinstalled', () => {
     document.getElementById('install-banner').classList.remove('visible');
     showToast('✅ Başarıyla Yüklendi!', 'CycleMaster Pro ana ekranında.');
 });
+
+// Mobil tarayıcılarda ses kilidini açmak için otomatik tetikleyici (Audio Unlocker)
+function unlockAudio() {
+    const audio = document.getElementById('alert-sound');
+    if (audio) {
+        audio.play().then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+        }).catch(() => {});
+    }
+    document.removeEventListener('click', unlockAudio);
+    document.removeEventListener('touchstart', unlockAudio);
+}
+document.addEventListener('click', unlockAudio);
+document.addEventListener('touchstart', unlockAudio);
 
 loadFromMemory();
 setInterval(updateCycle,1000);
