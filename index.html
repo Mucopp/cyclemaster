@@ -342,6 +342,19 @@
         .ios-arrow {
             text-align: center; font-size: 1.4rem; margin-top: 6px;
         }
+
+        /* TIMEFRAME MATRIX CARD */
+        .tf-card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:18px; margin-top:16px; }
+        .tf-card-title { font-size:0.54rem; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:2px; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+        .tf-card-title::before { content:''; width:3px; height:3px; border-radius:50%; background:var(--accent); }
+        .tf-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+        .tf-box { background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:14px; padding:12px 8px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px; }
+        .tf-name { font-size:0.58rem; color:var(--text3); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+        .tf-name span { color:var(--accent); font-family:'Space Mono',monospace; }
+        .tf-badge { font-size:0.52rem; font-weight:700; padding:4px 10px; border-radius:100px; text-transform:uppercase; font-family:'Space Mono',monospace; letter-spacing:0.5px; min-width:60px; text-align:center; }
+        .tf-badge.bull { background:rgba(16,185,129,0.12); color:var(--green); border:1px solid rgba(16,185,129,0.2); }
+        .tf-badge.bear { background:rgba(244,63,94,0.12); color:var(--red); border:1px solid rgba(244,63,94,0.2); }
+        .tf-badge.neutral { background:rgba(255,255,255,0.05); color:var(--text3); border:1px solid rgba(255,255,255,0.1); }
     </style>
 </head>
 <body>
@@ -395,14 +408,32 @@
                     <circle class="ring-prog" id="progress-circle" cx="50" cy="50" r="43"/>
                 </svg>
                 <div class="timer-inner">
-                    <div class="timer-num" id="timer-display">00:00</div>
-                    <div class="timer-lbl">kalan</div>
+                    <div class="timer-num" id="timer-display">0%</div>
+                    <div class="timer-lbl">uyum</div>
                 </div>
             </div>
             <div class="cycle-info">
                 <div class="cycle-strat" id="strategy-name">DAY TRADER MODE</div>
-                <div class="cycle-mode" id="mode-text">---</div>
+                <div class="cycle-mode" id="mode-text">YATAY PİYASA</div>
                 <div class="cycle-time" id="current-time">00:00:00</div>
+            </div>
+        </div>
+
+        <div class="tf-card">
+            <div class="tf-card-title">Zaman Dilimleri Matrisi</div>
+            <div class="tf-row">
+                <div class="tf-box">
+                    <div class="tf-name">Üst TF (<span id="lbl-ust-tf">1h</span>)</div>
+                    <div id="state-ust-tf" class="tf-badge neutral">YATAY</div>
+                </div>
+                <div class="tf-box">
+                    <div class="tf-name">Orta TF (<span id="lbl-orta-tf">15m</span>)</div>
+                    <div id="state-orta-tf" class="tf-badge neutral">NÖTR</div>
+                </div>
+                <div class="tf-box">
+                    <div class="tf-name">Alt TF (<span id="lbl-alt-tf">5m</span>)</div>
+                    <div id="state-alt-tf" class="tf-badge neutral">NÖTR</div>
+                </div>
             </div>
         </div>
     </div>
@@ -486,19 +517,24 @@
                 </select>
             </div>
             <div class="setting-row">
-                <div><div class="setting-name">Döngü Süresi</div><div class="setting-sub">Long/Short değişim aralığı</div></div>
-                <select id="cycle-select" class="setting-control" onchange="updateSettings()">
-                    <option value="1">1 dk</option><option value="3">3 dk</option><option value="5">5 dk</option>
-                    <option value="10">10 dk</option><option value="15" selected>15 dk</option>
-                    <option value="30">30 dk</option><option value="60">60 dk</option>
+                <div><div class="setting-name">Üst TF (Zaman Dilimi)</div><div class="setting-sub">Makro yön tayini için</div></div>
+                <select id="ust-tf-select" class="setting-control" onchange="updateSettings()">
+                    <option value="15m">15m</option><option value="30m">30m</option>
+                    <option value="1h" selected>1h</option><option value="4h">4h</option>
                 </select>
             </div>
             <div class="setting-row">
-                <div><div class="setting-name">Analiz TF</div><div class="setting-sub">Teknik analiz zaman dilimi</div></div>
-                <select id="tf-select" class="setting-control" onchange="updateSettings()">
+                <div><div class="setting-name">Orta TF (Zaman Dilimi)</div><div class="setting-sub">Ara momentum doğrulaması</div></div>
+                <select id="orta-tf-select" class="setting-control" onchange="updateSettings()">
+                    <option value="5m">5m</option><option value="15m" selected>15m</option><option value="30m">30m</option>
+                    <option value="1h">1h</option>
+                </select>
+            </div>
+            <div class="setting-row">
+                <div><div class="setting-name">Alt TF (Zaman Dilimi)</div><div class="setting-sub">Nokta atışı giriş sinyali için</div></div>
+                <select id="alt-tf-select" class="setting-control" onchange="updateSettings()">
                     <option value="1m">1m</option><option value="3m">3m</option><option value="5m" selected>5m</option>
-                    <option value="15m">15m</option><option value="30m">30m</option>
-                    <option value="1h">1h</option><option value="4h">4h</option>
+                    <option value="15m">15m</option>
                 </select>
             </div>
         </div>
@@ -578,11 +614,27 @@
 <audio id="alert-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
 
 <script>
+// ── SERVICE WORKER ──
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => {
+                console.log('SW kayıtlı:', reg.scope);
+                // SW güncelleme kontrolü
+                reg.addEventListener('updatefound', () => {
+                    const newWorker = reg.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            showToast('🔄 Güncelleme', 'Yeni sürüm hazır. Sayfayı yenile.');
+                        }
+                    });
+                });
+            })
+            .catch(err => console.log('SW hatası:', err));
+    });
 }
 
-let currentCoin="BTCUSDT", cycleMinutes=15, analysisTF="5m", lastMode=null;
+let currentCoin="BTCUSDT", altTF="5m", ortaTF="15m", ustTF="1h", lastMode=null;
 let rsiValue=50, stochRsiValue=50, bbStatus="Mid";
 let ema9Val=0, ema21Val=0, ema50Val=0;
 let vwapVal=0;
@@ -593,9 +645,9 @@ let isSoundEnabled=false, alertPlayedInThisWindow=false, isNotificationEnabled=f
 let toastTimer=null;
 
 const profiles={
-    scalper:{cycle:5,tf:"1m",name:"⚡ SCALPER MODE"},
-    trader:{cycle:15,tf:"5m",name:"🎯 DAY TRADER MODE"},
-    swing:{cycle:30,tf:"15m",name:"🛡️ SWING MODE"}
+    scalper:{alt:"1m",orta:"5m",ust:"15m",name:"⚡ SCALPER MODE"},
+    trader:{alt:"5m",orta:"15m",ust:"1h",name:"🎯 DAY TRADER MODE"},
+    swing:{alt:"15m",orta:"1h",ust:"4h",name:"🛡️ SWING MODE"}
 };
 
 function goTo(page){
@@ -632,52 +684,104 @@ function syncSoundUI(){
 function toggleNotificationsFromCb() {
     const cb = document.getElementById('notification-checkbox');
     if (cb.checked) {
-        if (!('Notification' in window)) {
-            showToast("⚠️ Desteklenmiyor", "Bu cihazda sistem bildirimleri desteklenmiyor.");
-            cb.checked = false;
-            return;
-        }
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                isNotificationEnabled = true;
-                showToast("🔔 Bildirimler Aktif", "Sinyaller cihaz üst panelinde görünecek.");
-                sendSystemNotification("CycleMaster Pro 🔔", "Sistem bildirimleri başarıyla aktif edildi!");
-            } else {
-                isNotificationEnabled = false;
-                showToast("❌ İzin Verilmedi", "Bildirim gönderme izni reddedildi.");
-                cb.checked = false;
-            }
-            saveToMemory();
-        });
+        requestNotificationPermission();
     } else {
         isNotificationEnabled = false;
+        syncNotificationUI();
         showToast("🔕 Bildirimler Kapatıldı", "Sistem bildirimleri devre dışı.");
         saveToMemory();
     }
+}
+
+function requestNotificationPermission() {
+    const cb = document.getElementById('notification-checkbox');
+
+    // iOS PWA: Notification API yok ama ses+toast yeterli
+    if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+        isNotificationEnabled = true;
+        syncNotificationUI();
+        showToast("🔔 Bildirimler Aktif", "iOS'ta uygulama açıkken sinyal gelince ses+ekran bildirimi çalışır.");
+        saveToMemory();
+        return;
+    }
+
+    if (!('Notification' in window)) {
+        showToast("⚠️ Desteklenmiyor", "Bu tarayıcı sistem bildirimlerini desteklemiyor.");
+        cb.checked = false;
+        return;
+    }
+
+    if (Notification.permission === 'granted') {
+        isNotificationEnabled = true;
+        syncNotificationUI();
+        showToast("🔔 Bildirimler Aktif", "Sinyaller cihaz üst panelinde görünecek.");
+        sendSystemNotification("CycleMaster Pro ✅", "Bildirimler başarıyla aktif edildi!");
+        saveToMemory();
+        return;
+    }
+
+    if (Notification.permission === 'denied') {
+        showToast("❌ İzin Reddedildi", "Tarayıcı ayarlarından bildirim iznini açmanız gerekiyor.");
+        cb.checked = false;
+        return;
+    }
+
+    // 'default' — izin iste
+    Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+            isNotificationEnabled = true;
+            syncNotificationUI();
+            showToast("🔔 Bildirimler Aktif", "Sinyaller cihaz üst panelinde görünecek.");
+            sendSystemNotification("CycleMaster Pro ✅", "Bildirimler başarıyla aktif edildi!");
+        } else {
+            isNotificationEnabled = false;
+            syncNotificationUI();
+            showToast("❌ İzin Verilmedi", "Bildirimler için tarayıcı iznine ihtiyaç var.");
+            cb.checked = false;
+        }
+        saveToMemory();
+    }).catch(() => {
+        cb.checked = false;
+        showToast("⚠️ Hata", "Bildirim izni alınamadı.");
+    });
 }
 function syncNotificationUI() {
     const cb = document.getElementById('notification-checkbox');
     if (cb) cb.checked = isNotificationEnabled;
 }
+
 function sendSystemNotification(title, body) {
-    if (!('Notification' in window)) return;
+    // iOS PWA veya Notification API yoksa sadece toast göster
+    if (!('Notification' in window) || /iphone|ipad|ipod/i.test(navigator.userAgent)) {
+        // iOS'ta zaten toast ve ses çalıyor, ek bir şey yapmaya gerek yok
+        return;
+    }
+
     if (Notification.permission !== 'granted') return;
-    
+
     const options = {
         body: body,
         icon: 'icon-192.png',
         badge: 'icon-192.png',
-        vibrate: [200, 100, 200]
+        tag: 'cyclemaster-signal',   // aynı tag'li eski bildirimi değiştirir, spam olmaz
+        renotify: true,
+        vibrate: [200, 100, 200, 100, 200],
+        requireInteraction: false,
+        silent: false
     };
-    
+
+    // Service Worker üzerinden gönder (daha güvenilir, arka plan desteği)
     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
         navigator.serviceWorker.ready.then(reg => {
             reg.showNotification(title, options).catch(() => {
-                new Notification(title, options);
+                // SW başarısız olursa normal Notification dene
+                try { new Notification(title, options); } catch(e) {}
             });
+        }).catch(() => {
+            try { new Notification(title, options); } catch(e) {}
         });
     } else {
-        new Notification(title, options);
+        try { new Notification(title, options); } catch(e) {}
     }
 }
 
@@ -694,17 +798,20 @@ function applyProfile(){
     const k=document.getElementById('profile-select').value;
     if(k==='custom') return;
     const p=profiles[k];
-    cycleMinutes=p.cycle; analysisTF=p.tf;
-    document.getElementById('cycle-select').value=cycleMinutes;
-    document.getElementById('tf-select').value=analysisTF;
+    altTF=p.alt; ortaTF=p.orta; ustTF=p.ust;
+    document.getElementById('alt-tf-select').value=altTF;
+    document.getElementById('orta-tf-select').value=ortaTF;
+    document.getElementById('ust-tf-select').value=ustTF;
     document.getElementById('strategy-name').textContent=p.name;
     saveToMemory(); fetchTechnical();
 }
 
 function updateSettings(){
-    cycleMinutes=parseInt(document.getElementById('cycle-select').value);
-    analysisTF=document.getElementById('tf-select').value;
-    const found=Object.values(profiles).find(p=>p.cycle==cycleMinutes&&p.tf==analysisTF);
+    altTF=document.getElementById('alt-tf-select').value;
+    ortaTF=document.getElementById('orta-tf-select').value;
+    ustTF=document.getElementById('ust-tf-select').value;
+    const found=Object.values(profiles).find(p=>p.alt===altTF&&p.orta===ortaTF&&p.ust===ustTF);
+    document.getElementById('profile-select').value=found?Object.keys(profiles).find(key=>profiles[key]===found):"custom";
     document.getElementById('strategy-name').textContent=found?found.name:"⚙️ ÖZEL MOD";
     saveToMemory(); fetchTechnical();
 }
@@ -739,63 +846,144 @@ async function fetchPrice(){
 
 async function fetchTechnical(){
     try{
-        const r=await fetch(`https://api.binance.com/api/v3/klines?symbol=${currentCoin}&interval=${analysisTF}&limit=300`);
-        const k=await r.json();
-        const closes=k.map(x=>parseFloat(x[4]));
-        const highs=k.map(x=>parseFloat(x[2]));
-        const lows=k.map(x=>parseFloat(x[3]));
-        const volumes=k.map(x=>parseFloat(x[5]));
-        if(closes.length<50) return;
-
-        const rsiSeries=calcRSI(closes,14);
-        rsiValue=rsiSeries[rsiSeries.length-1];
-        document.getElementById('rsi-val').textContent=rsiValue.toFixed(1);
-
-        const stochSeries=calcStochRSI(rsiSeries,14);
-        stochRsiValue=stochSeries[stochSeries.length-1];
-        document.getElementById('stoch-rsi-val').textContent=stochRsiValue.toFixed(1);
-
-        const{upper,lower}=calcBB(closes);
-        const lp=closes[closes.length-1];
-        lastPrice=lp;
-        bbStatus=lp>=upper*0.995?"Top":lp<=lower*1.005?"Bottom":"Mid";
-        document.getElementById('bb-status').textContent=bbStatus==="Top"?"ÜST BAND":bbStatus==="Bottom"?"ALT BAND":"ORTA";
-
-        // EMA 9/21/50
-        const ema9Series=calcEMA(closes,9);
-        const ema21Series=calcEMA(closes,21);
-        const ema50Series=calcEMA(closes,50);
-        ema9Val=ema9Series[ema9Series.length-1];
-        ema21Val=ema21Series[ema21Series.length-1];
-        ema50Val=ema50Series[ema50Series.length-1];
-        const fmtPrice=(v)=>v.toLocaleString('tr-TR',{minimumFractionDigits:1,maximumFractionDigits:1});
-        document.getElementById('ema-val').textContent=`9: ${fmtPrice(ema9Val)} | 21: ${fmtPrice(ema21Val)} | 50: ${fmtPrice(ema50Val)}`;
-
-        // VWAP
-        const vwapSeries=calcVWAP(k);
-        vwapVal=vwapSeries[vwapSeries.length-1];
-        document.getElementById('vwap-val').textContent=fmtPrice(vwapVal);
-
-        // OBV
-        const obvSeries=calcOBV(closes,volumes);
-        const obvMASeries=calcSMA(obvSeries,20);
-        obvVal=obvSeries[obvSeries.length-1];
-        obvMAVal=obvMASeries[obvMASeries.length-1];
-        const fmtVol=(v)=>{
-            const absV=Math.abs(v);
+        const [rAlt, rOrta, rUst] = await Promise.all([
+            fetch(`https://api.binance.com/api/v3/klines?symbol=${currentCoin}&interval=${altTF}&limit=150`),
+            fetch(`https://api.binance.com/api/v3/klines?symbol=${currentCoin}&interval=${ortaTF}&limit=150`),
+            fetch(`https://api.binance.com/api/v3/klines?symbol=${currentCoin}&interval=${ustTF}&limit=150`)
+        ]);
+        const [kAlt, kOrta, kUst] = await Promise.all([rAlt.json(), rOrta.json(), rUst.json()]);
+        
+        if(kAlt.length < 50 || kOrta.length < 50 || kUst.length < 50) return;
+        
+        const cAlt = kAlt.map(x=>parseFloat(x[4])), hAlt = kAlt.map(x=>parseFloat(x[2])), lAlt = kAlt.map(x=>parseFloat(x[3])), vAlt = kAlt.map(x=>parseFloat(x[5]));
+        const cOrta = kOrta.map(x=>parseFloat(x[4])), hOrta = kOrta.map(x=>parseFloat(x[2])), lOrta = kOrta.map(x=>parseFloat(x[3])), vOrta = kOrta.map(x=>parseFloat(x[5]));
+        const cUst = kUst.map(x=>parseFloat(x[4])), hUst = kUst.map(x=>parseFloat(x[2])), lUst = kUst.map(x=>parseFloat(x[3])), vUst = kUst.map(x=>parseFloat(x[5]));
+        
+        const lp = cAlt[cAlt.length-1];
+        lastPrice = lp;
+        
+        // Update Timeframe Labels
+        document.getElementById('lbl-alt-tf').textContent = altTF;
+        document.getElementById('lbl-orta-tf').textContent = ortaTF;
+        document.getElementById('lbl-ust-tf').textContent = ustTF;
+        
+        // --- ÜST TF INDICATORS (EMA 9/21/50) ---
+        const ema9Series = calcEMA(cUst, 9);
+        const ema21Series = calcEMA(cUst, 21);
+        const ema50Series = calcEMA(cUst, 50);
+        ema9Val = ema9Series[ema9Series.length-1];
+        ema21Val = ema21Series[ema21Series.length-1];
+        ema50Val = ema50Series[ema50Series.length-1];
+        const fmtPrice = (v)=>v.toLocaleString('tr-TR',{minimumFractionDigits:1,maximumFractionDigits:1});
+        document.getElementById('ema-val').textContent = `9: ${fmtPrice(ema9Val)} | 21: ${fmtPrice(ema21Val)} | 50: ${fmtPrice(ema50Val)}`;
+        
+        let ustTFTrend = "YATAY";
+        if(ema9Val > ema21Val && ema21Val > ema50Val) {
+            ustTFTrend = "BOĞA";
+        } else if(ema9Val < ema21Val && ema21Val < ema50Val) {
+            ustTFTrend = "AYI";
+        }
+        
+        const badgeUst = document.getElementById('state-ust-tf');
+        let newMode = "YATAY";
+        if(ustTFTrend === "BOĞA") {
+            badgeUst.textContent = "BOĞA";
+            badgeUst.className = "tf-badge bull";
+            newMode = "LONG";
+            document.getElementById('mode-text').textContent = "🟢 BOĞA TRENDİ";
+        } else if(ustTFTrend === "AYI") {
+            badgeUst.textContent = "AYI";
+            badgeUst.className = "tf-badge bear";
+            newMode = "SHORT";
+            document.getElementById('mode-text').textContent = "🔴 AYI TRENDİ";
+        } else {
+            badgeUst.textContent = "YATAY";
+            badgeUst.className = "tf-badge neutral";
+            newMode = "YATAY";
+            document.getElementById('mode-text').textContent = "⚪ YATAY PİYASA";
+        }
+        
+        if(newMode !== lastMode) {
+            lastMode = newMode;
+            alertPlayedInThisWindow = false;
+            document.body.className = lastMode==='SHORT' ? 'mode-short' : lastMode==='LONG' ? 'mode-long' : '';
+        }
+        
+        // --- ORTA TF INDICATORS (RSI, VWAP) ---
+        const rsiSeries = calcRSI(cOrta, 14);
+        rsiValue = rsiSeries[rsiSeries.length-1];
+        document.getElementById('rsi-val').textContent = rsiValue.toFixed(1);
+        
+        const vwapSeries = calcVWAP(kOrta);
+        vwapVal = vwapSeries[vwapSeries.length-1];
+        document.getElementById('vwap-val').textContent = fmtPrice(vwapVal);
+        
+        let ortaTFTrend = "NÖTR";
+        if(lp > vwapVal && rsiValue > 50) {
+            ortaTFTrend = "ALIM YNL";
+        } else if(lp < vwapVal && rsiValue < 50) {
+            ortaTFTrend = "SAT YNL";
+        }
+        
+        const badgeOrta = document.getElementById('state-orta-tf');
+        if(ortaTFTrend === "ALIM YNL") {
+            badgeOrta.textContent = "ALIM YÖN";
+            badgeOrta.className = "tf-badge bull";
+        } else if(ortaTFTrend === "SAT YNL") {
+            badgeOrta.textContent = "SAT YÖN";
+            badgeOrta.className = "tf-badge bear";
+        } else {
+            badgeOrta.textContent = "NÖTR";
+            badgeOrta.className = "tf-badge neutral";
+        }
+        
+        // --- ALT TF INDICATORS (Stoch RSI, BB, OBV, MFI) ---
+        const rsiSeriesAlt = calcRSI(cAlt, 14);
+        const stochSeries = calcStochRSI(rsiSeriesAlt, 14);
+        stochRsiValue = stochSeries[stochSeries.length-1];
+        document.getElementById('stoch-rsi-val').textContent = stochRsiValue.toFixed(1);
+        
+        const {upper, lower} = calcBB(cAlt);
+        bbStatus = lp >= upper*0.995 ? "Top" : lp <= lower*1.005 ? "Bottom" : "Mid";
+        document.getElementById('bb-status').textContent = bbStatus==="Top" ? "ÜST BAND" : bbStatus==="Bottom" ? "ALT BAND" : "ORTA";
+        
+        const obvSeries = calcOBV(cAlt, vAlt);
+        const obvMASeries = calcSMA(obvSeries, 20);
+        obvVal = obvSeries[obvSeries.length-1];
+        obvMAVal = obvMASeries[obvMASeries.length-1];
+        const fmtVol = (v)=>{
+            const absV = Math.abs(v);
             if(absV>=1e6) return (v/1e6).toFixed(2)+'M';
             if(absV>=1e3) return (v/1e3).toFixed(1)+'K';
             return v.toFixed(0);
         };
-        document.getElementById('obv-val').textContent=fmtVol(obvVal);
-
-        // MFI
-        const mfiSeries=calcMFI(highs,lows,closes,volumes,14);
-        mfiVal=mfiSeries[mfiSeries.length-1];
-        document.getElementById('mfi-val').textContent=mfiVal.toFixed(1);
-
+        document.getElementById('obv-val').textContent = fmtVol(obvVal);
+        
+        const mfiSeries = calcMFI(hAlt, lAlt, cAlt, vAlt, 14);
+        mfiVal = mfiSeries[mfiSeries.length-1];
+        document.getElementById('mfi-val').textContent = mfiVal.toFixed(1);
+        
+        let altTFTrend = "NÖTR";
+        if(stochRsiValue < 20 || bbStatus === "Bottom") {
+            altTFTrend = "GİRİŞ AL";
+        } else if(stochRsiValue > 80 || bbStatus === "Top") {
+            altTFTrend = "GİRİŞ SAT";
+        }
+        
+        const badgeAlt = document.getElementById('state-alt-tf');
+        if(altTFTrend === "GİRİŞ AL") {
+            badgeAlt.textContent = "GİRİŞ FRS";
+            badgeAlt.className = "tf-badge bull";
+        } else if(altTFTrend === "GİRİŞ SAT") {
+            badgeAlt.textContent = "GİRİŞ FRS";
+            badgeAlt.className = "tf-badge bear";
+        } else {
+            badgeAlt.textContent = "NÖTR";
+            badgeAlt.className = "tf-badge neutral";
+        }
+        
         updateBadges(lp);
-        document.getElementById('last-update').textContent=new Date().toLocaleTimeString('tr-TR');
+        document.getElementById('last-update').textContent = new Date().toLocaleTimeString('tr-TR');
         runAgent();
     }catch(e){}
 }
@@ -807,31 +995,33 @@ function updateBadges(lp){
         else if(val<lo){el.textContent="AŞIRI SATIM";el.className="ind-badge b-green";}
         else{el.textContent="NÖTR";el.className="ind-badge b-gray";}
     };
-    setBadge('rsi-badge',rsiValue,70,30);
+    
+    const rsiB=document.getElementById('rsi-badge');
+    if(rsiValue>50){rsiB.textContent="BOĞA";rsiB.className="ind-badge b-green";}
+    else if(rsiValue<50){rsiB.textContent="AYI";rsiB.className="ind-badge b-red";}
+    else{rsiB.textContent="NÖTR";rsiB.className="ind-badge b-gray";}
+    
     setBadge('stoch-badge',stochRsiValue,80,20);
+    
     const bb=document.getElementById('bb-badge');
     if(bbStatus==="Top"){bb.textContent="ÜST";bb.className="ind-badge b-red";}
     else if(bbStatus==="Bottom"){bb.textContent="ALT";bb.className="ind-badge b-green";}
     else{bb.textContent="ORTA";bb.className="ind-badge b-gray";}
 
-    // EMA Badge
     const emaB=document.getElementById('ema-badge');
     if(ema9Val>ema21Val&&ema21Val>ema50Val){emaB.textContent="BOĞA";emaB.className="ind-badge b-green";}
     else if(ema9Val<ema21Val&&ema21Val<ema50Val){emaB.textContent="AYI";emaB.className="ind-badge b-red";}
     else{emaB.textContent="KARIŞIK";emaB.className="ind-badge b-gray";}
 
-    // VWAP Badge
     const vwapB=document.getElementById('vwap-badge');
     if(lp>vwapVal){vwapB.textContent="BOĞA";vwapB.className="ind-badge b-green";}
     else{vwapB.textContent="AYI";vwapB.className="ind-badge b-red";}
 
-    // OBV Badge
     const obvB=document.getElementById('obv-badge');
     if(obvVal>obvMAVal){obvB.textContent="BOĞA";obvB.className="ind-badge b-green";}
     else{obvB.textContent="AYI";obvB.className="ind-badge b-red";}
 
-    // MFI Badge
-    setBadge('mfi-badge',mfiVal,80,20);
+    setBadge('mfi-badge',mfiVal,60,40);
 }
 
 function calcRSI(c,p=14){
@@ -945,56 +1135,102 @@ function updateCycle(){
     const now=new Date();
     const ts=now.toLocaleTimeString('tr-TR');
     document.getElementById('current-time').textContent=ts;
-
-    const totalMin=now.getHours()*60+now.getMinutes();
-    const mode=(Math.floor(totalMin/cycleMinutes)%2===0)?'SHORT':'LONG';
-    if(mode!==lastMode){lastMode=mode;alertPlayedInThisWindow=false;handleModeChange(mode);}
-
-    const sec=now.getSeconds();
-    const left=((cycleMinutes-(now.getMinutes()%cycleMinutes)-1)*60)+(60-sec);
-    document.getElementById('timer-display').textContent=`${Math.floor(left/60).toString().padStart(2,'0')}:${(left%60).toString().padStart(2,'0')}`;
-    document.getElementById('progress-circle').style.strokeDashoffset=270*(1-left/(cycleMinutes*60));
-}
-
-function handleModeChange(m){
-    document.body.className=m==='SHORT'?'mode-short':'mode-long';
-    document.getElementById('mode-text').textContent=m;
-    runAgent();
 }
 
 function runAgent(){
+    if(lastMode==='YATAY'){
+        document.getElementById('agent-score').textContent="0%";
+        document.getElementById('agent-score-fill').style.width="0%";
+        document.getElementById('progress-circle').style.strokeDashoffset=270;
+        document.getElementById('timer-display').textContent="0%";
+        
+        const stateEl=document.getElementById('agent-state');
+        stateEl.textContent='⚪ Yatay Piyasa';
+        stateEl.style.color='var(--text3)';
+        
+        const rBox=document.getElementById('agent-reasoning');
+        rBox.innerHTML=`<strong>PİYASA YATAY.</strong><br>Üst TF (${ustTF}) üzerinde net bir trend dizilimi yok. Trend hizalanması gerçekleşene kadar bekleyin.`;
+        
+        const banner=document.getElementById('signal-banner');
+        banner.innerHTML=`⏳ YATAY PİYASA BEKLENİYOR<div class="signal-sub">Üst TF trend uyumu yok.</div>`;
+        banner.className='signal-banner signal-wait';
+        
+        const setC=(id,textId,ok,text)=>{
+            const el=document.getElementById(id);
+            el.className='cond-icon no';
+            el.textContent='·';
+            document.getElementById(textId).textContent=text;
+        };
+        setC('cond-stoch','cond-stoch-text',false,`Stoch RSI ${stochRsiValue.toFixed(1)} — şart yok`);
+        setC('cond-bb','cond-bb-text',false,'Bollinger şartı yok');
+        setC('cond-rsi','cond-rsi-text',false,`RSI ${rsiValue.toFixed(1)} — şart yok`);
+        setC('cond-ema','cond-ema-text',false,'EMA dizilim şartı yok');
+        setC('cond-vwap','cond-vwap-text',false,'VWAP şartı yok');
+        setC('cond-obv','cond-obv-text',false,'OBV hacim şartı yok');
+        setC('cond-mfi','cond-mfi-text',false,`MFI ${mfiVal.toFixed(1)} — şart yok`);
+        
+        document.getElementById('stoch-dot').className='dot';
+        document.getElementById('bb-dot').className='dot';
+        document.getElementById('rsi-dot').className='dot';
+        document.getElementById('ema-dot').className='dot';
+        document.getElementById('vwap-dot').className='dot';
+        document.getElementById('obv-dot').className='dot';
+        document.getElementById('mfi-dot').className='dot';
+        return;
+    }
+
     const stochOk=lastMode==='SHORT'?stochRsiValue>80:stochRsiValue<20;
     const bbOk=lastMode==='SHORT'?bbStatus==="Top":bbStatus==="Bottom";
-    const rsiOk=lastMode==='SHORT'?rsiValue>55:rsiValue<45;
+    const rsiOk=lastMode==='SHORT'?rsiValue<50:rsiValue>50;
     const emaOk=lastMode==='SHORT'?(ema9Val<ema21Val&&ema21Val<ema50Val):(ema9Val>ema21Val&&ema21Val>ema50Val);
-    const vwapOk=lastMode==='SHORT'?(vwapVal>0&&lastPrice<vwapVal):(vwapVal>0&&lastPrice>vwapVal);
+    const vwapOk=lastMode==='SHORT'?lastPrice<vwapVal:lastPrice>vwapVal;
     const obvOk=lastMode==='SHORT'?obvVal<obvMAVal:obvVal>obvMAVal;
-    const mfiOk=lastMode==='SHORT'?mfiVal>55:mfiVal<45;
+    const mfiOk=lastMode==='SHORT'?mfiVal<40:mfiVal>60;
 
     let score=0;
-    if(stochOk) score+=20;
-    if(bbOk) score+=15;
-    if(rsiOk) score+=15;
-    if(emaOk) score+=15;
+    if(emaOk) score+=35;
     if(vwapOk) score+=15;
+    if(rsiOk) score+=15;
+    if(stochOk) score+=10;
+    if(bbOk) score+=10;
     if(obvOk) score+=10;
-    if(mfiOk) score+=10;
+    if(mfiOk) score+=5;
 
     document.getElementById('agent-score').textContent=score+"%";
     document.getElementById('agent-score-fill').style.width=score+"%";
+    document.getElementById('timer-display').textContent=score+"%";
+    
+    // Dynamic progress circle styling based on score
+    const circleEl=document.getElementById('progress-circle');
+    circleEl.style.strokeDashoffset=270*(1-score/100);
+    if(score>=75){
+        circleEl.style.stroke='var(--green)';
+        circleEl.style.filter='drop-shadow(0 0 5px var(--green))';
+    }else if(score>=45){
+        circleEl.style.stroke='var(--gold)';
+        circleEl.style.filter='drop-shadow(0 0 5px var(--gold))';
+    }else{
+        circleEl.style.stroke='var(--red)';
+        circleEl.style.filter='drop-shadow(0 0 5px var(--red))';
+    }
 
     const stateEl=document.getElementById('agent-state');
-    if(score>=75){stateEl.textContent=lastMode==='SHORT'?'🔴 Sat Sinyali':'🟢 Al Sinyali';stateEl.style.color=lastMode==='SHORT'?'var(--red)':'var(--green)';}
-    else{stateEl.textContent='⏳ Bekleniyor';stateEl.style.color='var(--gold)';}
+    if(score>=75){
+        stateEl.textContent=lastMode==='SHORT'?'🔴 Sat Sinyali':'🟢 Al Sinyali';
+        stateEl.style.color=lastMode==='SHORT'?'var(--red)':'var(--green)';
+    }else{
+        stateEl.textContent='⏳ Bekleniyor';
+        stateEl.style.color='var(--gold)';
+    }
 
     const reasons=[];
-    if(stochOk) reasons.push(`Stoch RSI ${stochRsiValue.toFixed(1)} — onaylı`);
-    if(bbOk) reasons.push(`Bollinger ${bbStatus==='Top'?'üst':'alt'} bant teması`);
-    if(rsiOk) reasons.push(`RSI ${rsiValue.toFixed(1)} — trend uyumlu`);
-    if(emaOk) reasons.push(`EMA ${lastMode==='SHORT'?'ayı':'boğa'} dizilimi onaylı`);
-    if(vwapOk) reasons.push(`Fiyat VWAP ${lastMode==='SHORT'?'altında':'üstünde'}`);
-    if(obvOk) reasons.push(`OBV ${lastMode==='SHORT'?'düşen':'yükselen'} hacim trendi`);
-    if(mfiOk) reasons.push(`MFI ${mfiVal.toFixed(1)} — trend uyumlu`);
+    if(emaOk) reasons.push(`Üst TF (${ustTF}) ${lastMode==='SHORT'?'Ayı':'Boğa'} Trend Hizalanması`);
+    if(vwapOk) reasons.push(`Orta TF (${ortaTF}) VWAP Fiyat Uyumu`);
+    if(rsiOk) reasons.push(`Orta TF (${ortaTF}) RSI Trend Momentum Onayı`);
+    if(stochOk) reasons.push(`Alt TF (${altTF}) Stoch RSI Onaylandı`);
+    if(bbOk) reasons.push(`Alt TF (${altTF}) Bollinger Bant Teması`);
+    if(obvOk) reasons.push(`Alt TF (${altTF}) Hacim Desteği (OBV)`);
+    if(mfiOk) reasons.push(`Alt TF (${altTF}) Para Akışı Uyumu (MFI)`);
 
     const rBox=document.getElementById('agent-reasoning');
     rBox.innerHTML=score>=75
@@ -1007,13 +1243,13 @@ function runAgent(){
         el.textContent=ok?'✓':'·';
         document.getElementById(textId).textContent=text;
     };
-    setC('cond-stoch','cond-stoch-text',stochOk,stochOk?`Stoch RSI ${stochRsiValue.toFixed(1)} ✓`:`Stoch RSI ${stochRsiValue.toFixed(1)} — şart yok`);
-    setC('cond-bb','cond-bb-text',bbOk,bbOk?`Bollinger ${bbStatus==='Top'?'üst':'alt'} band ✓`:'Bollinger şartı yok');
-    setC('cond-rsi','cond-rsi-text',rsiOk,rsiOk?`RSI ${rsiValue.toFixed(1)} ✓`:`RSI ${rsiValue.toFixed(1)} — şart yok`);
-    setC('cond-ema','cond-ema-text',emaOk,emaOk?`EMA 9/21/50 ${lastMode==='SHORT'?'ayı':'boğa'} dizilimi ✓`:'EMA dizilim şartı yok');
-    setC('cond-vwap','cond-vwap-text',vwapOk,vwapOk?`Fiyat VWAP ${lastMode==='SHORT'?'altında':'üstünde'} ✓`:'VWAP şartı yok');
-    setC('cond-obv','cond-obv-text',obvOk,obvOk?`OBV hacim yönü ✓`:'OBV hacim şartı yok');
-    setC('cond-mfi','cond-mfi-text',mfiOk,mfiOk?`MFI ${mfiVal.toFixed(1)} ✓`:`MFI ${mfiVal.toFixed(1)} — şart yok`);
+    setC('cond-stoch','cond-stoch-text',stochOk,stochOk?`Alt TF Stoch RSI Onayı ✓`:`Alt TF Stoch RSI şartı yok`);
+    setC('cond-bb','cond-bb-text',bbOk,bbOk?`Alt TF Bollinger Band Teması ✓`:'Alt TF Bollinger şartı yok');
+    setC('cond-rsi','cond-rsi-text',rsiOk,rsiOk?`Orta TF RSI Trend Uyumu ✓`:'Orta TF RSI şartı yok');
+    setC('cond-ema','cond-ema-text',emaOk,emaOk?`Üst TF EMA 9/21/50 ${lastMode==='SHORT'?'ayı':'boğa'} dizilimi ✓`:'Üst TF EMA dizilim şartı yok');
+    setC('cond-vwap','cond-vwap-text',vwapOk,vwapOk?`Orta TF VWAP Fiyat Onayı ✓`:'Orta TF VWAP şartı yok');
+    setC('cond-obv','cond-obv-text',obvOk,obvOk?`Alt TF OBV Hacim Onayı ✓`:'Alt TF OBV şartı yok');
+    setC('cond-mfi','cond-mfi-text',mfiOk,mfiOk?`Alt TF MFI Para Akışı Onayı ✓`:'Alt TF MFI şartı yok');
 
     document.getElementById('stoch-dot').className='dot '+(stochOk?'active':'warn');
     document.getElementById('bb-dot').className='dot '+(bbOk?'active':'warn');
@@ -1050,26 +1286,40 @@ function runAgent(){
 
 function saveToMemory(){
     localStorage.setItem('cm_coin',currentCoin);
-    localStorage.setItem('cm_min',cycleMinutes);
-    localStorage.setItem('cm_tf',analysisTF);
+    localStorage.setItem('cm_alt_tf',altTF);
+    localStorage.setItem('cm_orta_tf',ortaTF);
+    localStorage.setItem('cm_ust_tf',ustTF);
     localStorage.setItem('cm_sound',isSoundEnabled);
     localStorage.setItem('cm_notify',isNotificationEnabled);
 }
 
 function loadFromMemory(){
-    const c=localStorage.getItem('cm_coin'),m=localStorage.getItem('cm_min');
-    const t=localStorage.getItem('cm_tf'),s=localStorage.getItem('cm_sound');
-    const n=localStorage.getItem('cm_notify');
+    const c=localStorage.getItem('cm_coin');
+    const alt=localStorage.getItem('cm_alt_tf'), orta=localStorage.getItem('cm_orta_tf'), ust=localStorage.getItem('cm_ust_tf');
+    const s=localStorage.getItem('cm_sound'), n=localStorage.getItem('cm_notify');
     if(c) currentCoin=c;
-    if(m) cycleMinutes=parseInt(m);
-    if(t) analysisTF=t;
+    if(alt) altTF=alt;
+    if(orta) ortaTF=orta;
+    if(ust) ustTF=ust;
     if(s==='true'){isSoundEnabled=true;syncSoundUI();}
-    if(n==='true'){isNotificationEnabled=true;syncNotificationUI();}
+    if(n==='true'){
+        // Bildirim izni hâlâ geçerliyse geri yükle
+        if('Notification' in window && Notification.permission === 'granted') {
+            isNotificationEnabled=true;
+        } else if(/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+            isNotificationEnabled=true; // iOS'ta her zaman aktif
+        } else {
+            isNotificationEnabled=false; // izin iptal edilmiş olabilir
+        }
+        syncNotificationUI();
+    }
     document.getElementById('coin-input').value=currentCoin;
-    document.getElementById('cycle-select').value=cycleMinutes;
-    document.getElementById('tf-select').value=analysisTF;
+    document.getElementById('alt-tf-select').value=altTF;
+    document.getElementById('orta-tf-select').value=ortaTF;
+    document.getElementById('ust-tf-select').value=ustTF;
     document.getElementById('display-symbol').textContent=currentCoin;
-    const found=Object.values(profiles).find(p=>p.cycle==cycleMinutes&&p.tf==analysisTF);
+    const found=Object.values(profiles).find(p=>p.alt===altTF&&p.orta===ortaTF&&p.ust===ustTF);
+    document.getElementById('profile-select').value=found?Object.keys(profiles).find(key=>profiles[key]===found):"custom";
     document.getElementById('strategy-name').textContent=found?found.name:"⚙️ ÖZEL MOD";
 }
 
@@ -1120,25 +1370,31 @@ window.addEventListener('appinstalled', () => {
     showToast('✅ Başarıyla Yüklendi!', 'CycleMaster Pro ana ekranında.');
 });
 
-// Mobil tarayıcılarda ses kilidini açmak için otomatik tetikleyici (Audio Unlocker)
+// ── MOBİL SES KİLİDİ AÇICI ──
+// Mobil tarayıcılarda ses çalmak için kullanıcı etkileşimi şart.
+// İlk dokunuşta sessiz bir oynatma yaparak kilidi açıyoruz.
+let audioUnlocked = false;
 function unlockAudio() {
+    if (audioUnlocked) return;
     const audio = document.getElementById('alert-sound');
-    if (audio) {
-        audio.play().then(() => {
-            audio.pause();
-            audio.currentTime = 0;
-        }).catch(() => {});
-    }
+    if (!audio) return;
+    audio.volume = 0;
+    audio.play().then(() => {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.volume = 1;
+        audioUnlocked = true;
+    }).catch(() => {});
     document.removeEventListener('click', unlockAudio);
     document.removeEventListener('touchstart', unlockAudio);
 }
-document.addEventListener('click', unlockAudio);
-document.addEventListener('touchstart', unlockAudio);
+document.addEventListener('click', unlockAudio, { passive: true });
+document.addEventListener('touchstart', unlockAudio, { passive: true });
 
 loadFromMemory();
 setInterval(updateCycle,1000);
 setInterval(fetchPrice,3000);
-setInterval(fetchTechnical,15000);
+setInterval(fetchTechnical,30000);
 updateCycle(); fetchData();
 </script>
 </body>
