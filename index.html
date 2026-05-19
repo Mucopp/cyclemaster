@@ -614,13 +614,17 @@
 <audio id="alert-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
 
 <script>
+// ── CONFIG ──
+// GitHub'a yüklemeden önce bu değerleri kendin doldur:
+const BACKEND_URL = "https://script.google.com/macros/s/AKfycbziBcxlfZYGZxBjOYkNM1gCCpKFj8Yi_evZNgqRQtCtQB5ulbSoBFcIgGpQNr0lNIo/exec";
+const FCM_VAPID_KEY = "BPw62FfAUMNSkC9LtaMO-mPdt1URwzZs_RwxwbyiP61gnvZ54v0ILJkIf-8eztNnWw9ZXARpwl7NeBgtxrV4Fdk";
+
 // ── SERVICE WORKER ──
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js')
             .then(reg => {
                 console.log('SW kayıtlı:', reg.scope);
-                // SW güncelleme kontrolü
                 reg.addEventListener('updatefound', () => {
                     const newWorker = reg.installing;
                     newWorker.addEventListener('statechange', () => {
@@ -632,6 +636,65 @@ if ('serviceWorker' in navigator) {
             })
             .catch(err => console.log('SW hatası:', err));
     });
+}
+
+// FCM token'ı al ve backend'e kaydet
+async function subscribePush() {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        console.log('Push desteklenmiyor');
+        return null;
+    }
+    try {
+        const reg = await navigator.serviceWorker.ready;
+        // Mevcut aboneliği kontrol et
+        let sub = await reg.pushManager.getSubscription();
+        if (!sub) {
+            // Yeni abonelik oluştur
+            sub = await reg.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(FCM_VAPID_KEY)
+            });
+        }
+        // FCM token'ı backend'e gönder
+        const token = JSON.stringify(sub);
+        const r = await fetch(BACKEND_URL + '/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token })
+        });
+        if (r.ok) {
+            localStorage.setItem('cm_push_token', token);
+            console.log('Push kaydedildi');
+            return token;
+        }
+    } catch(e) {
+        console.log('Push subscribe hata:', e);
+    }
+    return null;
+}
+
+async function unsubscribePush() {
+    try {
+        const token = localStorage.getItem('cm_push_token');
+        if (token && BACKEND_URL !== 'YOUR_RENDER_URL') {
+            await fetch(BACKEND_URL + '/unregister', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token })
+            });
+        }
+        const reg = await navigator.serviceWorker.ready;
+        const sub = await reg.pushManager.getSubscription();
+        if (sub) await sub.unsubscribe();
+        localStorage.removeItem('cm_push_token');
+    } catch(e) {}
+}
+
+function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const raw = window.atob(base64);
+    return new Uint8Array([...raw].map(c => c.charCodeAt(0)));
 }
 
 let currentCoin="BTCUSDT", altTF="5m", ortaTF="15m", ustTF="1h", lastMode=null;
@@ -688,6 +751,7 @@ function toggleNotificationsFromCb() {
     } else {
         isNotificationEnabled = false;
         syncNotificationUI();
+        unsubscribePush();  // Backend'den sil
         showToast("🔕 Bildirimler Kapatıldı", "Sistem bildirimleri devre dışı.");
         saveToMemory();
     }
@@ -714,8 +778,9 @@ function requestNotificationPermission() {
     if (Notification.permission === 'granted') {
         isNotificationEnabled = true;
         syncNotificationUI();
-        showToast("🔔 Bildirimler Aktif", "Sinyaller cihaz üst panelinde görünecek.");
-        sendSystemNotification("CycleMaster Pro ✅", "Bildirimler başarıyla aktif edildi!");
+        showToast("🔔 Bildirimler Aktif", "Arka planda da sinyal gelecek.");
+        sendSystemNotification("CycleMaster Pro ✅", "Bildirimler aktif edildi!");
+        subscribePush();  // Backend'e kaydet
         saveToMemory();
         return;
     }
@@ -731,8 +796,9 @@ function requestNotificationPermission() {
         if (permission === 'granted') {
             isNotificationEnabled = true;
             syncNotificationUI();
-            showToast("🔔 Bildirimler Aktif", "Sinyaller cihaz üst panelinde görünecek.");
-            sendSystemNotification("CycleMaster Pro ✅", "Bildirimler başarıyla aktif edildi!");
+            showToast("🔔 Bildirimler Aktif", "Arka planda da sinyal gelecek.");
+            sendSystemNotification("CycleMaster Pro ✅", "Bildirimler aktif edildi!");
+            subscribePush();  // Backend'e kaydet
         } else {
             isNotificationEnabled = false;
             syncNotificationUI();
