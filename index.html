@@ -356,8 +356,6 @@
         .tf-badge.bear { background:rgba(244,63,94,0.12); color:var(--red); border:1px solid rgba(244,63,94,0.2); }
         .tf-badge.neutral { background:rgba(255,255,255,0.05); color:var(--text3); border:1px solid rgba(255,255,255,0.1); }
     </style>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
 </head>
 <body>
 
@@ -652,15 +650,25 @@ const FIREBASE_CONFIG = {
 
 async function subscribePush() {
     try {
-        // 1. Firebase'i başlat veya olanı al (Global firebase nesnesini kullanıyoruz)
-        const app = firebase.apps.length ? firebase.apps[0] : firebase.initializeApp(FIREBASE_CONFIG);
-        const messaging = firebase.messaging();
+        // 1. Kütüphaneler daha önce yüklenmediyse dinamik olarak yükle
+        if (!window.firebase) {
+            await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
+            await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
+        }
 
-        // 2. Service Worker'ın tamamen hazır olmasını bekle
+        // 2. Firebase uygulamasını başlat veya mevcut olanı çek
+        // Hatanın sebebi firebaseApp.default kullanımıydı. Compat sürümler window.firebase nesnesini oluşturur.
+        const app = window.firebase.apps.length 
+            ? window.firebase.apps[0] 
+            : window.firebase.initializeApp(FIREBASE_CONFIG);
+            
+        const messaging = window.firebase.messaging();
+
+        // 3. Service Worker'ın tamamen hazır olmasını bekle
         const registration = await navigator.serviceWorker.ready;
-        console.log("Service Worker hazır:", registration.scope);
+        console.log("Service Worker bildirim için hazır:", registration.scope);
 
-        // 3. Token alma isteği (Kritik: registration parametresini doğrudan buraya veriyoruz)
+        // 4. Token alma isteği (Service Worker kaydını içine açıkça gömüyoruz)
         const token = await messaging.getToken({ 
             vapidKey: FCM_VAPID_KEY,
             serviceWorkerRegistration: registration 
@@ -668,14 +676,14 @@ async function subscribePush() {
 
         if (!token) {
             console.error('FCM token boş döndü.');
-            showToast("⚠️ Token Hatası", "Bildirim token'ı alınamadı.");
+            showToast("⚠️ Token Hatası", "Bildirim token'ı boş döndü. Lütfen sayfayı yenileyin.");
             return null;
         }
 
         console.log('FCM token başarıyla alındı:', token);
         localStorage.setItem('cm_push_token', token);
 
-        // 4. Apps Script backend'ine gönder
+        // 5. Apps Script backend'ine güvenli şekilde pushla
         const encodedToken = encodeURIComponent(token);
         const url = `${BACKEND_URL}?action=register&token=${encodedToken}`;
         
