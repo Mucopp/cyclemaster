@@ -907,7 +907,7 @@ async function fetchPrice(){
         el.className='price-pill '+(c>=0?'up':'dn');
         document.getElementById('h24').textContent=parseFloat(t.high24h).toLocaleString('tr-TR');
         document.getElementById('l24').textContent=parseFloat(t.low24h).toLocaleString('tr-TR');
-    }catch(e){}
+    }catch(e){ console.error("fetchPrice error:", e); }
 }
 
 function toOKXInterval(tf){
@@ -942,7 +942,7 @@ async function fetchTechnical(){
         const cUst=parse(kUstRaw,4), hUst=parse(kUstRaw,2), lUst=parse(kUstRaw,3), vUst=parse(kUstRaw,5);
 
         // kOrta ham veri VWAP için gerekli
-        const kOrtaForVWAP = kOrtaRaw.map(x=>([0,x[1],x[2],x[3],x[4],x[5]]));
+        const kOrtaForVWAP = kOrtaRaw.map(x=>([x[0],x[1],x[2],x[3],x[4],x[5]]));
 
         const lp = cAlt[cAlt.length-1];
         lastPrice = lp;
@@ -1070,7 +1070,7 @@ async function fetchTechnical(){
         updateBadges(lp);
         document.getElementById('last-update').textContent = new Date().toLocaleTimeString('tr-TR');
         runAgent();
-    }catch(e){}
+    }catch(e){ console.error("fetchTechnical error:", e); }
 }
 
 function updateBadges(lp){
