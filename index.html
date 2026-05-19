@@ -616,13 +616,13 @@
 <script>
 // ── CONFIG ──
 // GitHub'a yüklemeden önce bu değerleri kendin doldur:
-const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyGenNs1D4VE-oeF7pusGbRjToNhj_gq9w8W9f8JIR78al9MSDI57rkBEmB5AaPnelV/exec";
+const BACKEND_URL = "https://script.google.com/macros/s/AKfycbw9ELXeqKyqLXcy5k1-Eju3cYsVq0XpxGqRPU15oL_LAPFgbETDO3ZE2t-Y7tdK2Tmy/exec";
 const FCM_VAPID_KEY = "BNmlrqN79EZ5GQskgK0EpWausWODfnvRikws5t3CqrCsyM5CuGm4B95Gpc8VKlSJUT3JVpeK5U_tCf0x8szbtV8";
 
 // ── SERVICE WORKER ──
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('firebase-messaging-sw.js')
+        navigator.serviceWorker.register('sw.js')
             .then(reg => {
                 console.log('SW kayıtlı:', reg.scope);
                 reg.addEventListener('updatefound', () => {
@@ -650,51 +650,33 @@ const FIREBASE_CONFIG = {
 
 async function subscribePush() {
     try {
-        // 1. Kütüphaneler daha önce yüklenmediyse dinamik olarak yükle
-        if (!window.firebase) {
-            await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
-            await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
-        }
+        const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+        const { getMessaging, getToken } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js');
 
-        // 2. Firebase uygulamasını başlat veya mevcut olanı çek
-        // Hatanın sebebi firebaseApp.default kullanımıydı. Compat sürümler window.firebase nesnesini oluşturur.
-        const app = window.firebase.apps.length 
-            ? window.firebase.apps[0] 
-            : window.firebase.initializeApp(FIREBASE_CONFIG);
-            
-        const messaging = window.firebase.messaging();
+        const app = getApps().length ? getApps()[0] : initializeApp(FIREBASE_CONFIG);
+        const messaging = getMessaging(app);
 
-        // 3. Service Worker'ın tamamen hazır olmasını bekle
-        const registration = await navigator.serviceWorker.ready;
-        console.log("Service Worker bildirim için hazır:", registration.scope);
-
-        // 4. Token alma isteği (Service Worker kaydını içine açıkça gömüyoruz)
-        const token = await messaging.getToken({ 
-            vapidKey: FCM_VAPID_KEY,
-            serviceWorkerRegistration: registration 
-        });
-
+        const token = await getToken(messaging, { vapidKey: FCM_VAPID_KEY });
         if (!token) {
-            console.error('FCM token boş döndü.');
-            showToast("⚠️ Token Hatası", "Bildirim token'ı boş döndü. Lütfen sayfayı yenileyin.");
+            console.log('FCM token alınamadı');
+            showToast("⚠️ Token Hatası", "Bildirim token'ı alınamadı. Sayfayı yenile.");
             return null;
         }
 
-        console.log('FCM token başarıyla alındı:', token);
+        console.log('FCM token alındı:', token.substring(0, 30) + '...');
         localStorage.setItem('cm_push_token', token);
 
-        // 5. Apps Script backend'ine güvenli şekilde pushla
+        // Apps Script'e GET ile gönder (CORS sorunu yok)
         const encodedToken = encodeURIComponent(token);
         const url = `${BACKEND_URL}?action=register&token=${encodedToken}`;
-        
-        console.log("Backend'e istek atılıyor:", url);
-        await fetch(url, { method: 'GET', mode: 'no-cors' });
+        const resp = await fetch(url, { method: 'GET', mode: 'no-cors' });
 
         showToast("✅ Kayıt Tamam", "Arka plan bildirimleri aktif!");
+        console.log('Token backend\'e gönderildi');
         return token;
     } catch(e) {
-        console.error('Kritik subscribePush Hatası:', e);
-        showToast("⚠️ Hata", "Token alınamadı: " + e.message);
+        console.log('subscribePush hata:', e.message);
+        showToast("⚠️ Hata", "Token kaydedilemedi: " + e.message);
         return null;
     }
 }
@@ -835,28 +817,27 @@ function syncNotificationUI() {
 function sendSystemNotification(title, body) {
     // iOS PWA veya Notification API yoksa sadece toast göster
     if (!('Notification' in window) || /iphone|ipad|ipod/i.test(navigator.userAgent)) {
-        // iOS'ta zaten toast ve ses çalıyor, ek bir şey yapmaya gerek yok
         return;
     }
-
     if (Notification.permission !== 'granted') return;
+
+    // Uygulama öndeyse sistem bildirimi gönderme — sadece toast ve ses yeterli
+    if (document.visibilityState === 'visible') return;
 
     const options = {
         body: body,
         icon: 'icon-192.png',
         badge: 'icon-192.png',
-        tag: 'cyclemaster-signal',   // aynı tag'li eski bildirimi değiştirir, spam olmaz
+        tag: 'cyclemaster-signal',
         renotify: true,
         vibrate: [200, 100, 200, 100, 200],
         requireInteraction: false,
         silent: false
     };
 
-    // Service Worker üzerinden gönder (daha güvenilir, arka plan desteği)
     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
         navigator.serviceWorker.ready.then(reg => {
             reg.showNotification(title, options).catch(() => {
-                // SW başarısız olursa normal Notification dene
                 try { new Notification(title, options); } catch(e) {}
             });
         }).catch(() => {
@@ -911,36 +892,58 @@ async function fetchData(){ fetchPrice(); fetchTechnical(); }
 
 async function fetchPrice(){
     try{
-        const r=await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${currentCoin}`);
+        const okxSymbol = currentCoin.replace("USDT","-USDT");
+        const r=await fetch(`https://www.okx.com/api/v5/market/ticker?instId=${okxSymbol}`);
         const d=await r.json();
-        if(!d.lastPrice) return;
-        const p=parseFloat(d.lastPrice);
+        if(!d.data||!d.data[0]) return;
+        const t=d.data[0];
+        const p=parseFloat(t.last);
         lastPrice=p;
         document.getElementById('display-price').textContent=p>1?p.toLocaleString('tr-TR'):p.toFixed(6);
-        const c=parseFloat(d.priceChangePercent);
+        const open=parseFloat(t.open24h);
+        const c=((p-open)/open)*100;
         const el=document.getElementById('price-change');
         el.textContent=(c>=0?"+":"")+c.toFixed(2)+"%";
         el.className='price-pill '+(c>=0?'up':'dn');
-        document.getElementById('h24').textContent=parseFloat(d.highPrice).toLocaleString('tr-TR');
-        document.getElementById('l24').textContent=parseFloat(d.lowPrice).toLocaleString('tr-TR');
+        document.getElementById('h24').textContent=parseFloat(t.high24h).toLocaleString('tr-TR');
+        document.getElementById('l24').textContent=parseFloat(t.low24h).toLocaleString('tr-TR');
     }catch(e){}
+}
+
+function toOKXInterval(tf){
+    const map={"1m":"1m","3m":"3m","5m":"5m","15m":"15m","30m":"30m","1h":"1H","4h":"4H","1d":"1D"};
+    return map[tf]||"1H";
+}
+
+async function fetchOKXKlines(symbol, interval, limit){
+    const okxSymbol=symbol.replace("USDT","-USDT");
+    const okxInterval=toOKXInterval(interval);
+    const r=await fetch(`https://www.okx.com/api/v5/market/candles?instId=${okxSymbol}&bar=${okxInterval}&limit=${limit||150}`);
+    const d=await r.json();
+    if(d.code!=="0"||!d.data||d.data.length===0) return null;
+    return d.data.reverse(); // eskiden yeniye
 }
 
 async function fetchTechnical(){
     try{
-        const [rAlt, rOrta, rUst] = await Promise.all([
-            fetch(`https://api.binance.com/api/v3/klines?symbol=${currentCoin}&interval=${altTF}&limit=150`),
-            fetch(`https://api.binance.com/api/v3/klines?symbol=${currentCoin}&interval=${ortaTF}&limit=150`),
-            fetch(`https://api.binance.com/api/v3/klines?symbol=${currentCoin}&interval=${ustTF}&limit=150`)
+        const [kAltRaw, kOrtaRaw, kUstRaw] = await Promise.all([
+            fetchOKXKlines(currentCoin, altTF, 150),
+            fetchOKXKlines(currentCoin, ortaTF, 150),
+            fetchOKXKlines(currentCoin, ustTF, 150)
         ]);
-        const [kAlt, kOrta, kUst] = await Promise.all([rAlt.json(), rOrta.json(), rUst.json()]);
-        
-        if(kAlt.length < 50 || kOrta.length < 50 || kUst.length < 50) return;
-        
-        const cAlt = kAlt.map(x=>parseFloat(x[4])), hAlt = kAlt.map(x=>parseFloat(x[2])), lAlt = kAlt.map(x=>parseFloat(x[3])), vAlt = kAlt.map(x=>parseFloat(x[5]));
-        const cOrta = kOrta.map(x=>parseFloat(x[4])), hOrta = kOrta.map(x=>parseFloat(x[2])), lOrta = kOrta.map(x=>parseFloat(x[3])), vOrta = kOrta.map(x=>parseFloat(x[5]));
-        const cUst = kUst.map(x=>parseFloat(x[4])), hUst = kUst.map(x=>parseFloat(x[2])), lUst = kUst.map(x=>parseFloat(x[3])), vUst = kUst.map(x=>parseFloat(x[5]));
-        
+
+        if(!kAltRaw||!kOrtaRaw||!kUstRaw) return;
+        if(kAltRaw.length<50||kOrtaRaw.length<50||kUstRaw.length<50) return;
+
+        // OKX format: [ts, open, high, low, close, vol, volCcy, volCcyQuote, confirm]
+        const parse=(k,idx)=>k.map(x=>parseFloat(x[idx]));
+        const cAlt=parse(kAltRaw,4), hAlt=parse(kAltRaw,2), lAlt=parse(kAltRaw,3), vAlt=parse(kAltRaw,5);
+        const cOrta=parse(kOrtaRaw,4), hOrta=parse(kOrtaRaw,2), lOrta=parse(kOrtaRaw,3), vOrta=parse(kOrtaRaw,5);
+        const cUst=parse(kUstRaw,4), hUst=parse(kUstRaw,2), lUst=parse(kUstRaw,3), vUst=parse(kUstRaw,5);
+
+        // kOrta ham veri VWAP için gerekli
+        const kOrtaForVWAP = kOrtaRaw.map(x=>([0,x[1],x[2],x[3],x[4],x[5]]));
+
         const lp = cAlt[cAlt.length-1];
         lastPrice = lp;
         
@@ -996,7 +999,7 @@ async function fetchTechnical(){
         rsiValue = rsiSeries[rsiSeries.length-1];
         document.getElementById('rsi-val').textContent = rsiValue.toFixed(1);
         
-        const vwapSeries = calcVWAP(kOrta);
+        const vwapSeries = calcVWAP(kOrtaForVWAP);
         vwapVal = vwapSeries[vwapSeries.length-1];
         document.getElementById('vwap-val').textContent = fmtPrice(vwapVal);
         
