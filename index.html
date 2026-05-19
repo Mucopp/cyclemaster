@@ -622,7 +622,7 @@ const FCM_VAPID_KEY = "BNmlrqN79EZ5GQskgK0EpWausWODfnvRikws5t3CqrCsyM5CuGm4B95Gp
 // ── SERVICE WORKER ──
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
+        navigator.serviceWorker.register('firebase-messaging-sw.js')
             .then(reg => {
                 console.log('SW kayıtlı:', reg.scope);
                 reg.addEventListener('updatefound', () => {
