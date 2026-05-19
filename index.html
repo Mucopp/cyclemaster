@@ -650,33 +650,49 @@ const FIREBASE_CONFIG = {
 
 async function subscribePush() {
     try {
-        const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
-        const { getMessaging, getToken } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js');
+        // 1. Kütüphaneleri dinamik ama birbiriyle uyumlu (compat) şekilde çağırıyoruz
+        const firebaseApp = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
+        const firebaseMessaging = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
 
-        const app = getApps().length ? getApps()[0] : initializeApp(FIREBASE_CONFIG);
-        const messaging = getMessaging(app);
+        // 2. Firebase uygulamasını başlat veya mevcut olanı çek
+        const app = window.firebase && window.firebase.apps.length 
+            ? window.firebase.apps[0] 
+            : firebaseApp.default.initializeApp(FIREBASE_CONFIG);
+            
+        const messaging = firebaseApp.default.messaging();
 
-        const token = await getToken(messaging, { vapidKey: FCM_VAPID_KEY });
+        // 3. Service Worker'ın tamamen hazır olmasını bekle
+        const registration = await navigator.serviceWorker.ready;
+        console.log("Service Worker bildirim için hazır:", registration.scope);
+
+        // 4. Token alma isteği (Service Worker kaydını içine açıkça gömüyoruz)
+        const token = await messaging.getToken({ 
+            vapidKey: FCM_VAPID_KEY,
+            serviceWorkerRegistration: registration 
+        });
+
         if (!token) {
-            console.log('FCM token alınamadı');
-            showToast("⚠️ Token Hatası", "Bildirim token'ı alınamadı. Sayfayı yenile.");
+            console.error('FCM token boş döndü.');
+            showToast("⚠️ Token Hatası", "Bildirim token'ı boş döndü. Lütfen sayfayı yenileyin.");
             return null;
         }
 
-        console.log('FCM token alındı:', token.substring(0, 30) + '...');
+        console.log('FCM token başarıyla alındı:', token);
         localStorage.setItem('cm_push_token', token);
 
-        // Apps Script'e GET ile gönder (CORS sorunu yok)
+        // 5. Apps Script backend'ine güvenli şekilde pushla
         const encodedToken = encodeURIComponent(token);
         const url = `${BACKEND_URL}?action=register&token=${encodedToken}`;
-        const resp = await fetch(url, { method: 'GET', mode: 'no-cors' });
+        
+        console.log("Backend'e istek atılıyor:", url);
+        await fetch(url, { method: 'GET', mode: 'no-cors' });
 
         showToast("✅ Kayıt Tamam", "Arka plan bildirimleri aktif!");
-        console.log('Token backend\'e gönderildi');
         return token;
     } catch(e) {
-        console.log('subscribePush hata:', e.message);
-        showToast("⚠️ Hata", "Token kaydedilemedi: " + e.message);
+        // Tarayıcı konsolunda (F12) hatanın tam sebebini görmek için:
+        console.error('Kritik subscribePush Hatası:', e);
+        showToast("⚠️ Hata", "Token alınamadı: " + e.message);
         return null;
     }
 }
