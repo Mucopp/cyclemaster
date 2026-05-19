@@ -10,6 +10,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2091/2091665.png">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
+
     <style>
         :root {
             --bg: #060910;
@@ -20,625 +24,353 @@
             --red: #f43f5e;
             --gold: #f59e0b;
             --green: #10b981;
-            --text: #f1f5f9;
-            --text2: #94a3b8;
-            --text3: #475569;
-            --accent: var(--blue);
-            --bottom-h: 70px;
-            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --text: #f8fafc;
+            --text-muted: #64748b;
         }
-        body.mode-short { --accent: var(--red); }
-        body.mode-long  { --accent: var(--blue); }
 
-        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
 
         body {
-            font-family: 'Space Grotesk', sans-serif;
             background: var(--bg);
             color: var(--text);
-            min-height: 100vh;
-            min-height: 100dvh;
+            font-family: 'Space Grotesk', sans-serif;
             overflow-x: hidden;
-            padding-bottom: calc(var(--bottom-h) + var(--safe-bottom));
+            padding-bottom: 100px;
         }
 
-        body::before {
-            content:'';
-            position:fixed; inset:0;
-            background:
-                radial-gradient(ellipse 80% 40% at 50% 0%, rgba(59,130,246,0.08) 0%, transparent 60%),
-                radial-gradient(ellipse 50% 50% at 80% 80%, rgba(245,158,11,0.04) 0%, transparent 60%);
-            pointer-events:none; z-index:0;
-        }
-
-        /* HEADER */
-        .header {
-            position: sticky; top: 0; z-index: 50;
-            background: rgba(6,9,16,0.95);
+        /* Nav & Layout */
+        nav {
+            background: rgba(13, 21, 36, 0.75);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
-            padding: 12px 16px;
-            padding-top: calc(12px + env(safe-area-inset-top, 0px));
+            padding: 16px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #fff, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 8px;
         }
-        .logo { display:flex; align-items:center; gap:9px; }
-        .logo-icon {
-            width:34px; height:34px;
-            background: linear-gradient(135deg,var(--blue),#1d4ed8);
-            border-radius:9px;
-            display:flex; align-items:center; justify-content:center;
-            font-size:1rem;
-            box-shadow: 0 0 16px rgba(59,130,246,0.35);
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        .logo-name { font-size:1rem; font-weight:700; }
-        .badge-ai {
-            background:linear-gradient(90deg,var(--gold),#d97706);
-            color:#000; font-size:0.48rem; font-weight:700;
-            padding:2px 6px; border-radius:100px; letter-spacing:1px;
-            margin-left:5px; vertical-align:middle;
+
+        /* Banner & Cards */
+        .banner {
+            background: linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(13,21,36,0) 100%);
+            border: 1px solid rgba(59,130,246,0.2);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            display: none;
         }
-        .header-right { display:flex; align-items:center; gap:8px; }
-        .live-pill {
-            display:flex; align-items:center; gap:5px;
-            background: rgba(16,185,129,0.1);
-            border:1px solid rgba(16,185,129,0.2);
-            border-radius:100px; padding:5px 10px;
-            font-size:0.52rem; font-weight:700; color:var(--green);
-        }
-        .live-dot {
-            width:5px;height:5px;border-radius:50%;
-            background:var(--green); box-shadow:0 0 5px var(--green);
-            animation:blink 1.5s infinite;
-        }
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-        .icon-btn {
-            width:38px; height:38px;
-            background: var(--surface2);
-            border:1px solid var(--border);
-            border-radius:10px;
-            display:flex; align-items:center; justify-content:center;
-            cursor:pointer; font-size:1rem;
+        .banner.visible { display: block; }
+
+        .banner h3 { font-size: 18px; margin-bottom: 6px; }
+        .banner p { font-size: 14px; color: var(--text-muted); margin-bottom: 16px; }
+
+        .btn {
+            background: var(--blue);
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
             transition: all 0.2s;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
         }
-        .icon-btn.active { border-color:rgba(16,185,129,0.4); background:rgba(16,185,129,0.1); }
+        .btn:active { transform: scale(0.98); opacity: 0.9; }
+        .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
 
-        /* PAGES */
-        .content { position:relative; z-index:1; padding:14px 14px 0; }
-        .page { display:none; flex-direction:column; gap:12px; }
-        .page.active { display:flex; }
-
-        /* COIN BAR */
-        .coin-bar { display:flex; gap:8px; }
-        .coin-input {
-            flex:1; background:var(--surface2);
-            border:1.5px solid var(--border);
-            border-radius:13px; padding:0 16px;
-            color:var(--text); font-family:'Space Mono',monospace;
-            font-size:1rem; font-weight:700;
-            outline:none; height:50px;
-            text-transform:uppercase;
-            transition: border-color 0.2s;
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
         }
-        .coin-input:focus { border-color:var(--blue); }
-        .analyze-btn {
-            background:linear-gradient(135deg,var(--blue),#2563eb);
-            border:none; border-radius:13px;
-            padding:0 22px; color:#fff;
-            font-family:'Space Grotesk',sans-serif;
-            font-weight:700; font-size:0.85rem;
-            cursor:pointer; height:50px;
-            box-shadow:0 4px 14px rgba(59,130,246,0.4);
-            transition: transform 0.15s;
-            white-space:nowrap;
+
+        /* Price & Status Display */
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 20px;
         }
-        .analyze-btn:active { transform:scale(0.96); }
-
-        /* MARKET HERO */
-        .market-hero {
-            background:var(--surface); border:1px solid var(--border);
-            border-radius:20px; padding:18px; position:relative; overflow:hidden;
+        .price-block .label { font-size: 12px; color: var(--text-muted); font-family: 'Space Mono', monospace; text-transform: uppercase; }
+        .price-block .value { font-size: 32px; font-weight: 700; font-family: 'Space Mono', monospace; margin-top: 4px; }
+        
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
         }
-        .market-hero::before {
-            content:''; position:absolute; top:0; left:0; right:0; height:3px;
-            background:linear-gradient(90deg,var(--accent),transparent);
-            transition: background 0.6s;
+        .badge-neutral { background: var(--surface2); color: var(--text-muted); }
+        .badge-success { background: rgba(16,185,129,0.15); color: var(--green); }
+        .badge-danger { background: rgba(244,63,94,0.15); color: var(--red); }
+
+        /* Main Signal Metric */
+        .metric-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
         }
-        .market-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
-        .market-symbol { font-family:'Space Mono',monospace; font-size:0.85rem; font-weight:700; color:var(--gold); }
-        .price-pill { font-size:0.68rem; font-weight:700; padding:4px 11px; border-radius:100px; font-family:'Space Mono',monospace; }
-        .price-pill.up { background:rgba(16,185,129,0.12); color:var(--green); }
-        .price-pill.dn { background:rgba(244,63,94,0.12); color:var(--red); }
-        .market-price { font-family:'Space Mono',monospace; font-size:2.5rem; font-weight:700; letter-spacing:-2px; line-height:1; margin-bottom:16px; }
-        .hl-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-        .hl-box { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:10px 12px; }
-        .hl-l { font-size:0.5rem; color:var(--text3); text-transform:uppercase; letter-spacing:1px; font-weight:600; margin-bottom:3px; }
-        .hl-v { font-family:'Space Mono',monospace; font-size:0.82rem; font-weight:700; }
-
-        /* SIGNAL BANNER */
-        .signal-banner {
-            border-radius:18px; padding:18px 20px;
-            text-align:center; font-weight:700; font-size:1.05rem;
-            line-height:1.3; transition:all 0.3s; border:1.5px solid transparent;
+        .metric-box {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
         }
-        .signal-wait { background:rgba(245,158,11,0.07); color:var(--gold); border-color:rgba(245,158,11,0.2); }
-        .signal-long { background:linear-gradient(135deg,rgba(16,185,129,0.18),rgba(16,185,129,0.05)); color:#fff; border-color:rgba(16,185,129,0.5); box-shadow:0 0 28px rgba(16,185,129,0.15); animation:pulse 1.3s ease-in-out infinite; }
-        .signal-short { background:linear-gradient(135deg,rgba(244,63,94,0.18),rgba(244,63,94,0.05)); color:#fff; border-color:rgba(244,63,94,0.5); box-shadow:0 0 28px rgba(244,63,94,0.15); animation:pulse 1.3s ease-in-out infinite; }
-        @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.015)} }
-        .signal-sub { font-size:0.6rem; font-weight:400; opacity:0.7; margin-top:4px; }
+        .metric-box .m-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-family: 'Space Mono', monospace; }
+        .metric-box .m-value { font-size: 18px; font-weight: 600; margin-top: 6px; }
 
-        /* CYCLE CARD */
-        .cycle-card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:18px; display:flex; align-items:center; gap:20px; }
-        .timer-wrap { position:relative; width:100px; height:100px; flex-shrink:0; }
-        .timer-svg { width:100%; height:100%; transform:rotate(-90deg); }
-        circle.ring-bg { fill:none; stroke:rgba(255,255,255,0.04); stroke-width:7; }
-        circle.ring-prog { fill:none; stroke:var(--accent); stroke-width:7; stroke-linecap:round; stroke-dasharray:270; stroke-dashoffset:0; transition: stroke-dashoffset 1s linear, stroke 0.6s; filter:drop-shadow(0 0 5px var(--accent)); }
-        .timer-inner { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
-        .timer-num { font-family:'Space Mono',monospace; font-size:1.3rem; font-weight:700; line-height:1; }
-        .timer-lbl { font-size:0.44rem; color:var(--text3); text-transform:uppercase; letter-spacing:1px; margin-top:3px; }
-        .cycle-info { flex:1; }
-        .cycle-strat { font-size:0.54rem; font-weight:600; color:var(--accent); letter-spacing:2px; text-transform:uppercase; opacity:0.85; margin-bottom:3px; transition:color 0.6s; }
-        .cycle-mode { font-size:2.2rem; font-weight:700; color:var(--accent); letter-spacing:-1px; line-height:1; transition:color 0.6s; }
-        .cycle-time { font-family:'Space Mono',monospace; font-size:0.58rem; color:var(--text3); margin-top:8px; }
-
-        /* SEC TITLE */
-        .sec-title { font-size:0.54rem; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:2px; margin-bottom:2px; display:flex; align-items:center; gap:6px; }
-        .sec-title::before { content:''; width:3px; height:3px; border-radius:50%; background:var(--accent); }
-
-        /* AGENT CARD */
-        .agent-card { background:var(--surface); border:1px solid var(--border); border-top:3px solid var(--gold); border-radius:20px; padding:18px; }
-        .agent-top { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:10px; }
-        .agent-score-num { font-family:'Space Mono',monospace; font-size:2.8rem; font-weight:700; color:var(--gold); line-height:1; }
-        .agent-score-meta { text-align:right; }
-        .agent-score-lbl { font-size:0.5rem; color:var(--text3); text-transform:uppercase; letter-spacing:1px; }
-        .agent-state { font-size:0.68rem; font-weight:700; color:var(--gold); }
-        .score-track { height:4px; background:rgba(255,255,255,0.05); border-radius:100px; overflow:hidden; margin-bottom:14px; }
-        .score-fill { height:100%; width:0%; background:linear-gradient(90deg,var(--gold),#ef4444); border-radius:100px; transition: width 1s cubic-bezier(0.4,0,0.2,1); }
-        .reasoning { background:rgba(0,0,0,0.3); border:1px solid var(--border); border-left:3px solid var(--gold); border-radius:12px; padding:12px 14px; font-size:0.68rem; line-height:1.65; color:var(--text2); margin-bottom:12px; }
-        .reasoning strong { color:var(--text); }
-        .cond-list { display:flex; flex-direction:column; gap:7px; }
-        .cond-row { display:flex; align-items:center; gap:10px; padding:10px 13px; background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:12px; }
-        .cond-icon { width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.55rem; font-weight:700; flex-shrink:0; }
-        .cond-icon.ok { background:rgba(16,185,129,0.15); color:var(--green); }
-        .cond-icon.no { background:rgba(255,255,255,0.05); color:var(--text3); }
-        .cond-text { font-size:0.67rem; color:var(--text2); }
-
-        /* TECH CARD */
-        .tech-card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:18px; }
-        .ind-row { display:flex; align-items:center; justify-content:space-between; padding:13px 14px; background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:13px; margin-bottom:8px; }
-        .ind-row:last-child { margin-bottom:0; }
-        .ind-left { display:flex; align-items:center; gap:11px; }
-        .dot { width:9px; height:9px; border-radius:50%; background:var(--text3); transition:all 0.4s; flex-shrink:0; }
-        .dot.active { background:var(--green); box-shadow:0 0 10px rgba(16,185,129,0.5); }
-        .dot.warn   { background:var(--red);   box-shadow:0 0 10px rgba(244,63,94,0.5); }
-        .ind-name { font-size:0.78rem; font-weight:500; color:var(--text2); }
-        .ind-right { display:flex; align-items:center; gap:8px; }
-        .ind-val { font-family:'Space Mono',monospace; font-size:0.82rem; font-weight:700; }
-        .ind-badge { font-size:0.5rem; font-weight:700; padding:3px 8px; border-radius:100px; }
-        .b-green { background:rgba(16,185,129,0.12); color:var(--green); }
-        .b-red   { background:rgba(244,63,94,0.12);  color:var(--red); }
-        .b-gray  { background:rgba(255,255,255,0.05); color:var(--text2); }
-        .update-row { display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding:10px 13px; background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:12px; }
-        .update-lbl { font-size:0.5rem; color:var(--text3); text-transform:uppercase; letter-spacing:1px; }
-        .update-val { font-family:'Space Mono',monospace; font-size:0.6rem; color:var(--text2); }
-
-        /* SETTINGS */
-        .settings-section { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:18px; }
-        .settings-title { font-size:0.54rem; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:2px; margin-bottom:14px; }
-        .setting-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 0; border-bottom:1px solid var(--border); }
-        .setting-row:last-child { border-bottom:none; padding-bottom:0; }
-        .setting-name { font-size:0.82rem; font-weight:600; }
-        .setting-sub { font-size:0.6rem; color:var(--text3); margin-top:2px; }
-        .setting-control { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:9px 12px; color:var(--text); font-family:'Space Mono',monospace; font-size:0.72rem; outline:none; -webkit-appearance:none; appearance:none; min-width:110px; text-align-last:right; }
-        .setting-control option { background:#0d1524; }
-
-        /* Toggle */
-        .toggle { position:relative; width:46px; height:26px; flex-shrink:0; }
-        .toggle input { opacity:0; width:0; height:0; position:absolute; }
-        .toggle-track { position:absolute; inset:0; background:rgba(255,255,255,0.08); border:1px solid var(--border); border-radius:100px; cursor:pointer; transition:all 0.3s; }
-        .toggle input:checked + .toggle-track { background:var(--green); border-color:var(--green); }
-        .toggle-thumb { position:absolute; top:4px; left:4px; width:16px; height:16px; background:#fff; border-radius:50%; transition:transform 0.3s; pointer-events:none; box-shadow:0 1px 3px rgba(0,0,0,0.4); }
-        .toggle input:checked ~ .toggle-thumb { transform:translateX(20px); }
-
-        /* BOTTOM NAV */
-        .bottom-nav {
-            position:fixed; bottom:0; left:0; right:0; z-index:100;
-            height: calc(var(--bottom-h) + var(--safe-bottom));
-            background:rgba(6,9,16,0.97);
-            backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
-            border-top:1px solid var(--border);
-            display:flex; align-items:flex-start; padding-top:6px;
-            padding-bottom: var(--safe-bottom);
+        /* Progress Bar */
+        .progress-wrapper { margin-top: 10px; }
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--surface2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
         }
-        .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:8px 0; cursor:pointer; }
-        .nav-icon { font-size:1.25rem; transition:transform 0.2s; }
-        .nav-label { font-size:0.48rem; font-weight:600; color:var(--text3); letter-spacing:0.5px; text-transform:uppercase; transition:color 0.2s; }
-        .nav-dot { width:3px; height:3px; border-radius:50%; background:transparent; margin-top:1px; transition:background 0.2s; }
-        .nav-item.active .nav-label { color:var(--accent); }
-        .nav-item.active .nav-icon { transform:scale(1.15); }
-        .nav-item.active .nav-dot { background:var(--accent); }
-
-        /* TOAST */
-        .toast {
-            position:fixed;
-            bottom:calc(var(--bottom-h) + var(--safe-bottom) + 12px);
-            right:14px;
-            background:var(--surface); border:1px solid var(--accent);
-            border-radius:16px; padding:13px 16px;
-            font-size:0.72rem; color:var(--text);
-            box-shadow:0 10px 40px rgba(0,0,0,0.6);
-            z-index:200; max-width:220px;
-            transform:translateY(20px) scale(0.95); opacity:0;
-            transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--blue);
+            transition: width 1s linear;
         }
-        .toast.show { transform:translateY(0) scale(1); opacity:1; }
-        .toast-title { font-weight:700; margin-bottom:2px; }
-        .toast-sub { color:var(--text2); font-size:0.6rem; }
 
-        ::-webkit-scrollbar { width:3px; }
-        ::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.08); border-radius:3px; }
+        /* Settings and Action Section */
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 24px 0 12px 4px;
+            font-family: 'Space Mono', monospace;
+        }
 
-        /* PWA INSTALL BANNER */
-        .install-banner {
-            display: none;
+        .list-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .list-item-info h4 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+        .list-item-info p { font-size: 12px; color: var(--text-muted); }
+
+        /* Custom Switch Toggle */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--surface2);
+            transition: .3s;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px; width: 16px;
+            left: 3px; bottom: 3px;
+            background-color: #fff;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--blue); border-color: transparent; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* Toast Engine */
+        .toast-container {
             position: fixed;
-            bottom: calc(var(--bottom-h) + var(--safe-bottom) + 12px);
-            left: 14px; right: 14px;
-            background: linear-gradient(135deg, #0d1f3c, #0d1524);
-            border: 1px solid rgba(59,130,246,0.35);
-            border-radius: 18px;
-            padding: 14px 16px;
-            z-index: 300;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-            animation: slideUp 0.4s cubic-bezier(0.4,0,0.2,1);
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(13, 21, 36, 0.9);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 12px 20px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            z-index: 1000;
+            width: calc(100% - 40px);
+            max-width: 400px;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
         }
-        @keyframes slideUp { from { transform:translateY(20px); opacity:0; } to { transform:translateY(0); opacity:1; } }
-        .install-banner.visible { display: flex; align-items: center; gap: 12px; }
-        .install-icon { font-size: 2rem; flex-shrink: 0; }
-        .install-text { flex: 1; }
-        .install-title { font-size: 0.82rem; font-weight: 700; margin-bottom: 2px; }
-        .install-sub { font-size: 0.6rem; color: var(--text2); }
-        .install-actions { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
-        .install-yes {
-            background: linear-gradient(135deg, var(--blue), #2563eb);
-            border: none; border-radius: 10px;
-            padding: 8px 14px; color: #fff;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700; font-size: 0.72rem;
-            cursor: pointer; white-space: nowrap;
-        }
-        .install-no {
-            background: transparent; border: none;
-            color: var(--text3); font-size: 0.6rem;
-            cursor: pointer; text-align: center;
-            font-family: 'Space Grotesk', sans-serif;
-        }
+        .toast-container.visible { transform: translateX(-50%) translateY(0); }
+        .toast-title { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+        .toast-body { font-size: 12px; color: var(--text-muted); }
 
-        /* iOS install hint */
-        .ios-hint {
-            display: none;
+        /* iOS Installation Hint Popup */
+        .ios-popup {
             position: fixed;
-            bottom: calc(var(--bottom-h) + var(--safe-bottom) + 12px);
-            left: 14px; right: 14px;
-            background: linear-gradient(135deg, #0d1f3c, #0d1524);
-            border: 1px solid rgba(59,130,246,0.35);
-            border-radius: 18px;
-            padding: 16px 18px;
-            z-index: 300;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-            font-size: 0.72rem; line-height: 1.7;
-            color: var(--text2);
-            animation: slideUp 0.4s cubic-bezier(0.4,0,0.2,1);
+            bottom: 0; left: 0; right: 0;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            border-radius: 24px 24px 0 0;
+            padding: 24px;
+            z-index: 999;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.1, 0.8, 0.2, 1);
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
         }
-        .ios-hint.visible { display: block; }
-        .ios-hint strong { color: var(--text); }
-        .ios-hint-close {
-            position: absolute; top: 10px; right: 14px;
-            background: none; border: none; color: var(--text3);
-            font-size: 1rem; cursor: pointer;
-        }
-        .ios-arrow {
-            text-align: center; font-size: 1.4rem; margin-top: 6px;
-        }
-
-        /* TIMEFRAME MATRIX CARD */
-        .tf-card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:18px; margin-top:16px; }
-        .tf-card-title { font-size:0.54rem; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:2px; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
-        .tf-card-title::before { content:''; width:3px; height:3px; border-radius:50%; background:var(--accent); }
-        .tf-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
-        .tf-box { background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:14px; padding:12px 8px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px; }
-        .tf-name { font-size:0.58rem; color:var(--text3); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
-        .tf-name span { color:var(--accent); font-family:'Space Mono',monospace; }
-        .tf-badge { font-size:0.52rem; font-weight:700; padding:4px 10px; border-radius:100px; text-transform:uppercase; font-family:'Space Mono',monospace; letter-spacing:0.5px; min-width:60px; text-align:center; }
-        .tf-badge.bull { background:rgba(16,185,129,0.12); color:var(--green); border:1px solid rgba(16,185,129,0.2); }
-        .tf-badge.bear { background:rgba(244,63,94,0.12); color:var(--red); border:1px solid rgba(244,63,94,0.2); }
-        .tf-badge.neutral { background:rgba(255,255,255,0.05); color:var(--text3); border:1px solid rgba(255,255,255,0.1); }
+        .ios-popup.visible { transform: translateY(0); }
+        .ios-header { display: flex; justify-content: space-between; margin-bottom: 16px; }
+        .ios-instructions { font-size: 14px; color: var(--text); line-height: 1.6; }
+        .ios-icon { display: inline-block; width: 20px; height: 20px; vertical-align: middle; margin: 0 4px; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <div class="logo">
-        <div class="logo-icon">📡</div>
-        <div>
-            <span class="logo-name">CycleMaster</span>
-            <span class="badge-ai">AI PRO</span>
-        </div>
+<nav>
+    <div class="brand">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        CycleMaster Pro
     </div>
-    <div class="header-right">
-        <div class="live-pill"><div class="live-dot"></div>CANLI</div>
-        <div class="icon-btn" id="sound-btn" onclick="toggleSound()">🔇</div>
-    </div>
-</div>
-
-<div class="content">
-
-    <!-- PİYASA -->
-    <div class="page active" id="page-market">
-        <div class="coin-bar">
-            <input type="text" id="coin-input" class="coin-input" value="BTCUSDT"
-                onkeydown="if(event.key==='Enter'){updateCoin();this.blur()}"
-                autocomplete="off" autocorrect="off" spellcheck="false" placeholder="BTCUSDT">
-            <button class="analyze-btn" onclick="updateCoin()">▶ ANALİZ</button>
-        </div>
-
-        <div class="market-hero">
-            <div class="market-top">
-                <span class="market-symbol" id="display-symbol">BTCUSDT</span>
-                <span id="price-change" class="price-pill">%0.00</span>
-            </div>
-            <div class="market-price" id="display-price">—</div>
-            <div class="hl-row">
-                <div class="hl-box"><div class="hl-l">24S Yüksek</div><div class="hl-v" id="h24">—</div></div>
-                <div class="hl-box"><div class="hl-l">24S Düşük</div><div class="hl-v" id="l24">—</div></div>
-            </div>
-        </div>
-
-        <div id="signal-banner" class="signal-banner signal-wait">
-            ⏳ VERİ BEKLENİYOR
-            <div class="signal-sub">Analiz başlatılıyor…</div>
-        </div>
-
-        <div class="cycle-card">
-            <div class="timer-wrap">
-                <svg class="timer-svg" viewBox="0 0 100 100">
-                    <circle class="ring-bg" cx="50" cy="50" r="43"/>
-                    <circle class="ring-prog" id="progress-circle" cx="50" cy="50" r="43"/>
-                </svg>
-                <div class="timer-inner">
-                    <div class="timer-num" id="timer-display">0%</div>
-                    <div class="timer-lbl">uyum</div>
-                </div>
-            </div>
-            <div class="cycle-info">
-                <div class="cycle-strat" id="strategy-name">DAY TRADER MODE</div>
-                <div class="cycle-mode" id="mode-text">YATAY PİYASA</div>
-                <div class="cycle-time" id="current-time">00:00:00</div>
-            </div>
-        </div>
-
-        <div class="tf-card">
-            <div class="tf-card-title">Zaman Dilimleri Matrisi</div>
-            <div class="tf-row">
-                <div class="tf-box">
-                    <div class="tf-name">Üst TF (<span id="lbl-ust-tf">1h</span>)</div>
-                    <div id="state-ust-tf" class="tf-badge neutral">YATAY</div>
-                </div>
-                <div class="tf-box">
-                    <div class="tf-name">Orta TF (<span id="lbl-orta-tf">15m</span>)</div>
-                    <div id="state-orta-tf" class="tf-badge neutral">NÖTR</div>
-                </div>
-                <div class="tf-box">
-                    <div class="tf-name">Alt TF (<span id="lbl-alt-tf">5m</span>)</div>
-                    <div id="state-alt-tf" class="tf-badge neutral">NÖTR</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- AJAN -->
-    <div class="page" id="page-agent">
-        <div class="sec-title">Karar Verici Ajan</div>
-        <div class="agent-card">
-            <div class="agent-top">
-                <div class="agent-score-num" id="agent-score">0%</div>
-                <div class="agent-score-meta">
-                    <div class="agent-score-lbl">GÜVEN SKORU</div>
-                    <div class="agent-state" id="agent-state">Bekleniyor</div>
-                </div>
-            </div>
-            <div class="score-track"><div class="score-fill" id="agent-score-fill"></div></div>
-            <div class="reasoning" id="agent-reasoning">Analiz bekleniyor...</div>
-            <div class="cond-list">
-                <div class="cond-row"><div class="cond-icon no" id="cond-stoch">·</div><span class="cond-text" id="cond-stoch-text">Stoch RSI bekleniyor</span></div>
-                <div class="cond-row"><div class="cond-icon no" id="cond-bb">·</div><span class="cond-text" id="cond-bb-text">Bollinger bekleniyor</span></div>
-                <div class="cond-row"><div class="cond-icon no" id="cond-rsi">·</div><span class="cond-text" id="cond-rsi-text">RSI bekleniyor</span></div>
-                <div class="cond-row"><div class="cond-icon no" id="cond-ema">·</div><span class="cond-text" id="cond-ema-text">EMA 9/21/50 bekleniyor</span></div>
-                <div class="cond-row"><div class="cond-icon no" id="cond-vwap">·</div><span class="cond-text" id="cond-vwap-text">VWAP bekleniyor</span></div>
-                <div class="cond-row"><div class="cond-icon no" id="cond-obv">·</div><span class="cond-text" id="cond-obv-text">OBV bekleniyor</span></div>
-                <div class="cond-row"><div class="cond-icon no" id="cond-mfi">·</div><span class="cond-text" id="cond-mfi-text">MFI bekleniyor</span></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- TEKNİK -->
-    <div class="page" id="page-tech">
-        <div class="sec-title">Teknik Tarama</div>
-        <div class="tech-card">
-            <div class="ind-row">
-                <div class="ind-left"><div id="stoch-dot" class="dot"></div><span class="ind-name">Stoch RSI</span></div>
-                <div class="ind-right"><span class="ind-val" id="stoch-rsi-val">—</span><span class="ind-badge b-gray" id="stoch-badge">—</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="bb-dot" class="dot"></div><span class="ind-name">Bollinger</span></div>
-                <div class="ind-right"><span class="ind-val" id="bb-status">—</span><span class="ind-badge b-gray" id="bb-badge">—</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="rsi-dot" class="dot"></div><span class="ind-name">RSI (14)</span></div>
-                <div class="ind-right"><span class="ind-val" id="rsi-val">—</span><span class="ind-badge b-gray" id="rsi-badge">—</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="ema-dot" class="dot"></div><span class="ind-name">EMA (9/21/50)</span></div>
-                <div class="ind-right"><span class="ind-val" id="ema-val">—</span><span class="ind-badge b-gray" id="ema-badge">—</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="vwap-dot" class="dot"></div><span class="ind-name">VWAP</span></div>
-                <div class="ind-right"><span class="ind-val" id="vwap-val">—</span><span class="ind-badge b-gray" id="vwap-badge">—</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="obv-dot" class="dot"></div><span class="ind-name">OBV</span></div>
-                <div class="ind-right"><span class="ind-val" id="obv-val">—</span><span class="ind-badge b-gray" id="obv-badge">—</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="mfi-dot" class="dot"></div><span class="ind-name">MFI (14)</span></div>
-                <div class="ind-right"><span class="ind-val" id="mfi-val">—</span><span class="ind-badge b-gray" id="mfi-badge">—</span></div>
-            </div>
-            <div class="update-row">
-                <span class="update-lbl">Son Güncelleme</span>
-                <span class="update-val" id="last-update">—</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- AYARLAR -->
-    <div class="page" id="page-settings">
-        <div class="sec-title">Ayarlar</div>
-        <div class="settings-section">
-            <div class="settings-title">Strateji Profili</div>
-            <div class="setting-row">
-                <div><div class="setting-name">Profil</div><div class="setting-sub">Hazır strateji seçin</div></div>
-                <select id="profile-select" class="setting-control" onchange="applyProfile()">
-                    <option value="scalper">⚡ Scalper</option>
-                    <option value="trader" selected>🎯 Day Trader</option>
-                    <option value="swing">🛡️ Swing</option>
-                    <option value="custom">⚙️ Özel</option>
-                </select>
-            </div>
-            <div class="setting-row">
-                <div><div class="setting-name">Üst TF (Zaman Dilimi)</div><div class="setting-sub">Makro yön tayini için</div></div>
-                <select id="ust-tf-select" class="setting-control" onchange="updateSettings()">
-                    <option value="15m">15m</option><option value="30m">30m</option>
-                    <option value="1h" selected>1h</option><option value="4h">4h</option>
-                </select>
-            </div>
-            <div class="setting-row">
-                <div><div class="setting-name">Orta TF (Zaman Dilimi)</div><div class="setting-sub">Ara momentum doğrulaması</div></div>
-                <select id="orta-tf-select" class="setting-control" onchange="updateSettings()">
-                    <option value="5m">5m</option><option value="15m" selected>15m</option><option value="30m">30m</option>
-                    <option value="1h">1h</option>
-                </select>
-            </div>
-            <div class="setting-row">
-                <div><div class="setting-name">Alt TF (Zaman Dilimi)</div><div class="setting-sub">Nokta atışı giriş sinyali için</div></div>
-                <select id="alt-tf-select" class="setting-control" onchange="updateSettings()">
-                    <option value="1m">1m</option><option value="3m">3m</option><option value="5m" selected>5m</option>
-                    <option value="15m">15m</option>
-                </select>
-            </div>
-        </div>
-        <div class="settings-section">
-            <div class="settings-title">Tercihler</div>
-            <div class="setting-row">
-                <div><div class="setting-name">Ses Uyarısı</div><div class="setting-sub">Sinyal gelince ses çal</div></div>
-                <label class="toggle">
-                    <input type="checkbox" id="sound-checkbox" onchange="toggleSoundFromCb()">
-                    <div class="toggle-track"></div>
-                    <div class="toggle-thumb"></div>
-                </label>
-            </div>
-            <div class="setting-row">
-                <div><div class="setting-name">Sistem Bildirimleri</div><div class="setting-sub">Cihaz üst panelinde sinyal göster</div></div>
-                <label class="toggle">
-                    <input type="checkbox" id="notification-checkbox" onchange="toggleNotificationsFromCb()">
-                    <div class="toggle-track"></div>
-                    <div class="toggle-thumb"></div>
-                </label>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav">
-    <div class="nav-item active" id="nav-market" onclick="goTo('market')">
-        <div class="nav-icon">📈</div>
-        <div class="nav-label">Piyasa</div>
-        <div class="nav-dot"></div>
-    </div>
-    <div class="nav-item" id="nav-agent" onclick="goTo('agent')">
-        <div class="nav-icon">🧠</div>
-        <div class="nav-label">Ajan</div>
-        <div class="nav-dot"></div>
-    </div>
-    <div class="nav-item" id="nav-tech" onclick="goTo('tech')">
-        <div class="nav-icon">📊</div>
-        <div class="nav-label">Teknik</div>
-        <div class="nav-dot"></div>
-    </div>
-    <div class="nav-item" id="nav-settings" onclick="goTo('settings')">
-        <div class="nav-icon">⚙️</div>
-        <div class="nav-label">Ayarlar</div>
-        <div class="nav-dot"></div>
-    </div>
+    <div id="connection-status" class="badge badge-neutral">Bağlanıyor...</div>
 </nav>
 
-<!-- PWA Install Banner (Android/Desktop) -->
-<div class="install-banner" id="install-banner">
-    <div class="install-icon">📡</div>
-    <div class="install-text">
-        <div class="install-title">Uygulamayı Yükle</div>
-        <div class="install-sub">Ana ekrana ekle, uygulama gibi aç</div>
+<div class="container">
+    <div id="install-banner" class="banner">
+        <h3>Uygulamayı Yükleyin</h3>
+        <p>Anlık sinyal takibi ve daha kararlı arka plan çalışması için ana ekranınıza ekleyin.</p>
+        <button class="btn" onclick="triggerNativeInstall()">Şimdi Yükle</button>
     </div>
-    <div class="install-actions">
-        <button class="install-yes" id="install-yes">YÜKLE</button>
-        <button class="install-no" id="install-no">Şimdi değil</button>
+
+    <div class="card">
+        <div class="price-row">
+            <div class="price-block">
+                <div class="label">BTC/USDT Fiyatı</div>
+                <div id="btc-price" class="value">$--,---</div>
+            </div>
+            <div id="signal-badge" class="badge badge-neutral">Yükleniyor</div>
+        </div>
+
+        <div class="progress-wrapper">
+            <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted); font-family:'Space Mono', monospace;">
+                <span>DÖNGÜ İLERLEMESİ</span>
+                <block id="timer-text">--:--</block>
+            </div>
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+        </div>
+
+        <div class="metric-container">
+            <div class="metric-box">
+                <div class="m-label">Mevcut Döngü</div>
+                <div id="cycle-index" class="m-value">-- / --</div>
+            </div>
+            <div class="metric-box">
+                <div class="m-label">Son Sinyal Skoru</div>
+                <div id="signal-score" class="m-value">--%</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-title">Bildirim Sistemleri</div>
+    
+    <div class="list-item">
+        <div class="list-item-info">
+            <h4>Anlık Push Bildirimleri</h4>
+            <p>Arka planda kritik sinyal değişikliklerini kaçırmayın.</p>
+        </div>
+        <label class="switch">
+            <input type="checkbox" id="push-toggle" onchange="togglePushNotifications(this)">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="list-item">
+        <div class="list-item-info">
+            <h4>Sesli Uyarı Sistemi</h4>
+            <p>Sinyal geldiğinde otomatik olarak alarm çalar.</p>
+        </div>
+        <label class="switch">
+            <input type="checkbox" id="sound-toggle" onchange="toggleSound(this)">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="list-item" style="cursor: pointer;" onclick="testPushNotification()">
+        <div class="list-item-info">
+            <h4>Test Bildirimi Gönder</h4>
+            <p>Sistemin aktifliğini kontrol etmek için dokunun.</p>
+        </div>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </div>
 </div>
 
-<!-- iOS Install Hint -->
-<div class="ios-hint" id="ios-hint">
-    <button class="ios-hint-close" onclick="closeIosHint()">✕</button>
-    <strong>Ana Ekrana Ekle</strong><br>
-    Safari'de aşağıdaki <strong>paylaş</strong> butonuna dokun → <strong>"Ana Ekrana Ekle"</strong> seç.
-    <div class="ios-arrow">⬇️</div>
+<div id="toast" class="toast-container">
+    <div id="toast-title" class="toast-title">Sistem Mesajı</div>
+    <div id="toast-body" class="toast-body">Açıklama</div>
 </div>
 
-<div class="toast" id="toast">
-    <div class="toast-title" id="toast-title">🔔 Sinyal!</div>
-    <div class="toast-sub" id="toast-sub">Yeni işlem sinyali.</div>
+<div id="ios-hint" class="ios-popup">
+    <div class="ios-header">
+        <h3 style="font-size:18px;">Uygulama Olarak Yükleyin</h3>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" onclick="closeIosHint()"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </div>
+    <div class="ios-instructions">
+        Bu uygulamayı iPhone cihazınıza yüklemek için alt menüdeki paylaş butonuna (<img class="ios-icon" src="https://cdn-icons-png.flaticon.com/512/3024/3024593.png">) dokunun ve ardından <b>"Ana Ekrana Ekle"</b> seçeneğini seçin.
+    </div>
 </div>
 
-<audio id="alert-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
+<audio id="alert-sound" src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" preload="auto" loop></audio>
 
 <script>
-// ── CONFIG ──
-// GitHub'a yüklemeden önce bu değerleri kendin doldur:
-const BACKEND_URL = "https://script.google.com/macros/s/AKfycbw9ELXeqKyqLXcy5k1-Eju3cYsVq0XpxGqRPU15oL_LAPFgbETDO3ZE2t-Y7tdK2Tmy/exec";
-const FCM_VAPID_KEY = "BNmlrqN79EZ5GQskgK0EpWausWODfnvRikws5t3CqrCsyM5CuGm4B95Gpc8VKlSJUT3JVpeK5U_tCf0x8szbtV8";
+// ── SYSTEM ARCHITECTURE CONFIGURATION ──
+const BACKEND_URL = "https://script.google.com/macros/s/AKfycbz_9mGvO313NvevTfB_h2rAn7g6m2f_J189uL88oY5Xp_pIcl01m5WjFstjA2N7eN_iDw/exec"; 
+const FCM_VAPID_KEY = "BNmlrqN79EZ5GQskgK0EpWausWODfnvRikws5t3CqrCsyM5CuGm4B95Gpc8VKlSJUT3JVpeK5U_tCf0x8szbtV8"; 
 
-// ── SERVICE WORKER ──
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('firebase-messaging-sw.js')
-            .then(reg => {
-                console.log('SW kayıtlı:', reg.scope);
-                reg.addEventListener('updatefound', () => {
-                    const newWorker = reg.installing;
-                    newWorker.addEventListener('statechange', () => {
-                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            showToast('🔄 Güncelleme', 'Yeni sürüm hazır. Sayfayı yenile.');
-                        }
-                    });
-                });
-            })
-            .catch(err => console.log('SW hatası:', err));
-    });
-}
-
-// ── Firebase SDK ile FCM Token al ──
 const FIREBASE_CONFIG = {
     apiKey: "AIzaSyCflGd5zuToK5QDkvONTelVwUqHvW0gKnw",
     authDomain: "cyclemaster-pro-cc443.firebaseapp.com",
@@ -648,792 +380,110 @@ const FIREBASE_CONFIG = {
     appId: "1:965620537440:web:1d5c923b620afa7cb48b05"
 };
 
-async function subscribePush() {
-    try {
-        // 1. Kütüphaneleri dinamik ama birbiriyle uyumlu (compat) şekilde çağırıyoruz
-        const firebaseApp = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
-        const firebaseMessaging = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
-
-        // 2. Firebase uygulamasını başlat veya mevcut olanı çek
-        const app = window.firebase && window.firebase.apps.length 
-            ? window.firebase.apps[0] 
-            : firebaseApp.default.initializeApp(FIREBASE_CONFIG);
-            
-        const messaging = firebaseApp.default.messaging();
-
-        // 3. Service Worker'ın tamamen hazır olmasını bekle
-        const registration = await navigator.serviceWorker.ready;
-        console.log("Service Worker bildirim için hazır:", registration.scope);
-
-        // 4. Token alma isteği (Service Worker kaydını içine açıkça gömüyoruz)
-        const token = await messaging.getToken({ 
-            vapidKey: FCM_VAPID_KEY,
-            serviceWorkerRegistration: registration 
-        });
-
-        if (!token) {
-            console.error('FCM token boş döndü.');
-            showToast("⚠️ Token Hatası", "Bildirim token'ı boş döndü. Lütfen sayfayı yenileyin.");
-            return null;
-        }
-
-        console.log('FCM token başarıyla alındı:', token);
-        localStorage.setItem('cm_push_token', token);
-
-        // 5. Apps Script backend'ine güvenli şekilde pushla
-        const encodedToken = encodeURIComponent(token);
-        const url = `${BACKEND_URL}?action=register&token=${encodedToken}`;
-        
-        console.log("Backend'e istek atılıyor:", url);
-        await fetch(url, { method: 'GET', mode: 'no-cors' });
-
-        showToast("✅ Kayıt Tamam", "Arka plan bildirimleri aktif!");
-        return token;
-    } catch(e) {
-        // Tarayıcı konsolunda (F12) hatanın tam sebebini görmek için:
-        console.error('Kritik subscribePush Hatası:', e);
-        showToast("⚠️ Hata", "Token alınamadı: " + e.message);
-        return null;
-    }
-}
-
-async function unsubscribePush() {
-    try {
-        const token = localStorage.getItem('cm_push_token');
-        if (token) {
-            const encodedToken = encodeURIComponent(token);
-            await fetch(`${BACKEND_URL}?action=unregister&token=${encodedToken}`, {
-                method: 'GET', mode: 'no-cors'
-            });
-            localStorage.removeItem('cm_push_token');
-        }
-    } catch(e) {}
-}
-
-
-let currentCoin="BTCUSDT", altTF="5m", ortaTF="15m", ustTF="1h", lastMode=null;
-let rsiValue=50, stochRsiValue=50, bbStatus="Mid";
-let ema9Val=0, ema21Val=0, ema50Val=0;
-let vwapVal=0;
-let obvVal=0, obvMAVal=0;
-let mfiVal=50;
-let lastPrice=0;
-let isSoundEnabled=false, alertPlayedInThisWindow=false, isNotificationEnabled=false;
-let toastTimer=null;
-
-const profiles={
-    scalper:{alt:"1m",orta:"5m",ust:"15m",name:"⚡ SCALPER MODE"},
-    trader:{alt:"5m",orta:"15m",ust:"1h",name:"🎯 DAY TRADER MODE"},
-    swing:{alt:"15m",orta:"1h",ust:"4h",name:"🛡️ SWING MODE"}
-};
-
-function goTo(page){
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-    document.getElementById('page-'+page).classList.add('active');
-    document.getElementById('nav-'+page).classList.add('active');
-    window.scrollTo(0,0);
-}
-
-function toggleSound(){ 
-    isSoundEnabled=!isSoundEnabled; 
-    syncSoundUI(); 
-    saveToMemory(); 
-    if(isSoundEnabled) {
-        const audio = document.getElementById('alert-sound');
-        if (audio) audio.play().catch(()=>{});
-    }
-}
-function toggleSoundFromCb(){ 
-    isSoundEnabled=document.getElementById('sound-checkbox').checked; 
-    syncSoundUI(); 
-    saveToMemory(); 
-    if(isSoundEnabled) {
-        const audio = document.getElementById('alert-sound');
-        if (audio) audio.play().catch(()=>{});
-    }
-}
-function syncSoundUI(){
-    document.getElementById('sound-btn').textContent=isSoundEnabled?'🔊':'🔇';
-    document.getElementById('sound-btn').className=isSoundEnabled?'icon-btn active':'icon-btn';
-    document.getElementById('sound-checkbox').checked=isSoundEnabled;
-}
-function toggleNotificationsFromCb() {
-    const cb = document.getElementById('notification-checkbox');
-    if (cb.checked) {
-        requestNotificationPermission();
-    } else {
-        isNotificationEnabled = false;
-        syncNotificationUI();
-        unsubscribePush();  // Backend'den sil
-        showToast("🔕 Bildirimler Kapatıldı", "Sistem bildirimleri devre dışı.");
-        saveToMemory();
-    }
-}
-
-function requestNotificationPermission() {
-    const cb = document.getElementById('notification-checkbox');
-
-    // iOS PWA: Notification API yok ama ses+toast yeterli
-    if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
-        isNotificationEnabled = true;
-        syncNotificationUI();
-        showToast("🔔 Bildirimler Aktif", "iOS'ta uygulama açıkken sinyal gelince ses+ekran bildirimi çalışır.");
-        saveToMemory();
-        return;
-    }
-
-    if (!('Notification' in window)) {
-        showToast("⚠️ Desteklenmiyor", "Bu tarayıcı sistem bildirimlerini desteklemiyor.");
-        cb.checked = false;
-        return;
-    }
-
-    if (Notification.permission === 'granted') {
-        isNotificationEnabled = true;
-        syncNotificationUI();
-        showToast("🔔 Bildirimler Aktif", "Arka planda da sinyal gelecek.");
-        sendSystemNotification("CycleMaster Pro ✅", "Bildirimler aktif edildi!");
-        subscribePush();  // Backend'e kaydet
-        saveToMemory();
-        return;
-    }
-
-    if (Notification.permission === 'denied') {
-        showToast("❌ İzin Reddedildi", "Tarayıcı ayarlarından bildirim iznini açmanız gerekiyor.");
-        cb.checked = false;
-        return;
-    }
-
-    // 'default' — izin iste
-    Notification.requestPermission().then(permission => {
-        if (permission === 'granted') {
-            isNotificationEnabled = true;
-            syncNotificationUI();
-            showToast("🔔 Bildirimler Aktif", "Arka planda da sinyal gelecek.");
-            sendSystemNotification("CycleMaster Pro ✅", "Bildirimler aktif edildi!");
-            subscribePush();  // Backend'e kaydet
-        } else {
-            isNotificationEnabled = false;
-            syncNotificationUI();
-            showToast("❌ İzin Verilmedi", "Bildirimler için tarayıcı iznine ihtiyaç var.");
-            cb.checked = false;
-        }
-        saveToMemory();
-    }).catch(() => {
-        cb.checked = false;
-        showToast("⚠️ Hata", "Bildirim izni alınamadı.");
-    });
-}
-function syncNotificationUI() {
-    const cb = document.getElementById('notification-checkbox');
-    if (cb) cb.checked = isNotificationEnabled;
-}
-
-function sendSystemNotification(title, body) {
-    // iOS PWA veya Notification API yoksa sadece toast göster
-    if (!('Notification' in window) || /iphone|ipad|ipod/i.test(navigator.userAgent)) {
-        // iOS'ta zaten toast ve ses çalıyor, ek bir şey yapmaya gerek yok
-        return;
-    }
-
-    if (Notification.permission !== 'granted') return;
-
-    const options = {
-        body: body,
-        icon: 'icon-192.png',
-        badge: 'icon-192.png',
-        tag: 'cyclemaster-signal',   // aynı tag'li eski bildirimi değiştirir, spam olmaz
-        renotify: true,
-        vibrate: [200, 100, 200, 100, 200],
-        requireInteraction: false,
-        silent: false
-    };
-
-    // Service Worker üzerinden gönder (daha güvenilir, arka plan desteği)
-    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.ready.then(reg => {
-            reg.showNotification(title, options).catch(() => {
-                // SW başarısız olursa normal Notification dene
-                try { new Notification(title, options); } catch(e) {}
-            });
-        }).catch(() => {
-            try { new Notification(title, options); } catch(e) {}
-        });
-    } else {
-        try { new Notification(title, options); } catch(e) {}
-    }
-}
-
-function showToast(title,sub){
-    const t=document.getElementById('toast');
-    document.getElementById('toast-title').textContent=title;
-    document.getElementById('toast-sub').textContent=sub;
-    t.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer=setTimeout(()=>t.classList.remove('show'),4000);
-}
-
-function applyProfile(){
-    const k=document.getElementById('profile-select').value;
-    if(k==='custom') return;
-    const p=profiles[k];
-    altTF=p.alt; ortaTF=p.orta; ustTF=p.ust;
-    document.getElementById('alt-tf-select').value=altTF;
-    document.getElementById('orta-tf-select').value=ortaTF;
-    document.getElementById('ust-tf-select').value=ustTF;
-    document.getElementById('strategy-name').textContent=p.name;
-    saveToMemory(); fetchTechnical();
-}
-
-function updateSettings(){
-    altTF=document.getElementById('alt-tf-select').value;
-    ortaTF=document.getElementById('orta-tf-select').value;
-    ustTF=document.getElementById('ust-tf-select').value;
-    const found=Object.values(profiles).find(p=>p.alt===altTF&&p.orta===ortaTF&&p.ust===ustTF);
-    document.getElementById('profile-select').value=found?Object.keys(profiles).find(key=>profiles[key]===found):"custom";
-    document.getElementById('strategy-name').textContent=found?found.name:"⚙️ ÖZEL MOD";
-    saveToMemory(); fetchTechnical();
-}
-
-function updateCoin(){
-    const v=document.getElementById('coin-input').value.toUpperCase().trim();
-    if(!v) return;
-    currentCoin=v.includes("USDT")?v:v+"USDT";
-    document.getElementById('coin-input').value=currentCoin;
-    document.getElementById('display-symbol').textContent=currentCoin;
-    saveToMemory(); fetchData();
-}
-
-async function fetchData(){ fetchPrice(); fetchTechnical(); }
-
-async function fetchPrice(){
-    try{
-        const r=await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${currentCoin}`);
-        const d=await r.json();
-        if(!d.lastPrice) return;
-        const p=parseFloat(d.lastPrice);
-        lastPrice=p;
-        document.getElementById('display-price').textContent=p>1?p.toLocaleString('tr-TR'):p.toFixed(6);
-        const c=parseFloat(d.priceChangePercent);
-        const el=document.getElementById('price-change');
-        el.textContent=(c>=0?"+":"")+c.toFixed(2)+"%";
-        el.className='price-pill '+(c>=0?'up':'dn');
-        document.getElementById('h24').textContent=parseFloat(d.highPrice).toLocaleString('tr-TR');
-        document.getElementById('l24').textContent=parseFloat(d.lowPrice).toLocaleString('tr-TR');
-    }catch(e){}
-}
-
-async function fetchTechnical(){
-    try{
-        const [rAlt, rOrta, rUst] = await Promise.all([
-            fetch(`https://api.binance.com/api/v3/klines?symbol=${currentCoin}&interval=${altTF}&limit=150`),
-            fetch(`https://api.binance.com/api/v3/klines?symbol=${currentCoin}&interval=${ortaTF}&limit=150`),
-            fetch(`https://api.binance.com/api/v3/klines?symbol=${currentCoin}&interval=${ustTF}&limit=150`)
-        ]);
-        const [kAlt, kOrta, kUst] = await Promise.all([rAlt.json(), rOrta.json(), rUst.json()]);
-        
-        if(kAlt.length < 50 || kOrta.length < 50 || kUst.length < 50) return;
-        
-        const cAlt = kAlt.map(x=>parseFloat(x[4])), hAlt = kAlt.map(x=>parseFloat(x[2])), lAlt = kAlt.map(x=>parseFloat(x[3])), vAlt = kAlt.map(x=>parseFloat(x[5]));
-        const cOrta = kOrta.map(x=>parseFloat(x[4])), hOrta = kOrta.map(x=>parseFloat(x[2])), lOrta = kOrta.map(x=>parseFloat(x[3])), vOrta = kOrta.map(x=>parseFloat(x[5]));
-        const cUst = kUst.map(x=>parseFloat(x[4])), hUst = kUst.map(x=>parseFloat(x[2])), lUst = kUst.map(x=>parseFloat(x[3])), vUst = kUst.map(x=>parseFloat(x[5]));
-        
-        const lp = cAlt[cAlt.length-1];
-        lastPrice = lp;
-        
-        // Update Timeframe Labels
-        document.getElementById('lbl-alt-tf').textContent = altTF;
-        document.getElementById('lbl-orta-tf').textContent = ortaTF;
-        document.getElementById('lbl-ust-tf').textContent = ustTF;
-        
-        // --- ÜST TF INDICATORS (EMA 9/21/50) ---
-        const ema9Series = calcEMA(cUst, 9);
-        const ema21Series = calcEMA(cUst, 21);
-        const ema50Series = calcEMA(cUst, 50);
-        ema9Val = ema9Series[ema9Series.length-1];
-        ema21Val = ema21Series[ema21Series.length-1];
-        ema50Val = ema50Series[ema50Series.length-1];
-        const fmtPrice = (v)=>v.toLocaleString('tr-TR',{minimumFractionDigits:1,maximumFractionDigits:1});
-        document.getElementById('ema-val').textContent = `9: ${fmtPrice(ema9Val)} | 21: ${fmtPrice(ema21Val)} | 50: ${fmtPrice(ema50Val)}`;
-        
-        let ustTFTrend = "YATAY";
-        if(ema9Val > ema21Val && ema21Val > ema50Val) {
-            ustTFTrend = "BOĞA";
-        } else if(ema9Val < ema21Val && ema21Val < ema50Val) {
-            ustTFTrend = "AYI";
-        }
-        
-        const badgeUst = document.getElementById('state-ust-tf');
-        let newMode = "YATAY";
-        if(ustTFTrend === "BOĞA") {
-            badgeUst.textContent = "BOĞA";
-            badgeUst.className = "tf-badge bull";
-            newMode = "LONG";
-            document.getElementById('mode-text').textContent = "🟢 BOĞA TRENDİ";
-        } else if(ustTFTrend === "AYI") {
-            badgeUst.textContent = "AYI";
-            badgeUst.className = "tf-badge bear";
-            newMode = "SHORT";
-            document.getElementById('mode-text').textContent = "🔴 AYI TRENDİ";
-        } else {
-            badgeUst.textContent = "YATAY";
-            badgeUst.className = "tf-badge neutral";
-            newMode = "YATAY";
-            document.getElementById('mode-text').textContent = "⚪ YATAY PİYASA";
-        }
-        
-        if(newMode !== lastMode) {
-            lastMode = newMode;
-            alertPlayedInThisWindow = false;
-            document.body.className = lastMode==='SHORT' ? 'mode-short' : lastMode==='LONG' ? 'mode-long' : '';
-        }
-        
-        // --- ORTA TF INDICATORS (RSI, VWAP) ---
-        const rsiSeries = calcRSI(cOrta, 14);
-        rsiValue = rsiSeries[rsiSeries.length-1];
-        document.getElementById('rsi-val').textContent = rsiValue.toFixed(1);
-        
-        const vwapSeries = calcVWAP(kOrta);
-        vwapVal = vwapSeries[vwapSeries.length-1];
-        document.getElementById('vwap-val').textContent = fmtPrice(vwapVal);
-        
-        let ortaTFTrend = "NÖTR";
-        if(lp > vwapVal && rsiValue > 50) {
-            ortaTFTrend = "ALIM YNL";
-        } else if(lp < vwapVal && rsiValue < 50) {
-            ortaTFTrend = "SAT YNL";
-        }
-        
-        const badgeOrta = document.getElementById('state-orta-tf');
-        if(ortaTFTrend === "ALIM YNL") {
-            badgeOrta.textContent = "ALIM YÖN";
-            badgeOrta.className = "tf-badge bull";
-        } else if(ortaTFTrend === "SAT YNL") {
-            badgeOrta.textContent = "SAT YÖN";
-            badgeOrta.className = "tf-badge bear";
-        } else {
-            badgeOrta.textContent = "NÖTR";
-            badgeOrta.className = "tf-badge neutral";
-        }
-        
-        // --- ALT TF INDICATORS (Stoch RSI, BB, OBV, MFI) ---
-        const rsiSeriesAlt = calcRSI(cAlt, 14);
-        const stochSeries = calcStochRSI(rsiSeriesAlt, 14);
-        stochRsiValue = stochSeries[stochSeries.length-1];
-        document.getElementById('stoch-rsi-val').textContent = stochRsiValue.toFixed(1);
-        
-        const {upper, lower} = calcBB(cAlt);
-        bbStatus = lp >= upper*0.995 ? "Top" : lp <= lower*1.005 ? "Bottom" : "Mid";
-        document.getElementById('bb-status').textContent = bbStatus==="Top" ? "ÜST BAND" : bbStatus==="Bottom" ? "ALT BAND" : "ORTA";
-        
-        const obvSeries = calcOBV(cAlt, vAlt);
-        const obvMASeries = calcSMA(obvSeries, 20);
-        obvVal = obvSeries[obvSeries.length-1];
-        obvMAVal = obvMASeries[obvMASeries.length-1];
-        const fmtVol = (v)=>{
-            const absV = Math.abs(v);
-            if(absV>=1e6) return (v/1e6).toFixed(2)+'M';
-            if(absV>=1e3) return (v/1e3).toFixed(1)+'K';
-            return v.toFixed(0);
-        };
-        document.getElementById('obv-val').textContent = fmtVol(obvVal);
-        
-        const mfiSeries = calcMFI(hAlt, lAlt, cAlt, vAlt, 14);
-        mfiVal = mfiSeries[mfiSeries.length-1];
-        document.getElementById('mfi-val').textContent = mfiVal.toFixed(1);
-        
-        let altTFTrend = "NÖTR";
-        if(stochRsiValue < 20 || bbStatus === "Bottom") {
-            altTFTrend = "GİRİŞ AL";
-        } else if(stochRsiValue > 80 || bbStatus === "Top") {
-            altTFTrend = "GİRİŞ SAT";
-        }
-        
-        const badgeAlt = document.getElementById('state-alt-tf');
-        if(altTFTrend === "GİRİŞ AL") {
-            badgeAlt.textContent = "GİRİŞ FRS";
-            badgeAlt.className = "tf-badge bull";
-        } else if(altTFTrend === "GİRİŞ SAT") {
-            badgeAlt.textContent = "GİRİŞ FRS";
-            badgeAlt.className = "tf-badge bear";
-        } else {
-            badgeAlt.textContent = "NÖTR";
-            badgeAlt.className = "tf-badge neutral";
-        }
-        
-        updateBadges(lp);
-        document.getElementById('last-update').textContent = new Date().toLocaleTimeString('tr-TR');
-        runAgent();
-    }catch(e){}
-}
-
-function updateBadges(lp){
-    const setBadge=(id,val,hi,lo)=>{
-        const el=document.getElementById(id);
-        if(val>hi){el.textContent="AŞIRI ALIM";el.className="ind-badge b-red";}
-        else if(val<lo){el.textContent="AŞIRI SATIM";el.className="ind-badge b-green";}
-        else{el.textContent="NÖTR";el.className="ind-badge b-gray";}
-    };
-    
-    const rsiB=document.getElementById('rsi-badge');
-    if(rsiValue>50){rsiB.textContent="BOĞA";rsiB.className="ind-badge b-green";}
-    else if(rsiValue<50){rsiB.textContent="AYI";rsiB.className="ind-badge b-red";}
-    else{rsiB.textContent="NÖTR";rsiB.className="ind-badge b-gray";}
-    
-    setBadge('stoch-badge',stochRsiValue,80,20);
-    
-    const bb=document.getElementById('bb-badge');
-    if(bbStatus==="Top"){bb.textContent="ÜST";bb.className="ind-badge b-red";}
-    else if(bbStatus==="Bottom"){bb.textContent="ALT";bb.className="ind-badge b-green";}
-    else{bb.textContent="ORTA";bb.className="ind-badge b-gray";}
-
-    const emaB=document.getElementById('ema-badge');
-    if(ema9Val>ema21Val&&ema21Val>ema50Val){emaB.textContent="BOĞA";emaB.className="ind-badge b-green";}
-    else if(ema9Val<ema21Val&&ema21Val<ema50Val){emaB.textContent="AYI";emaB.className="ind-badge b-red";}
-    else{emaB.textContent="KARIŞIK";emaB.className="ind-badge b-gray";}
-
-    const vwapB=document.getElementById('vwap-badge');
-    if(lp>vwapVal){vwapB.textContent="BOĞA";vwapB.className="ind-badge b-green";}
-    else{vwapB.textContent="AYI";vwapB.className="ind-badge b-red";}
-
-    const obvB=document.getElementById('obv-badge');
-    if(obvVal>obvMAVal){obvB.textContent="BOĞA";obvB.className="ind-badge b-green";}
-    else{obvB.textContent="AYI";obvB.className="ind-badge b-red";}
-
-    setBadge('mfi-badge',mfiVal,60,40);
-}
-
-function calcRSI(c,p=14){
-    let g=[],l=[];
-    for(let i=1;i<c.length;i++){const d=c[i]-c[i-1];g.push(Math.max(0,d));l.push(Math.max(0,-d));}
-    let ag=g.slice(0,p).reduce((a,b)=>a+b)/p,al=l.slice(0,p).reduce((a,b)=>a+b)/p;
-    const r=[];
-    for(let i=p;i<g.length;i++){ag=((ag*(p-1))+g[i])/p;al=((al*(p-1))+l[i])/p;r.push(al===0?100:100-(100/(1+ag/al)));}
-    return r;
-}
-
-function calcStochRSI(r,p=14){
-    const s=[];
-    for(let i=p;i<=r.length;i++){const sl=r.slice(i-p,i),c=r[i-1],mn=Math.min(...sl),mx=Math.max(...sl);s.push(mx===mn?50:((c-mn)/(mx-mn))*100);}
-    return s;
-}
-
-function calcBB(c,p=20,d=2){
-    const s=c.slice(-p),m=s.reduce((a,b)=>a+b)/p;
-    const sd=Math.sqrt(s.reduce((a,b)=>a+Math.pow(b-m,2),0)/p);
-    return{upper:m+sd*d,lower:m-sd*d};
-}
-
-function calcEMA(c, p) {
-    if (c.length < p) return [];
-    const k = 2 / (p + 1);
-    const r = new Array(c.length).fill(0);
-    let sma = 0;
-    for (let i = 0; i < p; i++) sma += c[i];
-    sma = sma / p;
-    r[p - 1] = sma;
-    for (let i = p; i < c.length; i++) {
-        r[i] = (c[i] - r[i - 1]) * k + r[i - 1];
-    }
-    return r;
-}
-
-function calcVWAP(klines) {
-    let sumPV = 0, sumV = 0;
-    const vwapSeries = [];
-    let lastDay = null;
-    for (let i = 0; i < klines.length; i++) {
-        const time = parseInt(klines[i][0]);
-        const high = parseFloat(klines[i][2]);
-        const low = parseFloat(klines[i][3]);
-        const close = parseFloat(klines[i][4]);
-        const volume = parseFloat(klines[i][5]);
-        const tp = (high + low + close) / 3;
-        const currentDay = new Date(time).getUTCDate();
-        if (lastDay !== null && currentDay !== lastDay) {
-            sumPV = 0;
-            sumV = 0;
-        }
-        lastDay = currentDay;
-        sumPV += tp * volume;
-        sumV += volume;
-        vwapSeries.push(sumV === 0 ? tp : sumPV / sumV);
-    }
-    return vwapSeries;
-}
-
-function calcOBV(closes, volumes) {
-    const obvSeries = [0];
-    let currentObv = 0;
-    for (let i = 1; i < closes.length; i++) {
-        if (closes[i] > closes[i - 1]) currentObv += volumes[i];
-        else if (closes[i] < closes[i - 1]) currentObv -= volumes[i];
-        obvSeries.push(currentObv);
-    }
-    return obvSeries;
-}
-
-function calcSMA(series, period) {
-    const r = [];
-    for (let i = 0; i < series.length; i++) {
-        if (i < period - 1) {
-            r.push(series[i]);
-            continue;
-        }
-        let sum = 0;
-        for (let j = i - period + 1; j <= i; j++) sum += series[j];
-        r.push(sum / period);
-    }
-    return r;
-}
-
-function calcMFI(highs, lows, closes, volumes, p = 14) {
-    const tp = [], rmf = [];
-    for (let i = 0; i < closes.length; i++) {
-        tp.push((highs[i] + lows[i] + closes[i]) / 3);
-        rmf.push(tp[i] * volumes[i]);
-    }
-    const mfiSeries = [];
-    for (let i = 0; i < closes.length; i++) {
-        if (i < p) {
-            mfiSeries.push(50);
-            continue;
-        }
-        let posFlow = 0, negFlow = 0;
-        for (let j = i - p + 1; j <= i; j++) {
-            if (tp[j] > tp[j - 1]) posFlow += rmf[j];
-            else if (tp[j] < tp[j - 1]) negFlow += rmf[j];
-        }
-        if (negFlow === 0) mfiSeries.push(100);
-        else mfiSeries.push(100 - (100 / (1 + posFlow / negFlow)));
-    }
-    return mfiSeries;
-}
-
-function updateCycle(){
-    const now=new Date();
-    const ts=now.toLocaleTimeString('tr-TR');
-    document.getElementById('current-time').textContent=ts;
-}
-
-function runAgent(){
-    if(lastMode==='YATAY'){
-        document.getElementById('agent-score').textContent="0%";
-        document.getElementById('agent-score-fill').style.width="0%";
-        document.getElementById('progress-circle').style.strokeDashoffset=270;
-        document.getElementById('timer-display').textContent="0%";
-        
-        const stateEl=document.getElementById('agent-state');
-        stateEl.textContent='⚪ Yatay Piyasa';
-        stateEl.style.color='var(--text3)';
-        
-        const rBox=document.getElementById('agent-reasoning');
-        rBox.innerHTML=`<strong>PİYASA YATAY.</strong><br>Üst TF (${ustTF}) üzerinde net bir trend dizilimi yok. Trend hizalanması gerçekleşene kadar bekleyin.`;
-        
-        const banner=document.getElementById('signal-banner');
-        banner.innerHTML=`⏳ YATAY PİYASA BEKLENİYOR<div class="signal-sub">Üst TF trend uyumu yok.</div>`;
-        banner.className='signal-banner signal-wait';
-        
-        const setC=(id,textId,ok,text)=>{
-            const el=document.getElementById(id);
-            el.className='cond-icon no';
-            el.textContent='·';
-            document.getElementById(textId).textContent=text;
-        };
-        setC('cond-stoch','cond-stoch-text',false,`Stoch RSI ${stochRsiValue.toFixed(1)} — şart yok`);
-        setC('cond-bb','cond-bb-text',false,'Bollinger şartı yok');
-        setC('cond-rsi','cond-rsi-text',false,`RSI ${rsiValue.toFixed(1)} — şart yok`);
-        setC('cond-ema','cond-ema-text',false,'EMA dizilim şartı yok');
-        setC('cond-vwap','cond-vwap-text',false,'VWAP şartı yok');
-        setC('cond-obv','cond-obv-text',false,'OBV hacim şartı yok');
-        setC('cond-mfi','cond-mfi-text',false,`MFI ${mfiVal.toFixed(1)} — şart yok`);
-        
-        document.getElementById('stoch-dot').className='dot';
-        document.getElementById('bb-dot').className='dot';
-        document.getElementById('rsi-dot').className='dot';
-        document.getElementById('ema-dot').className='dot';
-        document.getElementById('vwap-dot').className='dot';
-        document.getElementById('obv-dot').className='dot';
-        document.getElementById('mfi-dot').className='dot';
-        return;
-    }
-
-    const stochOk=lastMode==='SHORT'?stochRsiValue>80:stochRsiValue<20;
-    const bbOk=lastMode==='SHORT'?bbStatus==="Top":bbStatus==="Bottom";
-    const rsiOk=lastMode==='SHORT'?rsiValue<50:rsiValue>50;
-    const emaOk=lastMode==='SHORT'?(ema9Val<ema21Val&&ema21Val<ema50Val):(ema9Val>ema21Val&&ema21Val>ema50Val);
-    const vwapOk=lastMode==='SHORT'?lastPrice<vwapVal:lastPrice>vwapVal;
-    const obvOk=lastMode==='SHORT'?obvVal<obvMAVal:obvVal>obvMAVal;
-    const mfiOk=lastMode==='SHORT'?mfiVal<40:mfiVal>60;
-
-    let score=0;
-    if(emaOk) score+=35;
-    if(vwapOk) score+=15;
-    if(rsiOk) score+=15;
-    if(stochOk) score+=10;
-    if(bbOk) score+=10;
-    if(obvOk) score+=10;
-    if(mfiOk) score+=5;
-
-    document.getElementById('agent-score').textContent=score+"%";
-    document.getElementById('agent-score-fill').style.width=score+"%";
-    document.getElementById('timer-display').textContent=score+"%";
-    
-    // Dynamic progress circle styling based on score
-    const circleEl=document.getElementById('progress-circle');
-    circleEl.style.strokeDashoffset=270*(1-score/100);
-    if(score>=75){
-        circleEl.style.stroke='var(--green)';
-        circleEl.style.filter='drop-shadow(0 0 5px var(--green))';
-    }else if(score>=45){
-        circleEl.style.stroke='var(--gold)';
-        circleEl.style.filter='drop-shadow(0 0 5px var(--gold))';
-    }else{
-        circleEl.style.stroke='var(--red)';
-        circleEl.style.filter='drop-shadow(0 0 5px var(--red))';
-    }
-
-    const stateEl=document.getElementById('agent-state');
-    if(score>=75){
-        stateEl.textContent=lastMode==='SHORT'?'🔴 Sat Sinyali':'🟢 Al Sinyali';
-        stateEl.style.color=lastMode==='SHORT'?'var(--red)':'var(--green)';
-    }else{
-        stateEl.textContent='⏳ Bekleniyor';
-        stateEl.style.color='var(--gold)';
-    }
-
-    const reasons=[];
-    if(emaOk) reasons.push(`Üst TF (${ustTF}) ${lastMode==='SHORT'?'Ayı':'Boğa'} Trend Hizalanması`);
-    if(vwapOk) reasons.push(`Orta TF (${ortaTF}) VWAP Fiyat Uyumu`);
-    if(rsiOk) reasons.push(`Orta TF (${ortaTF}) RSI Trend Momentum Onayı`);
-    if(stochOk) reasons.push(`Alt TF (${altTF}) Stoch RSI Onaylandı`);
-    if(bbOk) reasons.push(`Alt TF (${altTF}) Bollinger Bant Teması`);
-    if(obvOk) reasons.push(`Alt TF (${altTF}) Hacim Desteği (OBV)`);
-    if(mfiOk) reasons.push(`Alt TF (${altTF}) Para Akışı Uyumu (MFI)`);
-
-    const rBox=document.getElementById('agent-reasoning');
-    rBox.innerHTML=score>=75
-        ?`<strong style="color:${lastMode==='SHORT'?'var(--red)':'var(--green)'}">GİRİŞ UYGUN ✓</strong><br>${reasons.join('<br>')}`
-        :`<strong>BEKLE.</strong><br>Şartlar oluşmadı (${score}%). ${reasons.length?reasons.join(', ')+'.':'Hiçbir koşul karşılanmıyor.'}`;
-
-    const setC=(id,textId,ok,text)=>{
-        const el=document.getElementById(id);
-        el.className='cond-icon '+(ok?'ok':'no');
-        el.textContent=ok?'✓':'·';
-        document.getElementById(textId).textContent=text;
-    };
-    setC('cond-stoch','cond-stoch-text',stochOk,stochOk?`Alt TF Stoch RSI Onayı ✓`:`Alt TF Stoch RSI şartı yok`);
-    setC('cond-bb','cond-bb-text',bbOk,bbOk?`Alt TF Bollinger Band Teması ✓`:'Alt TF Bollinger şartı yok');
-    setC('cond-rsi','cond-rsi-text',rsiOk,rsiOk?`Orta TF RSI Trend Uyumu ✓`:'Orta TF RSI şartı yok');
-    setC('cond-ema','cond-ema-text',emaOk,emaOk?`Üst TF EMA 9/21/50 ${lastMode==='SHORT'?'ayı':'boğa'} dizilimi ✓`:'Üst TF EMA dizilim şartı yok');
-    setC('cond-vwap','cond-vwap-text',vwapOk,vwapOk?`Orta TF VWAP Fiyat Onayı ✓`:'Orta TF VWAP şartı yok');
-    setC('cond-obv','cond-obv-text',obvOk,obvOk?`Alt TF OBV Hacim Onayı ✓`:'Alt TF OBV şartı yok');
-    setC('cond-mfi','cond-mfi-text',mfiOk,mfiOk?`Alt TF MFI Para Akışı Onayı ✓`:'Alt TF MFI şartı yok');
-
-    document.getElementById('stoch-dot').className='dot '+(stochOk?'active':'warn');
-    document.getElementById('bb-dot').className='dot '+(bbOk?'active':'warn');
-    document.getElementById('rsi-dot').className='dot '+(rsiOk?'active':'warn');
-    document.getElementById('ema-dot').className='dot '+(emaOk?'active':'warn');
-    document.getElementById('vwap-dot').className='dot '+(vwapOk?'active':'warn');
-    document.getElementById('obv-dot').className='dot '+(obvOk?'active':'warn');
-    document.getElementById('mfi-dot').className='dot '+(mfiOk?'active':'warn');
-
-    const banner=document.getElementById('signal-banner');
-    if(score>=75){
-        const cls=lastMode==='SHORT'?'signal-short':'signal-long';
-        const txt=lastMode==='SHORT'?'🔥 ŞİMDİ SATIŞ YAP':'🚀 ŞİMDİ ALIM YAP';
-        banner.innerHTML=`${txt}<div class="signal-sub">${currentCoin} · Güven: ${score}%</div>`;
-        banner.className='signal-banner '+cls;
-        if(isSoundEnabled&&!alertPlayedInThisWindow){
-            document.getElementById('alert-sound').play().catch(()=>{});
-        }
-        if(isNotificationEnabled&&!alertPlayedInThisWindow){
-            sendSystemNotification(
-                lastMode==='SHORT'?'🔴 Satış Sinyali!':'🟢 Alım Sinyali!',
-                `${currentCoin} · Güven: ${score}% · ${reasons.length} onay alındı.`
-            );
-        }
-        if(!alertPlayedInThisWindow){
-            alertPlayedInThisWindow=true;
-        }
-        showToast(lastMode==='SHORT'?'🔥 Satış Sinyali':'🚀 Alım Sinyali',`${currentCoin} · Güven: ${score}%`);
-    }else{
-        banner.innerHTML=`⏳ ŞARTLAR BEKLENİYOR<div class="signal-sub">Güven skoru: ${score}%</div>`;
-        banner.className='signal-banner signal-wait';
-    }
-}
-
-function saveToMemory(){
-    localStorage.setItem('cm_coin',currentCoin);
-    localStorage.setItem('cm_alt_tf',altTF);
-    localStorage.setItem('cm_orta_tf',ortaTF);
-    localStorage.setItem('cm_ust_tf',ustTF);
-    localStorage.setItem('cm_sound',isSoundEnabled);
-    localStorage.setItem('cm_notify',isNotificationEnabled);
-}
-
-function loadFromMemory(){
-    const c=localStorage.getItem('cm_coin');
-    const alt=localStorage.getItem('cm_alt_tf'), orta=localStorage.getItem('cm_orta_tf'), ust=localStorage.getItem('cm_ust_tf');
-    const s=localStorage.getItem('cm_sound'), n=localStorage.getItem('cm_notify');
-    if(c) currentCoin=c;
-    if(alt) altTF=alt;
-    if(orta) ortaTF=orta;
-    if(ust) ustTF=ust;
-    if(s==='true'){isSoundEnabled=true;syncSoundUI();}
-    if(n==='true'){
-        // Bildirim izni hâlâ geçerliyse geri yükle
-        if('Notification' in window && Notification.permission === 'granted') {
-            isNotificationEnabled=true;
-        } else if(/iphone|ipad|ipod/i.test(navigator.userAgent)) {
-            isNotificationEnabled=true; // iOS'ta her zaman aktif
-        } else {
-            isNotificationEnabled=false; // izin iptal edilmiş olabilir
-        }
-        syncNotificationUI();
-    }
-    document.getElementById('coin-input').value=currentCoin;
-    document.getElementById('alt-tf-select').value=altTF;
-    document.getElementById('orta-tf-select').value=ortaTF;
-    document.getElementById('ust-tf-select').value=ustTF;
-    document.getElementById('display-symbol').textContent=currentCoin;
-    const found=Object.values(profiles).find(p=>p.alt===altTF&&p.orta===ortaTF&&p.ust===ustTF);
-    document.getElementById('profile-select').value=found?Object.keys(profiles).find(key=>profiles[key]===found):"custom";
-    document.getElementById('strategy-name').textContent=found?found.name:"⚙️ ÖZEL MOD";
-}
-
-// ── PWA INSTALL ──
+// ── REALTIME MONITORING ENGINE STATE ──
+let cycleTimer = null;
+let secondsRemaining = 0;
+let totalCycleSeconds = 60; 
 let deferredPrompt = null;
-const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
-const isInStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+let soundEnabled = false;
 
-window.addEventListener('beforeinstallprompt', e => {
+// ── TOAST ENGINE ──
+function showToast(title, body) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toast-title').innerText = title;
+    document.getElementById('toast-body').innerText = body;
+    toast.classList.add('visible');
+    setTimeout(() => toast.classList.remove('visible'), 3500);
+}
+
+// ── DATA SYNC AND CORRECTIONS ──
+async function fetchPrice() {
+    try {
+        const r = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');
+        const d = await r.json();
+        if(d.price) {
+            const p = parseFloat(d.price);
+            document.getElementById('btc-price').innerText = '$' + p.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+        }
+    } catch(e) { console.error("Price sync error:", e); }
+}
+
+async function updateCycle() {
+    try {
+        const r = await fetch(`${BACKEND_URL}?action=getStatus`);
+        const d = await r.json();
+        
+        document.getElementById('connection-status').className = "badge badge-success";
+        document.getElementById('connection-status').innerText = "Canlı";
+
+        // UI State Injector
+        document.getElementById('cycle-index').innerText = `${d.currentCycle} / ${d.totalCycles}`;
+        document.getElementById('signal-score').innerText = `${d.score}%`;
+        
+        const badge = document.getElementById('signal-badge');
+        badge.innerText = d.signal;
+        if(d.signal === 'BUY') {
+            badge.className = "badge badge-success";
+            triggerLocalAudioAlert(true);
+        } else if(d.signal === 'SELL') {
+            badge.className = "badge badge-danger";
+            triggerLocalAudioAlert(true);
+        } else {
+            badge.className = "badge badge-neutral";
+            triggerLocalAudioAlert(false);
+        }
+
+        // Timer Recalibration
+        secondsRemaining = parseInt(d.remainingSeconds);
+        totalCycleSeconds = parseInt(d.totalCycleSeconds) || 60;
+        
+        clearInterval(cycleTimer);
+        cycleTimer = setInterval(() => {
+            if(secondsRemaining <= 0) {
+                clearInterval(cycleTimer);
+                fetchPrice();
+                updateCycle();
+                return;
+            }
+            secondsRemaining--;
+            
+            const mins = Math.floor(secondsRemaining / 60).toString().padStart(2, '0');
+            const secs = (secondsRemaining % 60).toString().padStart(2, '0');
+            document.getElementById('timer-text').innerText = `${mins}:${secs}`;
+            
+            const pct = ((totalCycleSeconds - secondsRemaining) / totalCycleSeconds) * 100;
+            document.getElementById('progress-fill').style.width = `${pct}%`;
+        }, 1000);
+
+    } catch(e) {
+        document.getElementById('connection-status').className = "badge badge-danger";
+        document.getElementById('connection-status').innerText = "Hata";
+        console.error("Status Sync Error:", e);
+    }
+}
+
+// ── PWA AND NATIVE INSTALL ENGINE ──
+window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    // Show banner after 3 seconds if not already installed
-    if (!isInStandalone && !localStorage.getItem('cm_install_dismissed')) {
-        setTimeout(() => document.getElementById('install-banner').classList.add('visible'), 3000);
-    }
+    document.getElementById('install-banner').classList.add('visible');
 });
 
-document.getElementById('install-yes').addEventListener('click', async () => {
-    if (deferredPrompt) {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
+function triggerNativeInstall() {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choice) => {
+        if (choice.outcome === 'accepted') {
+            document.getElementById('install-banner').classList.remove('visible');
+        }
         deferredPrompt = null;
-        document.getElementById('install-banner').classList.remove('visible');
-        if (outcome === 'accepted') showToast('✅ Yüklendi!', 'Uygulama ana ekrana eklendi.');
-    }
-});
+    });
+}
 
-document.getElementById('install-no').addEventListener('click', () => {
-    document.getElementById('install-banner').classList.remove('visible');
-    localStorage.setItem('cm_install_dismissed', '1');
-});
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isInStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
 
-// iOS: show hint if in Safari and not installed
-if (isIos && !isInStandalone && !localStorage.getItem('cm_ios_hint_shown')) {
+if (isIOS && !isInStandalone && !localStorage.getItem('cm_ios_hint_shown')) {
     setTimeout(() => {
         document.getElementById('ios-hint').classList.add('visible');
         localStorage.setItem('cm_ios_hint_shown', '1');
@@ -1444,15 +494,115 @@ function closeIosHint() {
     document.getElementById('ios-hint').classList.remove('visible');
 }
 
-// Install success detection
 window.addEventListener('appinstalled', () => {
     document.getElementById('install-banner').classList.remove('visible');
-    showToast('✅ Başarıyla Yüklendi!', 'CycleMaster Pro ana ekranında.');
+    showToast('✅ Başarıyla Yüklendi!', 'CycleMaster Pro ana ekranınızda.');
 });
 
-// ── MOBİL SES KİLİDİ AÇICI ──
-// Mobil tarayıcılarda ses çalmak için kullanıcı etkileşimi şart.
-// İlk dokunuşta sessiz bir oynatma yaparak kilidi açıyoruz.
+// ── AUDIO MANAGEMENT ──
+function toggleSound(el) {
+    soundEnabled = el.checked;
+    localStorage.setItem('cm_sound_alert', soundEnabled ? '1' : '0');
+    if(!soundEnabled) triggerLocalAudioAlert(false);
+}
+
+function triggerLocalAudioAlert(play) {
+    if(!soundEnabled) return;
+    const audio = document.getElementById('alert-sound');
+    if(!audio) return;
+    if(play) {
+        audio.play().catch(e => console.log("Audio play blocked:", e));
+    } else {
+        audio.pause();
+        audio.currentTime = 0;
+    }
+}
+
+function loadFromMemory() {
+    const s = localStorage.getItem('cm_sound_alert');
+    if(s === '1') {
+        soundEnabled = true;
+        document.getElementById('sound-toggle').checked = true;
+    }
+    const p = localStorage.getItem('cm_push_enabled');
+    if(p === '1' && Notification.permission === 'granted') {
+        document.getElementById('push-toggle').checked = true;
+    }
+}
+
+// ── FIREBASE COMPAT PUSH NOTIFICATION ENGINE ──
+async function togglePushNotifications(el) {
+    if(el.checked) {
+        const permission = await Notification.requestPermission();
+        if(permission === 'granted') {
+            localStorage.setItem('cm_push_enabled', '1');
+            await subscribePush();
+        } else {
+            el.checked = false;
+            localStorage.setItem('cm_push_enabled', '0');
+            showToast("⚠️ İzin Reddedildi", "Bildirim gönderebilmek için tarayıcı ayarlarından izin vermelisiniz.");
+        }
+    } else {
+        localStorage.setItem('cm_push_enabled', '0');
+        showToast("ℹ️ Bildirimler Kapatıldı", "Bu cihaz artık push bildirimleri almayacak.");
+    }
+}
+
+async function subscribePush() {
+    try {
+        // 1. Firebase'i başlat veya olanı al (Gelişmiş kontrol)
+        const app = firebase.apps.length ? firebase.apps[0] : firebase.initializeApp(FIREBASE_CONFIG);
+        const messaging = firebase.messaging();
+
+        // 2. Service Worker'ın tamamen hazır olmasını bekle
+        const registration = await navigator.serviceWorker.ready;
+        console.log("Service Worker bildirim için hazır:", registration.scope);
+
+        // 3. Token alma isteği (Kritik: registration parametresini doğrudan buraya veriyoruz)
+        const token = await messaging.getToken({ 
+            vapidKey: FCM_VAPID_KEY,
+            serviceWorkerRegistration: registration 
+        });
+
+        if (!token) {
+            console.error('FCM token boş döndü.');
+            showToast("⚠️ Token Hatası", "Bildirim token'ı alınamadı.");
+            return null;
+        }
+
+        console.log('FCM token başarıyla alındı:', token);
+        localStorage.setItem('cm_push_token', token);
+
+        // 4. Apps Script backend'ine güvenli şekilde kayıt isteği yolla
+        const encodedToken = encodeURIComponent(token);
+        const url = `${BACKEND_URL}?action=register&token=${encodedToken}`;
+        
+        console.log("Backend'e istek atılıyor:", url);
+        await fetch(url, { method: 'GET', mode: 'no-cors' });
+
+        showToast("✅ Kayıt Tamam", "Arka plan bildirimleri aktif!");
+        return token;
+    } catch(e) {
+        console.error('Kritik subscribePush Hatası:', e);
+        showToast("⚠️ Hata", "Token alınamadı: " + e.message);
+        return null;
+    }
+}
+
+async function testPushNotification() {
+    const token = localStorage.getItem('cm_push_token');
+    if(!token) {
+        showToast("⚠️ Test Başarısız", "Önce push bildirimlerini aktif etmelisiniz.");
+        return;
+    }
+    showToast("🚀 Test İsteyi Gönderildi", "Birkaç saniye içinde bildirim gelmeli.");
+    try {
+        const url = `${BACKEND_URL}?action=testPush&token=${encodeURIComponent(token)}`;
+        await fetch(url, { method: 'GET', mode: 'no-cors' });
+    } catch(e) { console.error("Test push event trigger failure:", e); }
+}
+
+// ── AUDIO MOBIL UNLOCK SYSTEM ──
 let audioUnlocked = false;
 function unlockAudio() {
     if (audioUnlocked) return;
@@ -1471,11 +621,22 @@ function unlockAudio() {
 document.addEventListener('click', unlockAudio, { passive: true });
 document.addEventListener('touchstart', unlockAudio, { passive: true });
 
+// ── BOOTSTRAP INITIALIZATION ──
+// Service Worker dosyasının adını 'firebase-messaging-sw.js' yaptığımız için burada da güncelledik.
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('firebase-messaging-sw.js')
+        .then(reg => console.log('Service Worker Kaydedildi:', reg.scope))
+        .catch(err => console.error('Service Worker Kayıt Hatası:', err));
+    });
+}
+
 loadFromMemory();
-setInterval(updateCycle,1000);
-setInterval(fetchPrice,3000);
-setInterval(fetchTechnical,30000);
-updateCycle(); fetchData();
+setInterval(updateCycle, 1000);
+setInterval(fetchPrice, 5000);
+fetchPrice();
+updateCycle();
+
 </script>
 </body>
 </html>
