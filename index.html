@@ -638,64 +638,69 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// FCM token'ı al ve backend'e kaydet
+// ── Firebase SDK ile FCM Token al ──
+const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyCacpi30hwf1OWPPmZLOXRXHLqN16hGgG4",
+    authDomain: "cyclemaster-559d7.firebaseapp.com",
+    projectId: "cyclemaster-559d7",
+    storageBucket: "cyclemaster-559d7.firebasestorage.app",
+    messagingSenderId: "313081846653",
+    appId: "1:313081846653:web:087f86bed7a1e010500a14"
+};
+
 async function subscribePush() {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-        console.log('Push desteklenmiyor');
-        return null;
-    }
     try {
-        const reg = await navigator.serviceWorker.ready;
-        // Mevcut aboneliği kontrol et
-        let sub = await reg.pushManager.getSubscription();
-        if (!sub) {
-            // Yeni abonelik oluştur
-            sub = await reg.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: urlBase64ToUint8Array(FCM_VAPID_KEY)
-            });
+        // Firebase SDK yükle
+        const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+        const { getMessaging, getToken } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js');
+
+        const app       = initializeApp(FIREBASE_CONFIG);
+        const messaging = getMessaging(app);
+
+        const token = await getToken(messaging, { vapidKey: FCM_VAPID_KEY });
+        if (!token) {
+            console.log('FCM token alınamadı');
+            return null;
         }
-        // FCM token'ı backend'e gönder
-        const token = JSON.stringify(sub);
-        const r = await fetch(BACKEND_URL + '/register', {
+
+        console.log('FCM token:', token.substring(0, 20) + '...');
+
+        // Backend'e kaydet (Google Apps Script POST)
+        const formData = new FormData();
+        formData.append('token', token);
+
+        // Apps Script CORS sorunu için no-cors kullan
+        await fetch(BACKEND_URL, {
             method: 'POST',
+            mode: 'no-cors',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ token })
         });
-        if (r.ok) {
-            localStorage.setItem('cm_push_token', token);
-            console.log('Push kaydedildi');
-            return token;
-        }
+
+        localStorage.setItem('cm_push_token', token);
+        console.log('Token backend\'e gönderildi');
+        return token;
     } catch(e) {
-        console.log('Push subscribe hata:', e);
+        console.log('subscribePush hata:', e);
+        return null;
     }
-    return null;
 }
 
 async function unsubscribePush() {
     try {
         const token = localStorage.getItem('cm_push_token');
-        if (token && BACKEND_URL !== 'YOUR_RENDER_URL') {
-            await fetch(BACKEND_URL + '/unregister', {
+        if (token) {
+            await fetch(BACKEND_URL, {
                 method: 'POST',
+                mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token })
+                body: JSON.stringify({ token, action: 'unregister' })
             });
+            localStorage.removeItem('cm_push_token');
         }
-        const reg = await navigator.serviceWorker.ready;
-        const sub = await reg.pushManager.getSubscription();
-        if (sub) await sub.unsubscribe();
-        localStorage.removeItem('cm_push_token');
     } catch(e) {}
 }
 
-function urlBase64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-    const raw = window.atob(base64);
-    return new Uint8Array([...raw].map(c => c.charCodeAt(0)));
-}
 
 let currentCoin="BTCUSDT", altTF="5m", ortaTF="15m", ustTF="1h", lastMode=null;
 let rsiValue=50, stochRsiValue=50, bbStatus="Mid";
