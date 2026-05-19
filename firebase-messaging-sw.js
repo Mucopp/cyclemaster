@@ -1,8 +1,6 @@
-// firebase-messaging-sw.js
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
 
-// index.html ile TAMAMEN AYNI config olmalı
 firebase.initializeApp({
     apiKey: "AIzaSyCflGd5zuToK5QDkvONTelVwUqHvW0gKnw",
     authDomain: "cyclemaster-pro-cc443.firebaseapp.com",
@@ -18,6 +16,7 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage(payload => {
     console.log('Arka plan bildirimi:', payload);
     const { title, body } = payload.notification;
+    // Bu zaten sadece arka planda çalışır, kontrol gerek yok
     self.registration.showNotification(title, {
         body: body,
         icon: './icon-192.png',
@@ -41,9 +40,9 @@ self.addEventListener('notificationclick', event => {
     );
 });
 
-// Statik cache (Önbelleğe yeni dosya adını ekledik)
+// Statik cache
 const CACHE_NAME = 'cyclemaster-v3';
-const STATIC_ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './firebase-messaging-sw.js'];
+const STATIC_ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', event => {
     event.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(STATIC_ASSETS).catch(()=>{})));
