@@ -41,7 +41,7 @@ self.addEventListener('notificationclick', event => {
 });
 
 // Statik cache
-const CACHE_NAME = 'cyclemaster-v4';
+const CACHE_NAME = 'cyclemaster-v5';
 const STATIC_ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', event => {
@@ -58,7 +58,7 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
     const url = event.request.url;
-    if (url.includes('binance.com') || url.includes('googleapis') || url.includes('gstatic')) {
+    if (url.includes('binance.com') || url.includes('okx.com') || url.includes('googleapis') || url.includes('gstatic')) {
         event.respondWith(fetch(event.request).catch(() => new Response('{}')));
         return;
     }
