@@ -1,13 +1,15 @@
+// firebase-messaging-sw.js
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
 
+// index.html ile TAMAMEN AYNI config olmalı
 firebase.initializeApp({
-    apiKey: "AIzaSyCacpi30hwf1OWPPmZLOXRXHLqN16hGgG4",
-    authDomain: "cyclemaster-559d7.firebaseapp.com",
-    projectId: "cyclemaster-559d7",
-    storageBucket: "cyclemaster-559d7.firebasestorage.app",
-    messagingSenderId: "313081846653",
-    appId: "1:313081846653:web:087f86bed7a1e010500a14"
+    apiKey: "AIzaSyCflGd5zuToK5QDkvONTelVwUqHvW0gKnw",
+    authDomain: "cyclemaster-pro-cc443.firebaseapp.com",
+    projectId: "cyclemaster-pro-cc443",
+    storageBucket: "cyclemaster-pro-cc443.firebasestorage.app",
+    messagingSenderId: "965620537440",
+    appId: "1:965620537440:web:1d5c923b620afa7cb48b05"
 });
 
 const messaging = firebase.messaging();
@@ -39,9 +41,9 @@ self.addEventListener('notificationclick', event => {
     );
 });
 
-// Statik cache
+// Statik cache (Önbelleğe yeni dosya adını ekledik)
 const CACHE_NAME = 'cyclemaster-v3';
-const STATIC_ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
+const STATIC_ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './firebase-messaging-sw.js'];
 
 self.addEventListener('install', event => {
     event.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(STATIC_ASSETS).catch(()=>{})));
