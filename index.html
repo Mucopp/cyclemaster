@@ -359,20 +359,6 @@
 </head>
 <body>
 
-<div class="header">
-    <div class="logo">
-        <div class="logo-icon">📡</div>
-        <div>
-            <span class="logo-name">CycleMaster</span>
-            <span class="badge-ai">AI PRO</span>
-        </div>
-    </div>
-    <div class="header-right">
-        <div class="live-pill"><div class="live-dot"></div>CANLI</div>
-        <div class="icon-btn" id="sound-btn" onclick="toggleSound()">🔇</div>
-    </div>
-</div>
-
 <div class="content">
 
     <!-- PİYASA -->
@@ -381,7 +367,7 @@
             <input type="text" id="coin-input" class="coin-input" value="BTCUSDT"
                 onkeydown="if(event.key==='Enter'){updateCoin();this.blur()}"
                 autocomplete="off" autocorrect="off" spellcheck="false" placeholder="BTCUSDT">
-            <button class="analyze-btn" onclick="updateCoin()">▶ ANALİZ</button>
+            <button class="analyze-btn" onclick="updateCoin()">▶ Takip</button>
         </div>
 
         <div class="market-hero">
@@ -459,6 +445,7 @@
                 <div class="cond-row"><div class="cond-icon no" id="cond-vwap">·</div><span class="cond-text" id="cond-vwap-text">VWAP bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-obv">·</div><span class="cond-text" id="cond-obv-text">OBV bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-mfi">·</div><span class="cond-text" id="cond-mfi-text">MFI bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-mom">·</div><span class="cond-text" id="cond-mom-text">Momentum bekleniyor</span></div>
             </div>
         </div>
     </div>
@@ -494,6 +481,10 @@
             <div class="ind-row">
                 <div class="ind-left"><div id="mfi-dot" class="dot"></div><span class="ind-name">MFI (14)</span></div>
                 <div class="ind-right"><span class="ind-val" id="mfi-val">—</span><span class="ind-badge b-gray" id="mfi-badge">—</span></div>
+            </div>
+            <div class="ind-row">
+                <div class="ind-left"><div id="mom-dot" class="dot"></div><span class="ind-name">Momentum (10)</span></div>
+                <div class="ind-right"><span class="ind-val" id="mom-val">—</span><span class="ind-badge b-gray" id="mom-badge">—</span></div>
             </div>
             <div class="update-row">
                 <span class="update-lbl">Son Güncelleme</span>
@@ -616,7 +607,7 @@
 <script>
 // ── CONFIG ──
 // GitHub'a yüklemeden önce bu değerleri kendin doldur:
-const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyGenNs1D4VE-oeF7pusGbRjToNhj_gq9w8W9f8JIR78al9MSDI57rkBEmB5AaPnelV/exec";
+const BACKEND_URL = "https://script.google.com/macros/s/AKfycbw9ELXeqKyqLXcy5k1-Eju3cYsVq0XpxGqRPU15oL_LAPFgbETDO3ZE2t-Y7tdK2Tmy/exec";
 const FCM_VAPID_KEY = "BNmlrqN79EZ5GQskgK0EpWausWODfnvRikws5t3CqrCsyM5CuGm4B95Gpc8VKlSJUT3JVpeK5U_tCf0x8szbtV8";
 
 // ── SERVICE WORKER ──
@@ -705,6 +696,7 @@ let ema9Val=0, ema21Val=0, ema50Val=0;
 let vwapVal=0;
 let obvVal=0, obvMAVal=0;
 let mfiVal=50;
+let momVal=0;
 let lastPrice=0;
 let isSoundEnabled=false, alertPlayedInThisWindow=false, isNotificationEnabled=false;
 let toastTimer=null;
@@ -890,6 +882,7 @@ function updateCoin(){
     document.getElementById('coin-input').value=currentCoin;
     document.getElementById('display-symbol').textContent=currentCoin;
     saveToMemory(); fetchData();
+    fetch(`${BACKEND_URL}?action=set_symbol&symbol=${currentCoin}`, { method: 'GET', mode: 'no-cors' }).catch(()=>{});
 }
 
 async function fetchData(){ fetchPrice(); fetchTechnical(); }
@@ -1051,6 +1044,10 @@ async function fetchTechnical(){
         const mfiSeries = calcMFI(hAlt, lAlt, cAlt, vAlt, 14);
         mfiVal = mfiSeries[mfiSeries.length-1];
         document.getElementById('mfi-val').textContent = mfiVal.toFixed(1);
+
+        const momSeries = calcMOM(cAlt, 10);
+        momVal = momSeries[momSeries.length-1];
+        document.getElementById('mom-val').textContent = momVal.toFixed(2);
         
         let altTFTrend = "NÖTR";
         if(stochRsiValue < 20 || bbStatus === "Bottom") {
@@ -1111,6 +1108,11 @@ function updateBadges(lp){
     else{obvB.textContent="AYI";obvB.className="ind-badge b-red";}
 
     setBadge('mfi-badge',mfiVal,60,40);
+
+    const momB=document.getElementById('mom-badge');
+    if(momVal>0){momB.textContent="POZİTİF";momB.className="ind-badge b-green";}
+    else if(momVal<0){momB.textContent="NEGATİF";momB.className="ind-badge b-red";}
+    else{momB.textContent="NÖTR";momB.className="ind-badge b-gray";}
 }
 
 function calcRSI(c,p=14){
@@ -1220,6 +1222,18 @@ function calcMFI(highs, lows, closes, volumes, p = 14) {
     return mfiSeries;
 }
 
+function calcMOM(closes, p = 10) {
+    const momSeries = [];
+    for (let i = 0; i < closes.length; i++) {
+        if (i < p) {
+            momSeries.push(0);
+        } else {
+            momSeries.push(closes[i] - closes[i - p]);
+        }
+    }
+    return momSeries;
+}
+
 function updateCycle(){
     const now=new Date();
     const ts=now.toLocaleTimeString('tr-TR');
@@ -1257,6 +1271,7 @@ function runAgent(){
         setC('cond-vwap','cond-vwap-text',false,'VWAP şartı yok');
         setC('cond-obv','cond-obv-text',false,'OBV hacim şartı yok');
         setC('cond-mfi','cond-mfi-text',false,`MFI ${mfiVal.toFixed(1)} — şart yok`);
+        setC('cond-mom','cond-mom-text',false,`Momentum ${momVal.toFixed(2)} — şart yok`);
         
         document.getElementById('stoch-dot').className='dot';
         document.getElementById('bb-dot').className='dot';
@@ -1265,6 +1280,7 @@ function runAgent(){
         document.getElementById('vwap-dot').className='dot';
         document.getElementById('obv-dot').className='dot';
         document.getElementById('mfi-dot').className='dot';
+        document.getElementById('mom-dot').className='dot';
         return;
     }
 
@@ -1275,15 +1291,17 @@ function runAgent(){
     const vwapOk=lastMode==='SHORT'?lastPrice<vwapVal:lastPrice>vwapVal;
     const obvOk=lastMode==='SHORT'?obvVal<obvMAVal:obvVal>obvMAVal;
     const mfiOk=lastMode==='SHORT'?mfiVal<40:mfiVal>60;
+    const momOk=lastMode==='SHORT'?momVal<0:momVal>0;
 
     let score=0;
     if(emaOk) score+=35;
     if(vwapOk) score+=15;
-    if(rsiOk) score+=15;
+    if(rsiOk) score+=10;
     if(stochOk) score+=10;
     if(bbOk) score+=10;
     if(obvOk) score+=10;
     if(mfiOk) score+=5;
+    if(momOk) score+=5;
 
     document.getElementById('agent-score').textContent=score+"%";
     document.getElementById('agent-score-fill').style.width=score+"%";
@@ -1320,6 +1338,7 @@ function runAgent(){
     if(bbOk) reasons.push(`Alt TF (${altTF}) Bollinger Bant Teması`);
     if(obvOk) reasons.push(`Alt TF (${altTF}) Hacim Desteği (OBV)`);
     if(mfiOk) reasons.push(`Alt TF (${altTF}) Para Akışı Uyumu (MFI)`);
+    if(momOk) reasons.push(`Alt TF (${altTF}) Momentum Teyidi`);
 
     const rBox=document.getElementById('agent-reasoning');
     rBox.innerHTML=score>=75
@@ -1339,6 +1358,7 @@ function runAgent(){
     setC('cond-vwap','cond-vwap-text',vwapOk,vwapOk?`Orta TF VWAP Fiyat Onayı ✓`:'Orta TF VWAP şartı yok');
     setC('cond-obv','cond-obv-text',obvOk,obvOk?`Alt TF OBV Hacim Onayı ✓`:'Alt TF OBV şartı yok');
     setC('cond-mfi','cond-mfi-text',mfiOk,mfiOk?`Alt TF MFI Para Akışı Onayı ✓`:'Alt TF MFI şartı yok');
+    setC('cond-mom','cond-mom-text',momOk,momOk?`Alt TF Momentum Onayı ✓`:'Alt TF Momentum şartı yok');
 
     document.getElementById('stoch-dot').className='dot '+(stochOk?'active':'warn');
     document.getElementById('bb-dot').className='dot '+(bbOk?'active':'warn');
@@ -1347,6 +1367,7 @@ function runAgent(){
     document.getElementById('vwap-dot').className='dot '+(vwapOk?'active':'warn');
     document.getElementById('obv-dot').className='dot '+(obvOk?'active':'warn');
     document.getElementById('mfi-dot').className='dot '+(mfiOk?'active':'warn');
+    document.getElementById('mom-dot').className='dot '+(momOk?'active':'warn');
 
     const banner=document.getElementById('signal-banner');
     if(score>=75){
