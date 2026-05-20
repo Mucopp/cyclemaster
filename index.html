@@ -607,7 +607,7 @@
 <script>
 // ── CONFIG ──
 // GitHub'a yüklemeden önce bu değerleri kendin doldur:
-const BACKEND_URL = "https://script.google.com/macros/s/AKfycbw9ELXeqKyqLXcy5k1-Eju3cYsVq0XpxGqRPU15oL_LAPFgbETDO3ZE2t-Y7tdK2Tmy/exec";
+const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyGenNs1D4VE-oeF7pusGbRjToNhj_gq9w8W9f8JIR78al9MSDI57rkBEmB5AaPnelV/exec";
 const FCM_VAPID_KEY = "BNmlrqN79EZ5GQskgK0EpWausWODfnvRikws5t3CqrCsyM5CuGm4B95Gpc8VKlSJUT3JVpeK5U_tCf0x8szbtV8";
 
 // ── SERVICE WORKER ──
@@ -882,7 +882,6 @@ function updateCoin(){
     document.getElementById('coin-input').value=currentCoin;
     document.getElementById('display-symbol').textContent=currentCoin;
     saveToMemory(); fetchData();
-    fetch(`${BACKEND_URL}?action=set_symbol&symbol=${currentCoin}`, { method: 'GET', mode: 'no-cors' }).catch(()=>{});
 }
 
 async function fetchData(){ fetchPrice(); fetchTechnical(); }
@@ -1401,6 +1400,10 @@ function saveToMemory(){
     localStorage.setItem('cm_ust_tf',ustTF);
     localStorage.setItem('cm_sound',isSoundEnabled);
     localStorage.setItem('cm_notify',isNotificationEnabled);
+    
+    // Arka planla senkronize et
+    const url = `${BACKEND_URL}?action=sync&symbol=${currentCoin}&upper=${ustTF}&mid=${ortaTF}&lower=${altTF}`;
+    fetch(url, { method: 'GET', mode: 'no-cors' }).catch(()=>{});
 }
 
 function loadFromMemory(){
