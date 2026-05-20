@@ -734,9 +734,13 @@ function toggleSoundFromCb(){
     }
 }
 function syncSoundUI(){
-    document.getElementById('sound-btn').textContent=isSoundEnabled?'🔊':'🔇';
-    document.getElementById('sound-btn').className=isSoundEnabled?'icon-btn active':'icon-btn';
-    document.getElementById('sound-checkbox').checked=isSoundEnabled;
+    const btn = document.getElementById('sound-btn');
+    if (btn) {
+        btn.textContent=isSoundEnabled?'🔊':'🔇';
+        btn.className=isSoundEnabled?'icon-btn active':'icon-btn';
+    }
+    const cb = document.getElementById('sound-checkbox');
+    if (cb) cb.checked=isSoundEnabled;
 }
 function toggleNotificationsFromCb() {
     const cb = document.getElementById('notification-checkbox');
