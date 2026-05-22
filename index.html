@@ -10,6 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2091/2091665.png">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <style>
         :root {
             --bg: #060910;
@@ -106,31 +107,31 @@
         .icon-btn.active { border-color:rgba(16,185,129,0.4); background:rgba(16,185,129,0.1); }
 
         /* PAGES */
-        .content { position:relative; z-index:1; padding:14px 14px 0; }
-        .page { display:none; flex-direction:column; gap:12px; }
+        .content { position:relative; z-index:1; padding:8px 8px 0; }
+        .page { display:none; flex-direction:column; gap:8px; }
         .page.active { display:flex; }
 
         /* COIN BAR */
-        .coin-bar { display:flex; gap:8px; }
+        .coin-bar { display:flex; gap:6px; }
         .coin-input {
             flex:1; background:var(--surface2);
             border:1.5px solid var(--border);
-            border-radius:13px; padding:0 16px;
+            border-radius:10px; padding:0 12px;
             color:var(--text); font-family:'Space Mono',monospace;
-            font-size:1rem; font-weight:700;
-            outline:none; height:50px;
+            font-size:0.9rem; font-weight:700;
+            outline:none; height:42px;
             text-transform:uppercase;
             transition: border-color 0.2s;
         }
         .coin-input:focus { border-color:var(--blue); }
         .analyze-btn {
             background:linear-gradient(135deg,var(--blue),#2563eb);
-            border:none; border-radius:13px;
-            padding:0 22px; color:#fff;
+            border:none; border-radius:10px;
+            padding:0 16px; color:#fff;
             font-family:'Space Grotesk',sans-serif;
-            font-weight:700; font-size:0.85rem;
-            cursor:pointer; height:50px;
-            box-shadow:0 4px 14px rgba(59,130,246,0.4);
+            font-weight:700; font-size:0.8rem;
+            cursor:pointer; height:42px;
+            box-shadow:0 4px 14px rgba(59,130,246,0.3);
             transition: transform 0.15s;
             white-space:nowrap;
         }
@@ -139,49 +140,88 @@
         /* MARKET HERO */
         .market-hero {
             background:var(--surface); border:1px solid var(--border);
-            border-radius:20px; padding:18px; position:relative; overflow:hidden;
+            border-radius:12px; padding:8px 12px; position:relative; overflow:hidden;
         }
         .market-hero::before {
             content:''; position:absolute; top:0; left:0; right:0; height:3px;
             background:linear-gradient(90deg,var(--accent),transparent);
             transition: background 0.6s;
         }
-        .market-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
-        .market-symbol { font-family:'Space Mono',monospace; font-size:0.85rem; font-weight:700; color:var(--gold); }
-        .price-pill { font-size:0.68rem; font-weight:700; padding:4px 11px; border-radius:100px; font-family:'Space Mono',monospace; }
+        .market-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .market-brand {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .market-symbol {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+        .market-price {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+        }
+        .market-stats {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+        .price-pill {
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 100px;
+            font-family: 'Space Mono', monospace;
+        }
         .price-pill.up { background:rgba(16,185,129,0.12); color:var(--green); }
         .price-pill.dn { background:rgba(244,63,94,0.12); color:var(--red); }
-        .market-price { font-family:'Space Mono',monospace; font-size:2.5rem; font-weight:700; letter-spacing:-2px; line-height:1; margin-bottom:16px; }
-        .hl-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-        .hl-box { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:10px 12px; }
-        .hl-l { font-size:0.5rem; color:var(--text3); text-transform:uppercase; letter-spacing:1px; font-weight:600; margin-bottom:3px; }
-        .hl-v { font-family:'Space Mono',monospace; font-size:0.82rem; font-weight:700; }
+        .hl-compact {
+            display: flex;
+            gap: 6px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.55rem;
+            color: var(--text2);
+        }
+        .hl-compact span span {
+            color: var(--text);
+            font-weight: 700;
+        }
 
         /* SIGNAL BANNER */
         .signal-banner {
-            border-radius:18px; padding:18px 20px;
-            text-align:center; font-weight:700; font-size:1.05rem;
-            line-height:1.3; transition:all 0.3s; border:1.5px solid transparent;
+            border-radius:12px; padding:10px 14px;
+            text-align:center; font-weight:700; font-size:0.9rem;
+            line-height:1.2; transition:all 0.3s; border:1.5px solid transparent;
         }
         .signal-wait { background:rgba(245,158,11,0.07); color:var(--gold); border-color:rgba(245,158,11,0.2); }
         .signal-long { background:linear-gradient(135deg,rgba(16,185,129,0.18),rgba(16,185,129,0.05)); color:#fff; border-color:rgba(16,185,129,0.5); box-shadow:0 0 28px rgba(16,185,129,0.15); animation:pulse 1.3s ease-in-out infinite; }
         .signal-short { background:linear-gradient(135deg,rgba(244,63,94,0.18),rgba(244,63,94,0.05)); color:#fff; border-color:rgba(244,63,94,0.5); box-shadow:0 0 28px rgba(244,63,94,0.15); animation:pulse 1.3s ease-in-out infinite; }
         @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.015)} }
-        .signal-sub { font-size:0.6rem; font-weight:400; opacity:0.7; margin-top:4px; }
+        .signal-sub { font-size:0.55rem; font-weight:400; opacity:0.7; margin-top:2px; }
 
         /* CYCLE CARD */
-        .cycle-card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:18px; display:flex; align-items:center; gap:20px; }
-        .timer-wrap { position:relative; width:100px; height:100px; flex-shrink:0; }
+        .cycle-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:10px 14px; display:flex; align-items:center; gap:14px; }
+        .timer-wrap { position:relative; width:70px; height:70px; flex-shrink:0; }
         .timer-svg { width:100%; height:100%; transform:rotate(-90deg); }
         circle.ring-bg { fill:none; stroke:rgba(255,255,255,0.04); stroke-width:7; }
         circle.ring-prog { fill:none; stroke:var(--accent); stroke-width:7; stroke-linecap:round; stroke-dasharray:270; stroke-dashoffset:0; transition: stroke-dashoffset 1s linear, stroke 0.6s; filter:drop-shadow(0 0 5px var(--accent)); }
         .timer-inner { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
-        .timer-num { font-family:'Space Mono',monospace; font-size:1.3rem; font-weight:700; line-height:1; }
-        .timer-lbl { font-size:0.44rem; color:var(--text3); text-transform:uppercase; letter-spacing:1px; margin-top:3px; }
+        .timer-num { font-family:'Space Mono',monospace; font-size:1.0rem; font-weight:700; line-height:1; }
+        .timer-lbl { font-size:0.4rem; color:var(--text3); text-transform:uppercase; letter-spacing:1px; margin-top:2px; }
         .cycle-info { flex:1; }
-        .cycle-strat { font-size:0.54rem; font-weight:600; color:var(--accent); letter-spacing:2px; text-transform:uppercase; opacity:0.85; margin-bottom:3px; transition:color 0.6s; }
-        .cycle-mode { font-size:2.2rem; font-weight:700; color:var(--accent); letter-spacing:-1px; line-height:1; transition:color 0.6s; }
-        .cycle-time { font-family:'Space Mono',monospace; font-size:0.58rem; color:var(--text3); margin-top:8px; }
+        .cycle-strat { font-size:0.5rem; font-weight:600; color:var(--accent); letter-spacing:1.5px; text-transform:uppercase; opacity:0.85; margin-bottom:2px; transition:color 0.6s; }
+        .cycle-mode { font-size:1.6rem; font-weight:700; color:var(--accent); letter-spacing:-1px; line-height:1; transition:color 0.6s; }
+        .cycle-time { font-family:'Space Mono',monospace; font-size:0.55rem; color:var(--text3); margin-top:4px; }
 
         /* SEC TITLE */
         .sec-title { font-size:0.54rem; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:2px; margin-bottom:2px; display:flex; align-items:center; gap:6px; }
@@ -259,6 +299,24 @@
         .nav-item.active .nav-label { color:var(--accent); }
         .nav-item.active .nav-icon { transform:scale(1.15); }
         .nav-item.active .nav-dot { background:var(--accent); }
+
+        .agent-svg-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            stroke: #10b981;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.6));
+            transition: all 0.2s;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .nav-item.active .agent-svg-icon {
+            stroke: #10b981;
+            filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.9));
+        }
 
         /* TOAST */
         .toast {
@@ -355,6 +413,222 @@
         .tf-badge.bull { background:rgba(16,185,129,0.12); color:var(--green); border:1px solid rgba(16,185,129,0.2); }
         .tf-badge.bear { background:rgba(244,63,94,0.12); color:var(--red); border:1px solid rgba(244,63,94,0.2); }
         .tf-badge.neutral { background:rgba(255,255,255,0.05); color:var(--text3); border:1px solid rgba(255,255,255,0.1); }
+
+        /* TRADING CHART STYLE */
+        .chart-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 0;
+            overflow: hidden;
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+        .chart-indicators-header {
+            background: #090e17;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            white-space: nowrap;
+            gap: 14px;
+            scrollbar-width: none;
+        }
+        .chart-indicators-header::-webkit-scrollbar {
+            display: none;
+        }
+        .chart-title {
+            font-size: 0.58rem;
+            font-weight: 700;
+            color: var(--text2);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        .chart-indicator-cb {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .chart-indicator-cb span {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            color: var(--text2);
+            font-size: 0.72rem;
+            letter-spacing: 0.5px;
+            transition: color 0.2s;
+        }
+        .chart-indicator-cb input[type="checkbox"] {
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            background: var(--surface2);
+            outline: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .chart-indicator-cb input[type="checkbox"]:checked {
+            background: var(--green);
+            border-color: var(--green);
+        }
+        .chart-indicator-cb input[type="checkbox"]:checked::after {
+            content: '✓';
+            color: #000;
+            font-size: 0.55rem;
+            font-weight: 900;
+        }
+        .chart-indicator-cb input[type="checkbox"]:checked + span {
+            color: var(--green);
+        }
+        .chart-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            background: rgba(255,255,255,0.01);
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            font-size: 0.8rem;
+        }
+        .chart-toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .chart-symbol-display {
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            color: var(--text);
+            cursor: pointer;
+        }
+        .chart-symbol-display:hover {
+            color: var(--blue);
+        }
+        .chart-plus-btn {
+            font-size: 1rem;
+            color: var(--text3);
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .chart-plus-btn:hover {
+            color: var(--text);
+        }
+        .chart-tf-display {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            outline: none;
+            font-family: 'Space Mono', monospace;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 2px 6px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--gold);
+            cursor: pointer;
+            text-align: center;
+        }
+        .chart-tf-display:hover {
+            border-color: var(--gold);
+        }
+        .chart-tf-display option {
+            background: #0d1524;
+            color: var(--text);
+        }
+        .chart-icon-btn {
+            color: var(--text2);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .chart-indicators-btn {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text2);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+        .chart-indicators-btn:hover {
+            color: var(--text);
+        }
+        .chart-toolbar-right {
+            display: flex;
+            align-items: center;
+        }
+        .chart-camera-btn {
+            cursor: pointer;
+            color: var(--text2);
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+        .chart-camera-btn:hover {
+            color: var(--text);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 330px;
+            background: #060910;
+            cursor: crosshair;
+        }
+        .chart-container canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .stoch-container {
+            position: relative;
+            width: 100%;
+            height: 0px;
+            background: #05070c;
+            border-top: 1px solid rgba(255,255,255,0.03);
+            transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            cursor: crosshair;
+        }
+        .stoch-container.active {
+            height: 110px;
+        }
+        .stoch-container canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .chart-candle-tooltip {
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.58rem;
+            color: var(--text2);
+            pointer-events: none;
+            display: none;
+            gap: 8px;
+            flex-wrap: wrap;
+            background: rgba(6, 9, 16, 0.7);
+            padding: 2px 6px;
+            border-radius: 4px;
+            z-index: 10;
+        }
+        .chart-candle-tooltip span {
+            font-weight: 700;
+        }
+        .chart-candle-tooltip span.green {
+            color: var(--green);
+        }
+        .chart-candle-tooltip span.red {
+            color: var(--red);
+        }
     </style>
 </head>
 <body>
@@ -372,13 +646,17 @@
 
         <div class="market-hero">
             <div class="market-top">
-                <span class="market-symbol" id="display-symbol">BTCUSDT</span>
-                <span id="price-change" class="price-pill">%0.00</span>
-            </div>
-            <div class="market-price" id="display-price">—</div>
-            <div class="hl-row">
-                <div class="hl-box"><div class="hl-l">24S Yüksek</div><div class="hl-v" id="h24">—</div></div>
-                <div class="hl-box"><div class="hl-l">24S Düşük</div><div class="hl-v" id="l24">—</div></div>
+                <div class="market-brand">
+                    <span class="market-symbol" id="display-symbol">BTCUSDT</span>
+                    <div class="market-price" id="display-price">—</div>
+                </div>
+                <div class="market-stats">
+                    <span id="price-change" class="price-pill">%0.00</span>
+                    <div class="hl-compact">
+                        <span>H: <span id="h24">—</span></span>
+                        <span>L: <span id="l24">—</span></span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -400,26 +678,42 @@
             </div>
             <div class="cycle-info">
                 <div class="cycle-strat" id="strategy-name">DAY TRADER MODE</div>
-                <div class="cycle-mode" id="mode-text">YATAY PİYASA</div>
+                <div class="cycle-mode" id="mode-text">YATAY</div>
                 <div class="cycle-time" id="current-time">00:00:00</div>
             </div>
         </div>
 
-        <div class="tf-card">
-            <div class="tf-card-title">Zaman Dilimleri Matrisi</div>
-            <div class="tf-row">
-                <div class="tf-box">
-                    <div class="tf-name">Üst TF (<span id="lbl-ust-tf">1h</span>)</div>
-                    <div id="state-ust-tf" class="tf-badge neutral">YATAY</div>
-                </div>
-                <div class="tf-box">
-                    <div class="tf-name">Orta TF (<span id="lbl-orta-tf">15m</span>)</div>
-                    <div id="state-orta-tf" class="tf-badge neutral">NÖTR</div>
-                </div>
-                <div class="tf-box">
-                    <div class="tf-name">Alt TF (<span id="lbl-alt-tf">5m</span>)</div>
-                    <div id="state-alt-tf" class="tf-badge neutral">NÖTR</div>
-                </div>
+        <!-- GRAPH CARD -->
+        <div class="chart-card" style="height: 330px; padding: 0; position: relative;">
+            <div class="chart-indicators-header">
+                <span class="chart-title">GÖSTERGELER:</span>
+                <label class="chart-indicator-cb">
+                    <input type="checkbox" id="cb-bb" onchange="toggleIndicator('bb')" checked>
+                    <span>BB</span>
+                </label>
+                <label class="chart-indicator-cb">
+                    <input type="checkbox" id="cb-regression" onchange="toggleIndicator('regr')" checked>
+                    <span>REGR</span>
+                </label>
+                <label class="chart-indicator-cb">
+                    <input type="checkbox" id="cb-stoch-rsi" onchange="toggleIndicator('stoch')">
+                    <span>STOK RSI</span>
+                </label>
+            </div>
+            <div id="chart-container-id" style="width: 100%; flex: 1;"></div>
+            
+            <!-- Hidden DOM elements to prevent existing JS from crashing -->
+            <div style="display: none;">
+                <span id="tooltip-o"></span>
+                <span id="tooltip-h"></span>
+                <span id="tooltip-l"></span>
+                <span id="tooltip-c"></span>
+                <span id="tooltip-v"></span>
+                
+                <select id="chart-tf-display">
+                    <option value="1m">1m</option>
+                </select>
+                <span id="chart-symbol-display"></span>
             </div>
         </div>
     </div>
@@ -560,7 +854,21 @@
         <div class="nav-dot"></div>
     </div>
     <div class="nav-item" id="nav-agent" onclick="goTo('agent')">
-        <div class="nav-icon">🧠</div>
+        <div class="nav-icon">
+            <svg class="agent-svg-icon" viewBox="0 0 24 24">
+                <!-- Hat Crown -->
+                <path d="M7 10 C 7 5, 10 4, 12 4 C 14 4, 17 5, 17 10" />
+                <path d="M 6 10 H 18" stroke-width="3" />
+                <!-- Hat Brim -->
+                <path d="M3 12 C 7 10, 17 10, 21 12" />
+                <!-- Sunglasses Lenses -->
+                <path d="M6 15 A 2 2 0 0 0 10 15 V 14 H 6 Z" fill="#10b981" />
+                <path d="M14 15 A 2 2 0 0 0 18 15 V 14 H 14 Z" fill="#10b981" />
+                <path d="M10 14.5 H 14" stroke-width="1.5" />
+                <!-- Collar / Shoulders -->
+                <path d="M5 21 L 8 18 H 16 L 19 21" />
+            </svg>
+        </div>
         <div class="nav-label">Ajan</div>
         <div class="nav-dot"></div>
     </div>
@@ -691,6 +999,7 @@ async function unsubscribePush() {
 
 
 let currentCoin="BTCUSDT", altTF="5m", ortaTF="15m", ustTF="1h", lastMode=null;
+let chartTF="5m";
 let rsiValue=50, stochRsiValue=50, bbStatus="Mid";
 let ema9Val=0, ema21Val=0, ema50Val=0;
 let vwapVal=0;
@@ -911,7 +1220,10 @@ async function fetchPrice(){
 }
 
 function toOKXInterval(tf){
-    const map={"1m":"1m","3m":"3m","5m":"5m","15m":"15m","30m":"30m","1h":"1H","4h":"4H","1d":"1D"};
+    const map={
+        "1m":"1m", "3m":"3m", "5m":"5m", "15m":"15m", "30m":"30m",
+        "1h":"1H", "2h":"2H", "4h":"4H", "12h":"12H", "1d":"1D", "1w":"1W"
+    };
     return map[tf]||"1H";
 }
 
@@ -926,20 +1238,43 @@ async function fetchOKXKlines(symbol, interval, limit){
 
 async function fetchTechnical(){
     try{
-        const [kAltRaw, kOrtaRaw, kUstRaw] = await Promise.all([
+        let fetchPromises = [
             fetchOKXKlines(currentCoin, altTF, 150),
             fetchOKXKlines(currentCoin, ortaTF, 150),
             fetchOKXKlines(currentCoin, ustTF, 150)
-        ]);
+        ];
+        
+        if (chartTF !== altTF) {
+            fetchPromises.push(fetchOKXKlines(currentCoin, chartTF, 150));
+        }
+        
+        const results = await Promise.all(fetchPromises);
+        const kAltRaw = results[0];
+        const kOrtaRaw = results[1];
+        const kUstRaw = results[2];
+        const kChartRaw = chartTF === altTF ? kAltRaw : results[3];
 
-        if(!kAltRaw||!kOrtaRaw||!kUstRaw) return;
-        if(kAltRaw.length<50||kOrtaRaw.length<50||kUstRaw.length<50) return;
+        if(!kAltRaw||!kOrtaRaw||!kUstRaw||!kChartRaw) return;
+        if(kAltRaw.length<50||kOrtaRaw.length<50||kUstRaw.length<50||kChartRaw.length<50) return;
 
         // OKX format: [ts, open, high, low, close, vol, volCcy, volCcyQuote, confirm]
         const parse=(k,idx)=>k.map(x=>parseFloat(x[idx]));
         const cAlt=parse(kAltRaw,4), hAlt=parse(kAltRaw,2), lAlt=parse(kAltRaw,3), vAlt=parse(kAltRaw,5);
         const cOrta=parse(kOrtaRaw,4), hOrta=parse(kOrtaRaw,2), lOrta=parse(kOrtaRaw,3), vOrta=parse(kOrtaRaw,5);
         const cUst=parse(kUstRaw,4), hUst=parse(kUstRaw,2), lUst=parse(kUstRaw,3), vUst=parse(kUstRaw,5);
+
+        // Store candles globally for the interactive chart
+        chartCandles = kChartRaw.map(x => ({
+            time: parseInt(x[0]),
+            open: parseFloat(x[1]),
+            high: parseFloat(x[2]),
+            low: parseFloat(x[3]),
+            close: parseFloat(x[4]),
+            volume: parseFloat(x[5])
+        }));
+        
+        // Render or update chart
+        initAndRenderChart();
 
         // kOrta ham veri VWAP için gerekli
         const kOrtaForVWAP = kOrtaRaw.map(x=>([x[0],x[1],x[2],x[3],x[4],x[5]]));
@@ -948,9 +1283,18 @@ async function fetchTechnical(){
         lastPrice = lp;
         
         // Update Timeframe Labels
-        document.getElementById('lbl-alt-tf').textContent = altTF;
-        document.getElementById('lbl-orta-tf').textContent = ortaTF;
-        document.getElementById('lbl-ust-tf').textContent = ustTF;
+        const lblAltTf = document.getElementById('lbl-alt-tf');
+        const lblOrtaTf = document.getElementById('lbl-orta-tf');
+        const lblUstTf = document.getElementById('lbl-ust-tf');
+        if (lblAltTf) lblAltTf.textContent = altTF;
+        if (lblOrtaTf) lblOrtaTf.textContent = ortaTF;
+        if (lblUstTf) lblUstTf.textContent = ustTF;
+
+        // Update Chart Labels
+        const tfLabelEl = document.getElementById('chart-tf-display');
+        const symbolLabelEl = document.getElementById('chart-symbol-display');
+        if (tfLabelEl) tfLabelEl.value = chartTF;
+        if (symbolLabelEl) symbolLabelEl.textContent = currentCoin.replace("USDT","USD");
         
         // --- ÜST TF INDICATORS (EMA 9/21/50) ---
         const ema9Series = calcEMA(cUst, 9);
@@ -972,20 +1316,26 @@ async function fetchTechnical(){
         const badgeUst = document.getElementById('state-ust-tf');
         let newMode = "YATAY";
         if(ustTFTrend === "BOĞA") {
-            badgeUst.textContent = "BOĞA";
-            badgeUst.className = "tf-badge bull";
+            if (badgeUst) {
+                badgeUst.textContent = "BOĞA";
+                badgeUst.className = "tf-badge bull";
+            }
             newMode = "LONG";
-            document.getElementById('mode-text').textContent = "🟢 BOĞA TRENDİ";
+            document.getElementById('mode-text').textContent = "🟢 BOĞA";
         } else if(ustTFTrend === "AYI") {
-            badgeUst.textContent = "AYI";
-            badgeUst.className = "tf-badge bear";
+            if (badgeUst) {
+                badgeUst.textContent = "AYI";
+                badgeUst.className = "tf-badge bear";
+            }
             newMode = "SHORT";
-            document.getElementById('mode-text').textContent = "🔴 AYI TRENDİ";
+            document.getElementById('mode-text').textContent = "🔴 AYI";
         } else {
-            badgeUst.textContent = "YATAY";
-            badgeUst.className = "tf-badge neutral";
+            if (badgeUst) {
+                badgeUst.textContent = "YATAY";
+                badgeUst.className = "tf-badge neutral";
+            }
             newMode = "YATAY";
-            document.getElementById('mode-text').textContent = "⚪ YATAY PİYASA";
+            document.getElementById('mode-text').textContent = "⚪ YATAY";
         }
         
         if(newMode !== lastMode) {
@@ -1012,14 +1362,20 @@ async function fetchTechnical(){
         
         const badgeOrta = document.getElementById('state-orta-tf');
         if(ortaTFTrend === "ALIM YNL") {
-            badgeOrta.textContent = "ALIM YÖN";
-            badgeOrta.className = "tf-badge bull";
+            if (badgeOrta) {
+                badgeOrta.textContent = "ALIM YÖN";
+                badgeOrta.className = "tf-badge bull";
+            }
         } else if(ortaTFTrend === "SAT YNL") {
-            badgeOrta.textContent = "SAT YÖN";
-            badgeOrta.className = "tf-badge bear";
+            if (badgeOrta) {
+                badgeOrta.textContent = "SAT YÖN";
+                badgeOrta.className = "tf-badge bear";
+            }
         } else {
-            badgeOrta.textContent = "NÖTR";
-            badgeOrta.className = "tf-badge neutral";
+            if (badgeOrta) {
+                badgeOrta.textContent = "NÖTR";
+                badgeOrta.className = "tf-badge neutral";
+            }
         }
         
         // --- ALT TF INDICATORS (Stoch RSI, BB, OBV, MFI) ---
@@ -1061,19 +1417,26 @@ async function fetchTechnical(){
         
         const badgeAlt = document.getElementById('state-alt-tf');
         if(altTFTrend === "GİRİŞ AL") {
-            badgeAlt.textContent = "GİRİŞ FRS";
-            badgeAlt.className = "tf-badge bull";
+            if (badgeAlt) {
+                badgeAlt.textContent = "GİRİŞ FRS";
+                badgeAlt.className = "tf-badge bull";
+            }
         } else if(altTFTrend === "GİRİŞ SAT") {
-            badgeAlt.textContent = "GİRİŞ FRS";
-            badgeAlt.className = "tf-badge bear";
+            if (badgeAlt) {
+                badgeAlt.textContent = "GİRİŞ FRS";
+                badgeAlt.className = "tf-badge bear";
+            }
         } else {
-            badgeAlt.textContent = "NÖTR";
-            badgeAlt.className = "tf-badge neutral";
+            if (badgeAlt) {
+                badgeAlt.textContent = "NÖTR";
+                badgeAlt.className = "tf-badge neutral";
+            }
         }
         
         updateBadges(lp);
         document.getElementById('last-update').textContent = new Date().toLocaleTimeString('tr-TR');
         runAgent();
+        updateTVWidget();
     }catch(e){ console.error("fetchTechnical error:", e); }
 }
 
@@ -1413,11 +1776,13 @@ function saveToMemory(){
 function loadFromMemory(){
     const c=localStorage.getItem('cm_coin');
     const alt=localStorage.getItem('cm_alt_tf'), orta=localStorage.getItem('cm_orta_tf'), ust=localStorage.getItem('cm_ust_tf');
+    const chTf=localStorage.getItem('cm_chart_tf');
     const s=localStorage.getItem('cm_sound'), n=localStorage.getItem('cm_notify');
     if(c) currentCoin=c;
     if(alt) altTF=alt;
     if(orta) ortaTF=orta;
     if(ust) ustTF=ust;
+    if(chTf) chartTF=chTf;
     if(s==='true'){isSoundEnabled=true;syncSoundUI();}
     if(n==='true'){
         // Bildirim izni hâlâ geçerliyse geri yükle
@@ -1438,6 +1803,14 @@ function loadFromMemory(){
     const found=Object.values(profiles).find(p=>p.alt===altTF&&p.orta===ortaTF&&p.ust===ustTF);
     document.getElementById('profile-select').value=found?Object.keys(profiles).find(key=>profiles[key]===found):"custom";
     document.getElementById('strategy-name').textContent=found?found.name:"⚙️ ÖZEL MOD";
+    
+    // Load dynamic indicators states
+    const cbBBVal = localStorage.getItem('cm_cb_bb');
+    const cbRegrVal = localStorage.getItem('cm_cb_regr');
+    const cbStochVal = localStorage.getItem('cm_cb_stoch');
+    if (cbBBVal !== null) document.getElementById('cb-bb').checked = (cbBBVal === 'true');
+    if (cbRegrVal !== null) document.getElementById('cb-regression').checked = (cbRegrVal === 'true');
+    if (cbStochVal !== null) document.getElementById('cb-stoch-rsi').checked = (cbStochVal === 'true');
 }
 
 // ── PWA INSTALL ──
@@ -1507,6 +1880,992 @@ function unlockAudio() {
 }
 document.addEventListener('click', unlockAudio, { passive: true });
 document.addEventListener('touchstart', unlockAudio, { passive: true });
+
+// Chart State Variables
+let chartCandles = [];
+let visibleCandlesCount = 60;
+let chartPanOffset = 0;
+let chartIsDragging = false;
+let chartDragStartX = 0;
+let chartDragStartOffset = 0;
+let crosshairIdx = -1;
+let crosshairX = -1;
+let crosshairY = -1;
+
+function focusSearch() {
+    const input = document.getElementById('coin-input');
+    if (input) {
+        input.focus();
+        input.select();
+    }
+}
+
+function goToSettings() {
+    goTo('settings');
+}
+
+function changeChartTimeframe(val) {
+    chartTF = val;
+    localStorage.setItem('cm_chart_tf', chartTF);
+    fetchTechnical();
+}
+
+function toggleStochRsiCheckbox() {
+    const cb = document.getElementById('cb-stoch-rsi');
+    if (cb) {
+        cb.checked = !cb.checked;
+        toggleStochRsiChart();
+    }
+}
+
+function toggleStochRsiChart() {
+    const cb = document.getElementById('cb-stoch-rsi');
+    const container = document.getElementById('stoch-container');
+    if (cb && container) {
+        if (cb.checked) {
+            container.classList.add('active');
+        } else {
+            container.classList.remove('active');
+        }
+        setTimeout(initAndRenderChart, 300);
+    }
+}
+
+function toggleChartIndicator() {
+    initAndRenderChart();
+}
+
+function calculateStochRSIForChart(candles) {
+    if (!candles || candles.length < 28) return null;
+    const closes = candles.map(c => c.close);
+    const n = closes.length;
+    const rsi = new Array(n).fill(null);
+    
+    const period = 14;
+    let gains = 0;
+    let losses = 0;
+    for (let i = 1; i <= period; i++) {
+        const diff = closes[i] - closes[i - 1];
+        if (diff > 0) gains += diff;
+        else losses -= diff;
+    }
+    let avgGain = gains / period;
+    let avgLoss = losses / period;
+    rsi[period] = avgLoss === 0 ? 100 : 100 - (100 / (1 + avgGain / avgLoss));
+    
+    for (let i = period + 1; i < n; i++) {
+        const diff = closes[i] - closes[i - 1];
+        const gain = diff > 0 ? diff : 0;
+        const loss = diff < 0 ? -diff : 0;
+        avgGain = (avgGain * 13 + gain) / 14;
+        avgLoss = (avgLoss * 13 + loss) / 14;
+        rsi[i] = avgLoss === 0 ? 100 : 100 - (100 / (1 + avgGain / avgLoss));
+    }
+    
+    const stochRsi = new Array(n).fill(null);
+    const stochPeriod = 14;
+    for (let i = period + stochPeriod - 1; i < n; i++) {
+        const slice = rsi.slice(i - stochPeriod + 1, i + 1);
+        const valid = slice.filter(v => v !== null);
+        if (valid.length < stochPeriod) continue;
+        const min = Math.min(...valid);
+        const max = Math.max(...valid);
+        stochRsi[i] = max === min ? 50 : ((rsi[i] - min) / (max - min)) * 100;
+    }
+    
+    const kSeries = new Array(n).fill(null);
+    const kPeriod = 3;
+    for (let i = 0; i < n; i++) {
+        const slice = [];
+        for (let j = i - kPeriod + 1; j <= i; j++) {
+            if (j >= 0 && stochRsi[j] !== null) slice.push(stochRsi[j]);
+        }
+        if (slice.length === kPeriod) {
+            kSeries[i] = slice.reduce((a, b) => a + b, 0) / kPeriod;
+        }
+    }
+    
+    const dSeries = new Array(n).fill(null);
+    const dPeriod = 3;
+    for (let i = 0; i < n; i++) {
+        const slice = [];
+        for (let j = i - dPeriod + 1; j <= i; j++) {
+            if (j >= 0 && kSeries[j] !== null) slice.push(kSeries[j]);
+        }
+        if (slice.length === dPeriod) {
+            dSeries[i] = slice.reduce((a, b) => a + b, 0) / dPeriod;
+        }
+    }
+    
+    return { k: kSeries, d: dSeries };
+}
+
+function calcLinearRegressionChannel(candles, startIdx, endIdx) {
+    const visibleCandles = candles.slice(startIdx, endIdx);
+    const n = visibleCandles.length;
+    if (n < 5) return null;
+    
+    let sumX = 0;
+    let sumY = 0;
+    let sumXX = 0;
+    let sumXY = 0;
+    
+    for (let i = 0; i < n; i++) {
+        const y = visibleCandles[i].close;
+        sumX += i;
+        sumY += y;
+        sumXX += i * i;
+        sumXY += i * y;
+    }
+    
+    const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+    const intercept = (sumY - slope * sumX) / n;
+    
+    let sumResidualsSq = 0;
+    for (let i = 0; i < n; i++) {
+        const expected = slope * i + intercept;
+        const residual = visibleCandles[i].close - expected;
+        sumResidualsSq += residual * residual;
+    }
+    const stdDev = Math.sqrt(sumResidualsSq / n);
+    
+    return { slope, intercept, stdDev, count: n };
+}
+
+function calcBBSeriesForChart(candles, period = 20, d = 2) {
+    const n = candles.length;
+    const upper = new Array(n).fill(null);
+    const lower = new Array(n).fill(null);
+    const middle = new Array(n).fill(null);
+    
+    for (let i = period - 1; i < n; i++) {
+        const slice = candles.slice(i - period + 1, i + 1).map(c => c.close);
+        const m = slice.reduce((a, b) => a + b, 0) / period;
+        const sd = Math.sqrt(slice.reduce((a, b) => a + Math.pow(b - m, 2), 0) / period);
+        upper[i] = m + sd * d;
+        lower[i] = m - sd * d;
+        middle[i] = m;
+    }
+    return { upper, middle, lower };
+}
+
+function initAndRenderChart() {
+    if (!chartCandles || chartCandles.length === 0) return;
+    
+    const canvas = document.getElementById('trading-chart');
+    if (!canvas) return;
+    
+    const container = canvas.parentElement;
+    const rect = container.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    
+    const width = rect.width;
+    const height = rect.height;
+    
+    const axisWidth = 62;
+    const axisHeight = 20;
+    const chartWidth = width - axisWidth;
+    const chartHeight = height - axisHeight;
+    
+    ctx.fillStyle = '#060910';
+    ctx.fillRect(0, 0, width, height);
+    
+    const n = chartCandles.length;
+    const endIndex = Math.max(0, n - chartPanOffset);
+    const startIndex = Math.max(0, endIndex - visibleCandlesCount);
+    const visibleCandles = chartCandles.slice(startIndex, endIndex);
+    const vCount = visibleCandles.length;
+    if (vCount === 0) return;
+    
+    const candleWidth = chartWidth / visibleCandlesCount;
+    const bodyWidth = candleWidth * 0.72;
+    
+    const showBB = document.getElementById('cb-bb').checked;
+    const showRegression = document.getElementById('cb-regression').checked;
+    
+    let bb = null;
+    if (showBB) {
+        bb = calcBBSeriesForChart(chartCandles);
+    }
+    
+    let regression = null;
+    if (showRegression) {
+        regression = calcLinearRegressionChannel(chartCandles, startIndex, endIndex);
+    }
+    
+    let maxPrice = -Infinity;
+    let minPrice = Infinity;
+    for (let i = 0; i < vCount; i++) {
+        const c = visibleCandles[i];
+        const idx = startIndex + i;
+        maxPrice = Math.max(maxPrice, c.high);
+        minPrice = Math.min(minPrice, c.low);
+        
+        if (showBB && bb && bb.upper[idx] !== null) {
+            maxPrice = Math.max(maxPrice, bb.upper[idx]);
+            minPrice = Math.min(minPrice, bb.lower[idx]);
+        }
+    }
+    
+    const priceRange = maxPrice - minPrice;
+    maxPrice += priceRange * 0.06;
+    minPrice -= priceRange * 0.06;
+    
+    const getPixelY = (price) => chartHeight - ((price - minPrice) / (maxPrice - minPrice)) * chartHeight;
+    const getPixelX = (i) => i * candleWidth + candleWidth / 2;
+    
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+    
+    const yLabelCount = 6;
+    ctx.fillStyle = '#475569';
+    ctx.font = '9px "Space Mono", monospace';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    
+    for (let i = 0; i < yLabelCount; i++) {
+        const val = minPrice + (i / (yLabelCount - 1)) * (maxPrice - minPrice);
+        const y = getPixelY(val);
+        
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(chartWidth, y);
+        ctx.stroke();
+        
+        const fmt = val > 1 ? val.toLocaleString('tr-TR', {maximumFractionDigits:2, minimumFractionDigits:2}) : val.toFixed(5);
+        ctx.fillText(fmt, chartWidth + 6, y);
+    }
+    
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    const xLabelInterval = Math.max(1, Math.floor(vCount / 5));
+    for (let i = vCount - 1; i >= 0; i -= xLabelInterval) {
+        const x = getPixelX(i);
+        const c = visibleCandles[i];
+        
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, chartHeight);
+        ctx.stroke();
+        
+        const date = new Date(c.time);
+        const hrs = date.getHours().toString().padStart(2, '0');
+        const mins = date.getMinutes().toString().padStart(2, '0');
+        const timeStr = `${hrs}:${mins}`;
+        ctx.fillText(timeStr, x, chartHeight + 6);
+    }
+    
+    if (showRegression && regression) {
+        const { slope, intercept, stdDev, count } = regression;
+        
+        ctx.lineWidth = 1.5;
+        
+        const getRegY = (index, mult = 0) => {
+            const regVal = slope * index + intercept + mult * stdDev;
+            return getPixelY(regVal);
+        };
+        
+        const xStart = getPixelX(0);
+        const xEnd = getPixelX(count - 1);
+        const yCenterStart = getRegY(0, 0);
+        const yCenterEnd = getRegY(count - 1, 0);
+        const yUpperStart = getRegY(0, 2);
+        const yUpperEnd = getRegY(count - 1, 2);
+        const yLowerStart = getRegY(0, -2);
+        const yLowerEnd = getRegY(count - 1, -2);
+        
+        ctx.fillStyle = 'rgba(59, 130, 246, 0.07)';
+        ctx.beginPath();
+        ctx.moveTo(xStart, yUpperStart);
+        ctx.lineTo(xEnd, yUpperEnd);
+        ctx.lineTo(xEnd, yCenterEnd);
+        ctx.lineTo(xStart, yCenterStart);
+        ctx.closePath();
+        ctx.fill();
+        
+        ctx.fillStyle = 'rgba(244, 63, 94, 0.07)';
+        ctx.beginPath();
+        ctx.moveTo(xStart, yCenterStart);
+        ctx.lineTo(xEnd, yCenterEnd);
+        ctx.lineTo(xEnd, yLowerStart);
+        ctx.lineTo(xStart, yLowerStart);
+        ctx.closePath();
+        ctx.fill();
+        
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(xStart, yCenterStart);
+        ctx.lineTo(xEnd, yCenterEnd);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        
+        ctx.strokeStyle = 'rgba(59, 130, 246, 0.65)';
+        ctx.beginPath();
+        ctx.moveTo(xStart, yUpperStart);
+        ctx.lineTo(xEnd, yUpperEnd);
+        ctx.stroke();
+        
+        ctx.strokeStyle = 'rgba(244, 63, 94, 0.65)';
+        ctx.beginPath();
+        ctx.moveTo(xStart, yLowerStart);
+        ctx.lineTo(xEnd, yLowerEnd);
+        ctx.stroke();
+    }
+    
+    if (showBB && bb) {
+        ctx.lineWidth = 1.2;
+        
+        ctx.strokeStyle = 'rgba(16, 185, 129, 0.55)';
+        ctx.beginPath();
+        let startedUpper = false;
+        for (let i = 0; i < vCount; i++) {
+            const idx = startIndex + i;
+            if (bb.upper[idx] !== null) {
+                const x = getPixelX(i);
+                const y = getPixelY(bb.upper[idx]);
+                if (!startedUpper) {
+                    ctx.moveTo(x, y);
+                    startedUpper = true;
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+        }
+        ctx.stroke();
+        
+        ctx.strokeStyle = 'rgba(16, 185, 129, 0.55)';
+        ctx.beginPath();
+        let startedLower = false;
+        for (let i = 0; i < vCount; i++) {
+            const idx = startIndex + i;
+            if (bb.lower[idx] !== null) {
+                const x = getPixelX(i);
+                const y = getPixelY(bb.lower[idx]);
+                if (!startedLower) {
+                    ctx.moveTo(x, y);
+                    startedLower = true;
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+        }
+        ctx.stroke();
+        
+        ctx.strokeStyle = 'rgba(16, 185, 129, 0.2)';
+        ctx.setLineDash([2, 2]);
+        ctx.beginPath();
+        let startedMid = false;
+        for (let i = 0; i < vCount; i++) {
+            const idx = startIndex + i;
+            if (bb.middle[idx] !== null) {
+                const x = getPixelX(i);
+                const y = getPixelY(bb.middle[idx]);
+                if (!startedMid) {
+                    ctx.moveTo(x, y);
+                    startedMid = true;
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
+    
+    const maxVolume = Math.max(...visibleCandles.map(c => c.volume), 1);
+    
+    for (let i = 0; i < vCount; i++) {
+        const c = visibleCandles[i];
+        const x = getPixelX(i);
+        const isUp = c.close >= c.open;
+        
+        const candleColor = isUp ? '#10b981' : '#f43f5e';
+        const wickColor = isUp ? 'rgba(16, 185, 129, 0.8)' : 'rgba(244, 63, 94, 0.8)';
+        
+        ctx.strokeStyle = wickColor;
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(x, getPixelY(c.high));
+        ctx.lineTo(x, getPixelY(c.low));
+        ctx.stroke();
+        
+        ctx.fillStyle = candleColor;
+        const yOpen = getPixelY(c.open);
+        const yClose = getPixelY(c.close);
+        const bodyH = Math.max(1, Math.abs(yClose - yOpen));
+        const bodyY = Math.min(yOpen, yClose);
+        
+        ctx.fillRect(x - bodyWidth / 2, bodyY, bodyWidth, bodyH);
+        
+        const volH = (c.volume / maxVolume) * (chartHeight * 0.16);
+        const volY = chartHeight - volH;
+        ctx.fillStyle = isUp ? 'rgba(16, 185, 129, 0.22)' : 'rgba(244, 63, 94, 0.22)';
+        ctx.fillRect(x - bodyWidth / 2, volY, bodyWidth, volH);
+    }
+    
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(chartWidth, 0);
+    ctx.lineTo(chartWidth, chartHeight);
+    ctx.lineTo(width, chartHeight);
+    ctx.stroke();
+    
+    const displayIdx = crosshairIdx >= 0 ? crosshairIdx : endIndex - 1;
+    if (displayIdx >= startIndex && displayIdx < endIndex) {
+        const activeCandle = chartCandles[displayIdx];
+        const fmtVol = (v) => {
+            if (v >= 1e6) return (v / 1e6).toFixed(2) + 'M';
+            if (v >= 1e3) return (v / 1e3).toFixed(1) + 'K';
+            return v.toFixed(0);
+        };
+        
+        const volText = fmtVol(activeCandle.volume);
+        ctx.font = 'bold 9px "Space Mono", monospace';
+        const volW = ctx.measureText(volText).width + 8;
+        ctx.fillStyle = 'rgba(16, 185, 129, 0.85)';
+        ctx.beginPath();
+        ctx.roundRect(chartWidth + 3, chartHeight - 16, volW, 13, 3);
+        ctx.fill();
+        ctx.fillStyle = '#000';
+        ctx.fillText(volText, chartWidth + 7, chartHeight - 10);
+    }
+    
+    if (crosshairIdx >= startIndex && crosshairIdx < endIndex && !chartIsDragging) {
+        const localIdx = crosshairIdx - startIndex;
+        const cx = getPixelX(localIdx);
+        const activeCandle = chartCandles[crosshairIdx];
+        
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        
+        ctx.beginPath();
+        ctx.moveTo(cx, 0);
+        ctx.lineTo(cx, chartHeight);
+        ctx.stroke();
+        
+        if (crosshairY >= 0 && crosshairY < chartHeight) {
+            ctx.beginPath();
+            ctx.moveTo(0, crosshairY);
+            ctx.lineTo(chartWidth, crosshairY);
+            ctx.stroke();
+        }
+        ctx.setLineDash([]);
+        
+        if (crosshairY >= 0 && crosshairY < chartHeight) {
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(cx, crosshairY, 3, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+        
+        if (crosshairY >= 0 && crosshairY < chartHeight) {
+            const priceAtVal = maxPrice - (crosshairY / chartHeight) * (maxPrice - minPrice);
+            const priceStr = priceAtVal > 1 ? priceAtVal.toLocaleString('tr-TR', {maximumFractionDigits:2, minimumFractionDigits:2}) : priceAtVal.toFixed(5);
+            
+            ctx.fillStyle = '#3b82f6';
+            ctx.beginPath();
+            ctx.roundRect(chartWidth + 2, crosshairY - 8, width - chartWidth - 4, 15, 3);
+            ctx.fill();
+            
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 9px "Space Mono", monospace';
+            ctx.fillText(priceStr, chartWidth + 5, crosshairY);
+        }
+        
+        const date = new Date(activeCandle.time);
+        const hrs = date.getHours().toString().padStart(2, '0');
+        const mins = date.getMinutes().toString().padStart(2, '0');
+        const dateStr = `${hrs}:${mins}`;
+        ctx.font = 'bold 9px "Space Mono", monospace';
+        const textW = ctx.measureText(dateStr).width + 10;
+        
+        ctx.fillStyle = '#3b82f6';
+        ctx.beginPath();
+        ctx.roundRect(cx - textW / 2, chartHeight + 2, textW, 14, 3);
+        ctx.fill();
+        
+        ctx.fillStyle = '#fff';
+        ctx.fillText(dateStr, cx, chartHeight + 9);
+        
+        const isUp = activeCandle.close >= activeCandle.open;
+        const classColor = isUp ? 'green' : 'red';
+        const fmtPrice = (v) => v > 1 ? v.toLocaleString('tr-TR', {maximumFractionDigits:2, minimumFractionDigits:2}) : v.toFixed(5);
+        
+        document.getElementById('tooltip-o').textContent = fmtPrice(activeCandle.open);
+        document.getElementById('tooltip-o').className = classColor;
+        document.getElementById('tooltip-h').textContent = fmtPrice(activeCandle.high);
+        document.getElementById('tooltip-h').className = classColor;
+        document.getElementById('tooltip-l').textContent = fmtPrice(activeCandle.low);
+        document.getElementById('tooltip-l').className = classColor;
+        document.getElementById('tooltip-c').textContent = fmtPrice(activeCandle.close);
+        document.getElementById('tooltip-c').className = classColor;
+        
+        const chg = ((activeCandle.close - activeCandle.open) / activeCandle.open) * 100;
+        const chgStr = ` (${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%)`;
+        document.getElementById('tooltip-c').innerHTML += `<span style="font-size:0.53rem;" class="${classColor}">${chgStr}</span>`;
+        
+        const fmtVol = (v) => {
+            if (v >= 1e6) return (v / 1e6).toFixed(2) + 'M';
+            if (v >= 1e3) return (v / 1e3).toFixed(1) + 'K';
+            return v.toFixed(0);
+        };
+        document.getElementById('tooltip-v').textContent = fmtVol(activeCandle.volume);
+        document.getElementById('tooltip-v').className = classColor;
+    } else {
+        const lastC = chartCandles[endIndex - 1];
+        if (lastC) {
+            const isUp = lastC.close >= lastC.open;
+            const classColor = isUp ? 'green' : 'red';
+            const fmtPrice = (v) => v > 1 ? v.toLocaleString('tr-TR', {maximumFractionDigits:2, minimumFractionDigits:2}) : v.toFixed(5);
+            
+            document.getElementById('tooltip-o').textContent = fmtPrice(lastC.open);
+            document.getElementById('tooltip-o').className = classColor;
+            document.getElementById('tooltip-h').textContent = fmtPrice(lastC.high);
+            document.getElementById('tooltip-h').className = classColor;
+            document.getElementById('tooltip-l').textContent = fmtPrice(lastC.low);
+            document.getElementById('tooltip-l').className = classColor;
+            document.getElementById('tooltip-c').textContent = fmtPrice(lastC.close);
+            document.getElementById('tooltip-c').className = classColor;
+            
+            const chg = ((lastC.close - lastC.open) / lastC.open) * 100;
+            const chgStr = ` (${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%)`;
+            document.getElementById('tooltip-c').innerHTML += `<span style="font-size:0.53rem;" class="${classColor}">${chgStr}</span>`;
+            
+            const fmtVol = (v) => {
+                if (v >= 1e6) return (v / 1e6).toFixed(2) + 'M';
+                if (v >= 1e3) return (v / 1e3).toFixed(1) + 'K';
+                return v.toFixed(0);
+            };
+            document.getElementById('tooltip-v').textContent = fmtVol(lastC.volume);
+            document.getElementById('tooltip-v').className = classColor;
+        }
+    }
+    
+    renderStochRsiPane(startIndex, endIndex, candleWidth, getPixelX);
+}
+
+function renderStochRsiPane(startIndex, endIndex, candleWidth, getPixelX) {
+    const showStoch = document.getElementById('cb-stoch-rsi').checked;
+    if (!showStoch) return;
+    
+    const canvas = document.getElementById('stoch-chart');
+    if (!canvas) return;
+    
+    const container = canvas.parentElement;
+    const rect = container.getBoundingClientRect();
+    if (rect.height === 0) return;
+    
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    
+    const width = rect.width;
+    const height = rect.height;
+    
+    const axisWidth = 62;
+    const axisHeight = 15;
+    const chartWidth = width - axisWidth;
+    const chartHeight = height - axisHeight;
+    
+    ctx.fillStyle = '#05070c';
+    ctx.fillRect(0, 0, width, height);
+    
+    const stochData = calculateStochRSIForChart(chartCandles);
+    if (!stochData) return;
+    
+    const vCount = endIndex - startIndex;
+    const getPixelY = (val) => chartHeight - (val / 100) * (chartHeight - 10) - 5;
+    
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+    ctx.lineWidth = 1;
+    
+    const levels = [20, 50, 80];
+    ctx.fillStyle = '#475569';
+    ctx.font = '8px "Space Mono", monospace';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    
+    for (const lvl of levels) {
+        const y = getPixelY(lvl);
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(chartWidth, y);
+        ctx.stroke();
+        
+        ctx.fillText(lvl.toString(), chartWidth + 6, y);
+    }
+    
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.01)';
+    const y80 = getPixelY(80);
+    const y20 = getPixelY(20);
+    ctx.fillRect(0, y80, chartWidth, y20 - y80);
+    
+    ctx.lineWidth = 1.25;
+    ctx.strokeStyle = '#3b82f6';
+    ctx.beginPath();
+    let startedK = false;
+    for (let i = 0; i < vCount; i++) {
+        const idx = startIndex + i;
+        if (stochData.k[idx] !== null) {
+            const x = getPixelX(i);
+            const y = getPixelY(stochData.k[idx]);
+            if (!startedK) {
+                ctx.moveTo(x, y);
+                startedK = true;
+            } else {
+                ctx.lineTo(x, y);
+            }
+        }
+    }
+    ctx.stroke();
+    
+    ctx.strokeStyle = '#f43f5e';
+    ctx.beginPath();
+    let startedD = false;
+    for (let i = 0; i < vCount; i++) {
+        const idx = startIndex + i;
+        if (stochData.d[idx] !== null) {
+            const x = getPixelX(i);
+            const y = getPixelY(stochData.d[idx]);
+            if (!startedD) {
+                ctx.moveTo(x, y);
+                startedD = true;
+            } else {
+                ctx.lineTo(x, y);
+            }
+        }
+    }
+    ctx.stroke();
+    
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+    ctx.beginPath();
+    ctx.moveTo(chartWidth, 0);
+    ctx.lineTo(chartWidth, chartHeight);
+    ctx.lineTo(width, chartHeight);
+    ctx.stroke();
+    
+    if (crosshairIdx >= startIndex && crosshairIdx < endIndex && !chartIsDragging) {
+        const localIdx = crosshairIdx - startIndex;
+        const cx = getPixelX(localIdx);
+        
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(cx, 0);
+        ctx.lineTo(cx, chartHeight);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        
+        const kVal = stochData.k[crosshairIdx];
+        const dVal = stochData.d[crosshairIdx];
+        if (kVal !== null && dVal !== null) {
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '8px "Space Mono", monospace';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+            ctx.fillText(`Stoch RSI(14,3,3)  %K: `, 10, 4);
+            const kWidth = ctx.measureText(`Stoch RSI(14,3,3)  %K: `).width;
+            ctx.fillStyle = '#3b82f6';
+            ctx.fillText(kVal.toFixed(2), 10 + kWidth, 4);
+            const kValWidth = ctx.measureText(kVal.toFixed(2)).width;
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText(`  %D: `, 10 + kWidth + kValWidth, 4);
+            const dWidth = ctx.measureText(`  %D: `).width;
+            ctx.fillStyle = '#f43f5e';
+            ctx.fillText(dVal.toFixed(2), 10 + kWidth + kValWidth + dWidth, 4);
+        }
+    }
+}
+
+function captureChartSnapshot() {
+    const mainCanvas = document.getElementById('trading-chart');
+    const stochCanvas = document.getElementById('stoch-chart');
+    const showStoch = document.getElementById('cb-stoch-rsi').checked;
+    
+    if (!mainCanvas) return;
+    
+    const w = mainCanvas.width;
+    let h = mainCanvas.height;
+    if (showStoch && stochCanvas) {
+        h += stochCanvas.height;
+    }
+    
+    const captureCanvas = document.createElement('canvas');
+    captureCanvas.width = w;
+    captureCanvas.height = h;
+    const ctx = captureCanvas.getContext('2d');
+    
+    ctx.drawImage(mainCanvas, 0, 0);
+    if (showStoch && stochCanvas) {
+        ctx.drawImage(stochCanvas, 0, mainCanvas.height);
+    }
+    
+    const link = document.createElement('a');
+    link.download = `cyclemaster_chart_${currentCoin}_${chartTF}.png`;
+    link.href = captureCanvas.toDataURL('image/png');
+    link.click();
+    
+    showToast("📸 Ekran Görüntüsü", "Grafik resmi cihazınıza indirildi.");
+}
+
+function setupChartListeners() {
+    const container = document.querySelector('.chart-container');
+    const canvas = document.getElementById('trading-chart');
+    if (!container || !canvas) return;
+    
+    const newCanvas = canvas.cloneNode(true);
+    canvas.parentNode.replaceChild(newCanvas, canvas);
+    
+    const stochCanvas = document.getElementById('stoch-chart');
+    if (stochCanvas) {
+        const newStochCanvas = stochCanvas.cloneNode(true);
+        stochCanvas.parentNode.replaceChild(newStochCanvas, stochCanvas);
+    }
+    
+    const activeCanvas = document.getElementById('trading-chart');
+    const activeStoch = document.getElementById('stoch-chart');
+    
+    const onStart = (e) => {
+        chartIsDragging = true;
+        const pageX = e.touches ? e.touches[0].pageX : e.pageX;
+        chartDragStartX = pageX;
+        chartDragStartOffset = chartPanOffset;
+    };
+    
+    activeCanvas.addEventListener('mousedown', onStart);
+    activeCanvas.addEventListener('touchstart', onStart, { passive: true });
+    if (activeStoch) {
+        activeStoch.addEventListener('mousedown', onStart);
+        activeStoch.addEventListener('touchstart', onStart, { passive: true });
+    }
+    
+    const onMove = (e) => {
+        const rect = activeCanvas.getBoundingClientRect();
+        const pageX = e.touches ? e.touches[0].pageX : e.pageX;
+        const pageY = e.touches ? e.touches[0].pageY : e.pageY;
+        
+        const clientX = pageX - rect.left - window.scrollX;
+        const clientY = pageY - rect.top - window.scrollY;
+        
+        if (chartIsDragging) {
+            const deltaX = pageX - chartDragStartX;
+            const candleWidth = (rect.width - 62) / visibleCandlesCount;
+            const deltaCandles = Math.round(deltaX / candleWidth);
+            
+            const maxOffset = chartCandles.length - visibleCandlesCount;
+            chartPanOffset = Math.max(0, Math.min(maxOffset, chartDragStartOffset + deltaCandles));
+            initAndRenderChart();
+        } else {
+            const chartWidth = rect.width - 62;
+            if (clientX >= 0 && clientX <= chartWidth) {
+                const candleWidth = chartWidth / visibleCandlesCount;
+                const localIdx = Math.floor(clientX / candleWidth);
+                
+                const n = chartCandles.length;
+                const endIndex = Math.max(0, n - chartPanOffset);
+                const startIndex = Math.max(0, endIndex - visibleCandlesCount);
+                
+                crosshairIdx = Math.max(startIndex, Math.min(endIndex - 1, startIndex + localIdx));
+                crosshairX = clientX;
+                crosshairY = clientY;
+            } else {
+                crosshairIdx = -1;
+            }
+            initAndRenderChart();
+        }
+    };
+    
+    activeCanvas.addEventListener('mousemove', onMove);
+    activeCanvas.addEventListener('touchmove', onMove, { passive: true });
+    if (activeStoch) {
+        activeStoch.addEventListener('mousemove', (e) => {
+            const rect = activeStoch.getBoundingClientRect();
+            const pageX = e.touches ? e.touches[0].pageX : e.pageX;
+            const clientX = pageX - rect.left - window.scrollX;
+            
+            if (chartIsDragging) {
+                const deltaX = pageX - chartDragStartX;
+                const candleWidth = (rect.width - 62) / visibleCandlesCount;
+                const deltaCandles = Math.round(deltaX / candleWidth);
+                const maxOffset = chartCandles.length - visibleCandlesCount;
+                chartPanOffset = Math.max(0, Math.min(maxOffset, chartDragStartOffset + deltaCandles));
+                initAndRenderChart();
+            } else {
+                const chartWidth = rect.width - 62;
+                if (clientX >= 0 && clientX <= chartWidth) {
+                    const candleWidth = chartWidth / visibleCandlesCount;
+                    const localIdx = Math.floor(clientX / candleWidth);
+                    const n = chartCandles.length;
+                    const endIndex = Math.max(0, n - chartPanOffset);
+                    const startIndex = Math.max(0, endIndex - visibleCandlesCount);
+                    crosshairIdx = Math.max(startIndex, Math.min(endIndex - 1, startIndex + localIdx));
+                    crosshairY = -1;
+                } else {
+                    crosshairIdx = -1;
+                }
+                initAndRenderChart();
+            }
+        });
+        activeStoch.addEventListener('touchmove', onMove, { passive: true });
+    }
+    
+    const onEnd = () => {
+        chartIsDragging = false;
+    };
+    
+    window.addEventListener('mouseup', onEnd);
+    window.addEventListener('touchend', onEnd);
+    
+    const onLeave = () => {
+        if (!chartIsDragging) {
+            crosshairIdx = -1;
+            initAndRenderChart();
+        }
+    };
+    activeCanvas.addEventListener('mouseleave', onLeave);
+    if (activeStoch) {
+        activeStoch.addEventListener('mouseleave', onLeave);
+    }
+    
+    const onWheel = (e) => {
+        e.preventDefault();
+        
+        const zoomFactor = e.deltaY > 0 ? 1 : -1;
+        const oldVisible = visibleCandlesCount;
+        
+        visibleCandlesCount = Math.max(20, Math.min(120, visibleCandlesCount + zoomFactor * 5));
+        
+        const rect = activeCanvas.getBoundingClientRect();
+        const clientX = e.clientX - rect.left;
+        const chartWidth = rect.width - 62;
+        
+        if (clientX >= 0 && clientX <= chartWidth) {
+            const mouseRatio = clientX / chartWidth;
+            const deltaVisible = visibleCandlesCount - oldVisible;
+            chartPanOffset = Math.max(0, Math.min(chartCandles.length - visibleCandlesCount, Math.round(chartPanOffset - deltaVisible * (1 - mouseRatio))));
+        }
+        
+        initAndRenderChart();
+    };
+    
+    container.addEventListener('wheel', onWheel, { passive: false });
+    if (activeStoch) {
+        activeStoch.parentElement.addEventListener('wheel', onWheel, { passive: false });
+    }
+}
+
+window.addEventListener('resize', () => {
+    if (chartCandles && chartCandles.length > 0) {
+        initAndRenderChart();
+    }
+});
+
+let listenersAttached = false;
+const originalRender = initAndRenderChart;
+initAndRenderChart = function() {
+    originalRender();
+    if (!listenersAttached) {
+        setupChartListeners();
+        listenersAttached = true;
+    }
+};
+
+let tvWidget = null;
+let lastTvSymbol = "";
+let lastTvInterval = "";
+let lastTvStudies = "";
+
+function toggleIndicator(type) {
+    localStorage.setItem('cm_cb_bb', document.getElementById('cb-bb').checked);
+    localStorage.setItem('cm_cb_regr', document.getElementById('cb-regression').checked);
+    localStorage.setItem('cm_cb_stoch', document.getElementById('cb-stoch-rsi').checked);
+    updateTVWidget(true);
+}
+
+function updateTVWidget(force = false) {
+    const container = document.getElementById('chart-container-id');
+    if (!container) return;
+    
+    if (typeof TradingView === 'undefined') {
+        setTimeout(() => updateTVWidget(force), 500);
+        return;
+    }
+    
+    const intervalMap = {
+        "1m": "1",
+        "3m": "3",
+        "5m": "5",
+        "15m": "15",
+        "30m": "30",
+        "1h": "60",
+        "2h": "120",
+        "4h": "240",
+        "12h": "720",
+        "1d": "D",
+        "1w": "W"
+    };
+    const interval = intervalMap[chartTF] || "5";
+    
+    let symbol = currentCoin;
+    if (!symbol.includes(":")) {
+        symbol = "BINANCE:" + symbol;
+    }
+    
+    const studies = [];
+    if (document.getElementById('cb-bb').checked) {
+        studies.push("BB@tv-basicstudies");
+    }
+    if (document.getElementById('cb-regression').checked) {
+        studies.push("LinearRegression@tv-basicstudies");
+    }
+    if (document.getElementById('cb-stoch-rsi').checked) {
+        studies.push("StochasticRSI@tv-basicstudies");
+    }
+    
+    const studiesStr = studies.join(",");
+    
+    if (!force && symbol === lastTvSymbol && interval === lastTvInterval && studiesStr === lastTvStudies) {
+        return;
+    }
+    
+    lastTvSymbol = symbol;
+    lastTvInterval = interval;
+    lastTvStudies = studiesStr;
+    
+    container.innerHTML = '';
+    
+    tvWidget = new TradingView.widget({
+        "autosize": true,
+        "symbol": symbol,
+        "interval": interval,
+        "timezone": "Europe/Istanbul",
+        "theme": "dark",
+        "style": "1",
+        "locale": "tr",
+        "toolbar_bg": "#131722",
+        "enable_publishing": false,
+        "hide_side_toolbar": true,
+        "hide_legend": true,
+        "allow_symbol_change": true,
+        "container_id": "chart-container-id",
+        "studies": studies,
+        "show_popup_button": true,
+        "popup_width": "1000",
+        "popup_height": "650"
+    });
+}
 
 loadFromMemory();
 setInterval(updateCycle,1000);
