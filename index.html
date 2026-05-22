@@ -139,62 +139,23 @@
         /* MARKET HERO */
         .market-hero {
             background:var(--surface); border:1px solid var(--border);
-            border-radius:16px; padding:12px 16px; position:relative; overflow:hidden;
+            border-radius:20px; padding:18px; position:relative; overflow:hidden;
         }
         .market-hero::before {
             content:''; position:absolute; top:0; left:0; right:0; height:3px;
             background:linear-gradient(90deg,var(--accent),transparent);
             transition: background 0.6s;
         }
-        .market-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .market-brand {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-        .market-symbol {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.72rem;
-            font-weight: 700;
-            color: var(--gold);
-        }
-        .market-price {
-            font-family: 'Space Mono', monospace;
-            font-size: 1.6rem;
-            font-weight: 700;
-            letter-spacing: -1px;
-            line-height: 1.1;
-        }
-        .market-stats {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 6px;
-        }
-        .price-pill {
-            font-size: 0.65rem;
-            font-weight: 700;
-            padding: 3px 8px;
-            border-radius: 100px;
-            font-family: 'Space Mono', monospace;
-        }
+        .market-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+        .market-symbol { font-family:'Space Mono',monospace; font-size:0.85rem; font-weight:700; color:var(--gold); }
+        .price-pill { font-size:0.68rem; font-weight:700; padding:4px 11px; border-radius:100px; font-family:'Space Mono',monospace; }
         .price-pill.up { background:rgba(16,185,129,0.12); color:var(--green); }
         .price-pill.dn { background:rgba(244,63,94,0.12); color:var(--red); }
-        .hl-compact {
-            display: flex;
-            gap: 8px;
-            font-family: 'Space Mono', monospace;
-            font-size: 0.58rem;
-            color: var(--text2);
-        }
-        .hl-compact span span {
-            color: var(--text);
-            font-weight: 700;
-        }
+        .market-price { font-family:'Space Mono',monospace; font-size:2.5rem; font-weight:700; letter-spacing:-2px; line-height:1; margin-bottom:16px; }
+        .hl-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+        .hl-box { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:10px 12px; }
+        .hl-l { font-size:0.5rem; color:var(--text3); text-transform:uppercase; letter-spacing:1px; font-weight:600; margin-bottom:3px; }
+        .hl-v { font-family:'Space Mono',monospace; font-size:0.82rem; font-weight:700; }
 
         /* SIGNAL BANNER */
         .signal-banner {
@@ -299,24 +260,6 @@
         .nav-item.active .nav-icon { transform:scale(1.15); }
         .nav-item.active .nav-dot { background:var(--accent); }
 
-        .agent-svg-icon {
-            width: 1.25rem;
-            height: 1.25rem;
-            stroke: #10b981;
-            fill: none;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.6));
-            transition: all 0.2s;
-            display: inline-block;
-            vertical-align: middle;
-        }
-        .nav-item.active .agent-svg-icon {
-            stroke: #10b981;
-            filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.9));
-        }
-
         /* TOAST */
         .toast {
             position:fixed;
@@ -412,214 +355,6 @@
         .tf-badge.bull { background:rgba(16,185,129,0.12); color:var(--green); border:1px solid rgba(16,185,129,0.2); }
         .tf-badge.bear { background:rgba(244,63,94,0.12); color:var(--red); border:1px solid rgba(244,63,94,0.2); }
         .tf-badge.neutral { background:rgba(255,255,255,0.05); color:var(--text3); border:1px solid rgba(255,255,255,0.1); }
-
-        /* TRADING CHART STYLE */
-        .chart-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 0;
-            overflow: hidden;
-            margin-top: 16px;
-            display: flex;
-            flex-direction: column;
-        }
-        .chart-indicators-header {
-            background: #090e17;
-            padding: 10px 16px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            white-space: nowrap;
-            gap: 14px;
-            scrollbar-width: none;
-        }
-        .chart-indicators-header::-webkit-scrollbar {
-            display: none;
-        }
-        .chart-title {
-            font-size: 0.58rem;
-            font-weight: 700;
-            color: var(--text2);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-        }
-        .chart-indicator-cb {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: var(--text2);
-            cursor: pointer;
-            user-select: none;
-        }
-        .chart-indicator-cb input[type="checkbox"] {
-            appearance: none;
-            width: 14px;
-            height: 14px;
-            border: 1px solid var(--border);
-            border-radius: 3px;
-            background: var(--surface2);
-            outline: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-        .chart-indicator-cb input[type="checkbox"]:checked {
-            background: var(--green);
-            border-color: var(--green);
-        }
-        .chart-indicator-cb input[type="checkbox"]:checked::after {
-            content: '✓';
-            color: #000;
-            font-size: 0.55rem;
-            font-weight: 900;
-        }
-        .chart-toolbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 16px;
-            background: rgba(255,255,255,0.01);
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-            font-size: 0.8rem;
-        }
-        .chart-toolbar-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .chart-symbol-display {
-            font-family: 'Space Mono', monospace;
-            font-weight: 700;
-            color: var(--text);
-            cursor: pointer;
-        }
-        .chart-symbol-display:hover {
-            color: var(--blue);
-        }
-        .chart-plus-btn {
-            font-size: 1rem;
-            color: var(--text3);
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .chart-plus-btn:hover {
-            color: var(--text);
-        }
-        .chart-tf-display {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            outline: none;
-            font-family: 'Space Mono', monospace;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 2px 6px;
-            font-size: 0.65rem;
-            font-weight: 700;
-            color: var(--gold);
-            cursor: pointer;
-            text-align: center;
-        }
-        .chart-tf-display:hover {
-            border-color: var(--gold);
-        }
-        .chart-tf-display option {
-            background: #0d1524;
-            color: var(--text);
-        }
-        .chart-icon-btn {
-            color: var(--text2);
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-        .chart-indicators-btn {
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: var(--text2);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            cursor: pointer;
-        }
-        .chart-indicators-btn:hover {
-            color: var(--text);
-        }
-        .chart-toolbar-right {
-            display: flex;
-            align-items: center;
-        }
-        .chart-camera-btn {
-            cursor: pointer;
-            color: var(--text2);
-            font-size: 0.95rem;
-            transition: color 0.2s;
-        }
-        .chart-camera-btn:hover {
-            color: var(--text);
-        }
-        .chart-container {
-            position: relative;
-            width: 100%;
-            height: 330px;
-            background: #060910;
-            cursor: crosshair;
-        }
-        .chart-container canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-        .stoch-container {
-            position: relative;
-            width: 100%;
-            height: 0px;
-            background: #05070c;
-            border-top: 1px solid rgba(255,255,255,0.03);
-            transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
-            cursor: crosshair;
-        }
-        .stoch-container.active {
-            height: 110px;
-        }
-        .stoch-container canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-        .chart-candle-tooltip {
-            position: absolute;
-            top: 8px;
-            left: 12px;
-            font-family: 'Space Mono', monospace;
-            font-size: 0.58rem;
-            color: var(--text2);
-            pointer-events: none;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            background: rgba(6, 9, 16, 0.7);
-            padding: 2px 6px;
-            border-radius: 4px;
-            z-index: 10;
-        }
-        .chart-candle-tooltip span {
-            font-weight: 700;
-        }
-        .chart-candle-tooltip span.green {
-            color: var(--green);
-        }
-        .chart-candle-tooltip span.red {
-            color: var(--red);
-        }
     </style>
 </head>
 <body>
@@ -637,17 +372,13 @@
 
         <div class="market-hero">
             <div class="market-top">
-                <div class="market-brand">
-                    <span class="market-symbol" id="display-symbol">BTCUSDT</span>
-                    <div class="market-price" id="display-price">—</div>
-                </div>
-                <div class="market-stats">
-                    <span id="price-change" class="price-pill">%0.00</span>
-                    <div class="hl-compact">
-                        <span>H: <span id="h24">—</span></span>
-                        <span>L: <span id="l24">—</span></span>
-                    </div>
-                </div>
+                <span class="market-symbol" id="display-symbol">BTCUSDT</span>
+                <span id="price-change" class="price-pill">%0.00</span>
+            </div>
+            <div class="market-price" id="display-price">—</div>
+            <div class="hl-row">
+                <div class="hl-box"><div class="hl-l">24S Yüksek</div><div class="hl-v" id="h24">—</div></div>
+                <div class="hl-box"><div class="hl-l">24S Düşük</div><div class="hl-v" id="l24">—</div></div>
             </div>
         </div>
 
@@ -669,60 +400,26 @@
             </div>
             <div class="cycle-info">
                 <div class="cycle-strat" id="strategy-name">DAY TRADER MODE</div>
-                <div class="cycle-mode" id="mode-text">YATAY</div>
+                <div class="cycle-mode" id="mode-text">YATAY PİYASA</div>
                 <div class="cycle-time" id="current-time">00:00:00</div>
             </div>
         </div>
 
-        <!-- GRAPH CARD -->
-        <div class="chart-card">
-            <div class="chart-indicators-header">
-                <label class="chart-indicator-cb">
-                    <input type="checkbox" id="cb-stoch-rsi" onchange="toggleStochRsiChart()"> STOK RSI
-                </label>
-                <label class="chart-indicator-cb">
-                    <input type="checkbox" id="cb-bb" checked onchange="toggleChartIndicator()"> BB
-                </label>
-                <label class="chart-indicator-cb">
-                    <input type="checkbox" id="cb-regression" checked onchange="toggleChartIndicator()"> REGRESYON
-                </label>
-            </div>
-            <div class="chart-toolbar">
-                <div class="chart-toolbar-left">
-                    <span class="chart-symbol-display" id="chart-symbol-display" onclick="focusSearch()">WLDUSD</span>
-                    <span class="chart-plus-btn" onclick="focusSearch()">+</span>
-                    <select class="chart-tf-display" id="chart-tf-display" onchange="changeChartTimeframe(this.value)">
-                        <option value="1m">1m</option>
-                        <option value="3m">3m</option>
-                        <option value="5m">5m</option>
-                        <option value="15m">15m</option>
-                        <option value="30m">30m</option>
-                        <option value="1h">1h</option>
-                        <option value="2h">2h</option>
-                        <option value="4h">4h</option>
-                        <option value="12h">12h</option>
-                        <option value="1d">1d</option>
-                        <option value="1w">1w</option>
-                    </select>
-                    <span class="chart-icon-btn">🕯️</span>
-                    <span class="chart-indicators-btn" onclick="toggleStochRsiCheckbox()">📈 Göstergeler</span>
+        <div class="tf-card">
+            <div class="tf-card-title">Zaman Dilimleri Matrisi</div>
+            <div class="tf-row">
+                <div class="tf-box">
+                    <div class="tf-name">Üst TF (<span id="lbl-ust-tf">1h</span>)</div>
+                    <div id="state-ust-tf" class="tf-badge neutral">YATAY</div>
                 </div>
-                <div class="chart-toolbar-right">
-                    <span class="chart-camera-btn" onclick="captureChartSnapshot()" title="Ekran Görüntüsü Al">📷</span>
+                <div class="tf-box">
+                    <div class="tf-name">Orta TF (<span id="lbl-orta-tf">15m</span>)</div>
+                    <div id="state-orta-tf" class="tf-badge neutral">NÖTR</div>
                 </div>
-            </div>
-            <div class="chart-container">
-                <div class="chart-candle-tooltip" id="chart-candle-tooltip">
-                    <span>O: <span id="tooltip-o">—</span></span>
-                    <span>H: <span id="tooltip-h">—</span></span>
-                    <span>L: <span id="tooltip-l">—</span></span>
-                    <span>C: <span id="tooltip-c">—</span></span>
-                    <span>V: <span id="tooltip-v">—</span></span>
+                <div class="tf-box">
+                    <div class="tf-name">Alt TF (<span id="lbl-alt-tf">5m</span>)</div>
+                    <div id="state-alt-tf" class="tf-badge neutral">NÖTR</div>
                 </div>
-                <canvas id="trading-chart"></canvas>
-            </div>
-            <div class="stoch-container" id="stoch-container">
-                <canvas id="stoch-chart"></canvas>
             </div>
         </div>
     </div>
@@ -863,21 +560,7 @@
         <div class="nav-dot"></div>
     </div>
     <div class="nav-item" id="nav-agent" onclick="goTo('agent')">
-        <div class="nav-icon">
-            <svg class="agent-svg-icon" viewBox="0 0 24 24">
-                <!-- Hat Crown -->
-                <path d="M7 10 C 7 5, 10 4, 12 4 C 14 4, 17 5, 17 10" />
-                <path d="M 6 10 H 18" stroke-width="3" />
-                <!-- Hat Brim -->
-                <path d="M3 12 C 7 10, 17 10, 21 12" />
-                <!-- Sunglasses Lenses -->
-                <path d="M6 15 A 2 2 0 0 0 10 15 V 14 H 6 Z" fill="#10b981" />
-                <path d="M14 15 A 2 2 0 0 0 18 15 V 14 H 14 Z" fill="#10b981" />
-                <path d="M10 14.5 H 14" stroke-width="1.5" />
-                <!-- Collar / Shoulders -->
-                <path d="M5 21 L 8 18 H 16 L 19 21" />
-            </svg>
-        </div>
+        <div class="nav-icon">🧠</div>
         <div class="nav-label">Ajan</div>
         <div class="nav-dot"></div>
     </div>
@@ -1008,7 +691,6 @@ async function unsubscribePush() {
 
 
 let currentCoin="BTCUSDT", altTF="5m", ortaTF="15m", ustTF="1h", lastMode=null;
-let chartTF="5m";
 let rsiValue=50, stochRsiValue=50, bbStatus="Mid";
 let ema9Val=0, ema21Val=0, ema50Val=0;
 let vwapVal=0;
@@ -1229,10 +911,7 @@ async function fetchPrice(){
 }
 
 function toOKXInterval(tf){
-    const map={
-        "1m":"1m", "3m":"3m", "5m":"5m", "15m":"15m", "30m":"30m",
-        "1h":"1H", "2h":"2H", "4h":"4H", "12h":"12H", "1d":"1D", "1w":"1W"
-    };
+    const map={"1m":"1m","3m":"3m","5m":"5m","15m":"15m","30m":"30m","1h":"1H","4h":"4H","1d":"1D"};
     return map[tf]||"1H";
 }
 
@@ -1247,43 +926,20 @@ async function fetchOKXKlines(symbol, interval, limit){
 
 async function fetchTechnical(){
     try{
-        let fetchPromises = [
+        const [kAltRaw, kOrtaRaw, kUstRaw] = await Promise.all([
             fetchOKXKlines(currentCoin, altTF, 150),
             fetchOKXKlines(currentCoin, ortaTF, 150),
             fetchOKXKlines(currentCoin, ustTF, 150)
-        ];
-        
-        if (chartTF !== altTF) {
-            fetchPromises.push(fetchOKXKlines(currentCoin, chartTF, 150));
-        }
-        
-        const results = await Promise.all(fetchPromises);
-        const kAltRaw = results[0];
-        const kOrtaRaw = results[1];
-        const kUstRaw = results[2];
-        const kChartRaw = chartTF === altTF ? kAltRaw : results[3];
+        ]);
 
-        if(!kAltRaw||!kOrtaRaw||!kUstRaw||!kChartRaw) return;
-        if(kAltRaw.length<50||kOrtaRaw.length<50||kUstRaw.length<50||kChartRaw.length<50) return;
+        if(!kAltRaw||!kOrtaRaw||!kUstRaw) return;
+        if(kAltRaw.length<50||kOrtaRaw.length<50||kUstRaw.length<50) return;
 
         // OKX format: [ts, open, high, low, close, vol, volCcy, volCcyQuote, confirm]
         const parse=(k,idx)=>k.map(x=>parseFloat(x[idx]));
         const cAlt=parse(kAltRaw,4), hAlt=parse(kAltRaw,2), lAlt=parse(kAltRaw,3), vAlt=parse(kAltRaw,5);
         const cOrta=parse(kOrtaRaw,4), hOrta=parse(kOrtaRaw,2), lOrta=parse(kOrtaRaw,3), vOrta=parse(kOrtaRaw,5);
         const cUst=parse(kUstRaw,4), hUst=parse(kUstRaw,2), lUst=parse(kUstRaw,3), vUst=parse(kUstRaw,5);
-
-        // Store candles globally for the interactive chart
-        chartCandles = kChartRaw.map(x => ({
-            time: parseInt(x[0]),
-            open: parseFloat(x[1]),
-            high: parseFloat(x[2]),
-            low: parseFloat(x[3]),
-            close: parseFloat(x[4]),
-            volume: parseFloat(x[5])
-        }));
-        
-        // Render or update chart
-        initAndRenderChart();
 
         // kOrta ham veri VWAP için gerekli
         const kOrtaForVWAP = kOrtaRaw.map(x=>([x[0],x[1],x[2],x[3],x[4],x[5]]));
@@ -1292,18 +948,9 @@ async function fetchTechnical(){
         lastPrice = lp;
         
         // Update Timeframe Labels
-        const lblAltTf = document.getElementById('lbl-alt-tf');
-        const lblOrtaTf = document.getElementById('lbl-orta-tf');
-        const lblUstTf = document.getElementById('lbl-ust-tf');
-        if (lblAltTf) lblAltTf.textContent = altTF;
-        if (lblOrtaTf) lblOrtaTf.textContent = ortaTF;
-        if (lblUstTf) lblUstTf.textContent = ustTF;
-
-        // Update Chart Labels
-        const tfLabelEl = document.getElementById('chart-tf-display');
-        const symbolLabelEl = document.getElementById('chart-symbol-display');
-        if (tfLabelEl) tfLabelEl.value = chartTF;
-        if (symbolLabelEl) symbolLabelEl.textContent = currentCoin.replace("USDT","USD");
+        document.getElementById('lbl-alt-tf').textContent = altTF;
+        document.getElementById('lbl-orta-tf').textContent = ortaTF;
+        document.getElementById('lbl-ust-tf').textContent = ustTF;
         
         // --- ÜST TF INDICATORS (EMA 9/21/50) ---
         const ema9Series = calcEMA(cUst, 9);
@@ -1325,26 +972,20 @@ async function fetchTechnical(){
         const badgeUst = document.getElementById('state-ust-tf');
         let newMode = "YATAY";
         if(ustTFTrend === "BOĞA") {
-            if (badgeUst) {
-                badgeUst.textContent = "BOĞA";
-                badgeUst.className = "tf-badge bull";
-            }
+            badgeUst.textContent = "BOĞA";
+            badgeUst.className = "tf-badge bull";
             newMode = "LONG";
-            document.getElementById('mode-text').textContent = "🟢 BOĞA";
+            document.getElementById('mode-text').textContent = "🟢 BOĞA TRENDİ";
         } else if(ustTFTrend === "AYI") {
-            if (badgeUst) {
-                badgeUst.textContent = "AYI";
-                badgeUst.className = "tf-badge bear";
-            }
+            badgeUst.textContent = "AYI";
+            badgeUst.className = "tf-badge bear";
             newMode = "SHORT";
-            document.getElementById('mode-text').textContent = "🔴 AYI";
+            document.getElementById('mode-text').textContent = "🔴 AYI TRENDİ";
         } else {
-            if (badgeUst) {
-                badgeUst.textContent = "YATAY";
-                badgeUst.className = "tf-badge neutral";
-            }
+            badgeUst.textContent = "YATAY";
+            badgeUst.className = "tf-badge neutral";
             newMode = "YATAY";
-            document.getElementById('mode-text').textContent = "⚪ YATAY";
+            document.getElementById('mode-text').textContent = "⚪ YATAY PİYASA";
         }
         
         if(newMode !== lastMode) {
@@ -1371,20 +1012,14 @@ async function fetchTechnical(){
         
         const badgeOrta = document.getElementById('state-orta-tf');
         if(ortaTFTrend === "ALIM YNL") {
-            if (badgeOrta) {
-                badgeOrta.textContent = "ALIM YÖN";
-                badgeOrta.className = "tf-badge bull";
-            }
+            badgeOrta.textContent = "ALIM YÖN";
+            badgeOrta.className = "tf-badge bull";
         } else if(ortaTFTrend === "SAT YNL") {
-            if (badgeOrta) {
-                badgeOrta.textContent = "SAT YÖN";
-                badgeOrta.className = "tf-badge bear";
-            }
+            badgeOrta.textContent = "SAT YÖN";
+            badgeOrta.className = "tf-badge bear";
         } else {
-            if (badgeOrta) {
-                badgeOrta.textContent = "NÖTR";
-                badgeOrta.className = "tf-badge neutral";
-            }
+            badgeOrta.textContent = "NÖTR";
+            badgeOrta.className = "tf-badge neutral";
         }
         
         // --- ALT TF INDICATORS (Stoch RSI, BB, OBV, MFI) ---
@@ -1426,20 +1061,14 @@ async function fetchTechnical(){
         
         const badgeAlt = document.getElementById('state-alt-tf');
         if(altTFTrend === "GİRİŞ AL") {
-            if (badgeAlt) {
-                badgeAlt.textContent = "GİRİŞ FRS";
-                badgeAlt.className = "tf-badge bull";
-            }
+            badgeAlt.textContent = "GİRİŞ FRS";
+            badgeAlt.className = "tf-badge bull";
         } else if(altTFTrend === "GİRİŞ SAT") {
-            if (badgeAlt) {
-                badgeAlt.textContent = "GİRİŞ FRS";
-                badgeAlt.className = "tf-badge bear";
-            }
+            badgeAlt.textContent = "GİRİŞ FRS";
+            badgeAlt.className = "tf-badge bear";
         } else {
-            if (badgeAlt) {
-                badgeAlt.textContent = "NÖTR";
-                badgeAlt.className = "tf-badge neutral";
-            }
+            badgeAlt.textContent = "NÖTR";
+            badgeAlt.className = "tf-badge neutral";
         }
         
         updateBadges(lp);
@@ -1784,13 +1413,11 @@ function saveToMemory(){
 function loadFromMemory(){
     const c=localStorage.getItem('cm_coin');
     const alt=localStorage.getItem('cm_alt_tf'), orta=localStorage.getItem('cm_orta_tf'), ust=localStorage.getItem('cm_ust_tf');
-    const chTf=localStorage.getItem('cm_chart_tf');
     const s=localStorage.getItem('cm_sound'), n=localStorage.getItem('cm_notify');
     if(c) currentCoin=c;
     if(alt) altTF=alt;
     if(orta) ortaTF=orta;
     if(ust) ustTF=ust;
-    if(chTf) chartTF=chTf;
     if(s==='true'){isSoundEnabled=true;syncSoundUI();}
     if(n==='true'){
         // Bildirim izni hâlâ geçerliyse geri yükle
@@ -1880,949 +1507,6 @@ function unlockAudio() {
 }
 document.addEventListener('click', unlockAudio, { passive: true });
 document.addEventListener('touchstart', unlockAudio, { passive: true });
-
-// Chart State Variables
-let chartCandles = [];
-let visibleCandlesCount = 60;
-let chartPanOffset = 0;
-let chartIsDragging = false;
-let chartDragStartX = 0;
-let chartDragStartOffset = 0;
-let crosshairIdx = -1;
-let crosshairX = -1;
-let crosshairY = -1;
-
-function focusSearch() {
-    const input = document.getElementById('coin-input');
-    if (input) {
-        input.focus();
-        input.select();
-    }
-}
-
-function goToSettings() {
-    goTo('settings');
-}
-
-function changeChartTimeframe(val) {
-    chartTF = val;
-    localStorage.setItem('cm_chart_tf', chartTF);
-    fetchTechnical();
-}
-
-function toggleStochRsiCheckbox() {
-    const cb = document.getElementById('cb-stoch-rsi');
-    if (cb) {
-        cb.checked = !cb.checked;
-        toggleStochRsiChart();
-    }
-}
-
-function toggleStochRsiChart() {
-    const cb = document.getElementById('cb-stoch-rsi');
-    const container = document.getElementById('stoch-container');
-    if (cb && container) {
-        if (cb.checked) {
-            container.classList.add('active');
-        } else {
-            container.classList.remove('active');
-        }
-        setTimeout(initAndRenderChart, 300);
-    }
-}
-
-function toggleChartIndicator() {
-    initAndRenderChart();
-}
-
-function calculateStochRSIForChart(candles) {
-    if (!candles || candles.length < 28) return null;
-    const closes = candles.map(c => c.close);
-    const n = closes.length;
-    const rsi = new Array(n).fill(null);
-    
-    const period = 14;
-    let gains = 0;
-    let losses = 0;
-    for (let i = 1; i <= period; i++) {
-        const diff = closes[i] - closes[i - 1];
-        if (diff > 0) gains += diff;
-        else losses -= diff;
-    }
-    let avgGain = gains / period;
-    let avgLoss = losses / period;
-    rsi[period] = avgLoss === 0 ? 100 : 100 - (100 / (1 + avgGain / avgLoss));
-    
-    for (let i = period + 1; i < n; i++) {
-        const diff = closes[i] - closes[i - 1];
-        const gain = diff > 0 ? diff : 0;
-        const loss = diff < 0 ? -diff : 0;
-        avgGain = (avgGain * 13 + gain) / 14;
-        avgLoss = (avgLoss * 13 + loss) / 14;
-        rsi[i] = avgLoss === 0 ? 100 : 100 - (100 / (1 + avgGain / avgLoss));
-    }
-    
-    const stochRsi = new Array(n).fill(null);
-    const stochPeriod = 14;
-    for (let i = period + stochPeriod - 1; i < n; i++) {
-        const slice = rsi.slice(i - stochPeriod + 1, i + 1);
-        const valid = slice.filter(v => v !== null);
-        if (valid.length < stochPeriod) continue;
-        const min = Math.min(...valid);
-        const max = Math.max(...valid);
-        stochRsi[i] = max === min ? 50 : ((rsi[i] - min) / (max - min)) * 100;
-    }
-    
-    const kSeries = new Array(n).fill(null);
-    const kPeriod = 3;
-    for (let i = 0; i < n; i++) {
-        const slice = [];
-        for (let j = i - kPeriod + 1; j <= i; j++) {
-            if (j >= 0 && stochRsi[j] !== null) slice.push(stochRsi[j]);
-        }
-        if (slice.length === kPeriod) {
-            kSeries[i] = slice.reduce((a, b) => a + b, 0) / kPeriod;
-        }
-    }
-    
-    const dSeries = new Array(n).fill(null);
-    const dPeriod = 3;
-    for (let i = 0; i < n; i++) {
-        const slice = [];
-        for (let j = i - dPeriod + 1; j <= i; j++) {
-            if (j >= 0 && kSeries[j] !== null) slice.push(kSeries[j]);
-        }
-        if (slice.length === dPeriod) {
-            dSeries[i] = slice.reduce((a, b) => a + b, 0) / dPeriod;
-        }
-    }
-    
-    return { k: kSeries, d: dSeries };
-}
-
-function calcLinearRegressionChannel(candles, startIdx, endIdx) {
-    const visibleCandles = candles.slice(startIdx, endIdx);
-    const n = visibleCandles.length;
-    if (n < 5) return null;
-    
-    let sumX = 0;
-    let sumY = 0;
-    let sumXX = 0;
-    let sumXY = 0;
-    
-    for (let i = 0; i < n; i++) {
-        const y = visibleCandles[i].close;
-        sumX += i;
-        sumY += y;
-        sumXX += i * i;
-        sumXY += i * y;
-    }
-    
-    const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
-    const intercept = (sumY - slope * sumX) / n;
-    
-    let sumResidualsSq = 0;
-    for (let i = 0; i < n; i++) {
-        const expected = slope * i + intercept;
-        const residual = visibleCandles[i].close - expected;
-        sumResidualsSq += residual * residual;
-    }
-    const stdDev = Math.sqrt(sumResidualsSq / n);
-    
-    return { slope, intercept, stdDev, count: n };
-}
-
-function calcBBSeriesForChart(candles, period = 20, d = 2) {
-    const n = candles.length;
-    const upper = new Array(n).fill(null);
-    const lower = new Array(n).fill(null);
-    const middle = new Array(n).fill(null);
-    
-    for (let i = period - 1; i < n; i++) {
-        const slice = candles.slice(i - period + 1, i + 1).map(c => c.close);
-        const m = slice.reduce((a, b) => a + b, 0) / period;
-        const sd = Math.sqrt(slice.reduce((a, b) => a + Math.pow(b - m, 2), 0) / period);
-        upper[i] = m + sd * d;
-        lower[i] = m - sd * d;
-        middle[i] = m;
-    }
-    return { upper, middle, lower };
-}
-
-function initAndRenderChart() {
-    if (!chartCandles || chartCandles.length === 0) return;
-    
-    const canvas = document.getElementById('trading-chart');
-    if (!canvas) return;
-    
-    const container = canvas.parentElement;
-    const rect = container.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    
-    const ctx = canvas.getContext('2d');
-    ctx.scale(dpr, dpr);
-    
-    const width = rect.width;
-    const height = rect.height;
-    
-    const axisWidth = 62;
-    const axisHeight = 20;
-    const chartWidth = width - axisWidth;
-    const chartHeight = height - axisHeight;
-    
-    ctx.fillStyle = '#060910';
-    ctx.fillRect(0, 0, width, height);
-    
-    const n = chartCandles.length;
-    const endIndex = Math.max(0, n - chartPanOffset);
-    const startIndex = Math.max(0, endIndex - visibleCandlesCount);
-    const visibleCandles = chartCandles.slice(startIndex, endIndex);
-    const vCount = visibleCandles.length;
-    if (vCount === 0) return;
-    
-    const candleWidth = chartWidth / visibleCandlesCount;
-    const bodyWidth = candleWidth * 0.72;
-    
-    const showBB = document.getElementById('cb-bb').checked;
-    const showRegression = document.getElementById('cb-regression').checked;
-
-    // ── ALAN BÖLÜMÜ: %78 fiyat, %22 hacim ──
-    const volAreaH   = Math.floor(chartHeight * 0.22);
-    const priceAreaH = chartHeight - volAreaH - 4; // 4px ayırıcı
-
-    const getPixelY = (price) => priceAreaH - ((price - minPrice) / (maxPrice - minPrice)) * priceAreaH;
-    const getPixelX = (i) => i * candleWidth + candleWidth / 2;
-
-    // BB serisi
-    let bb = null;
-    if (showBB) bb = calcBBSeriesForChart(chartCandles);
-
-    // Regression
-    let regression = null;
-    if (showRegression) regression = calcLinearRegressionChannel(chartCandles, startIndex, endIndex);
-
-    // Fiyat aralığını BB dahil hesapla
-    let maxPrice = -Infinity, minPrice = Infinity;
-    for (let i = 0; i < vCount; i++) {
-        const c = visibleCandles[i];
-        const idx = startIndex + i;
-        maxPrice = Math.max(maxPrice, c.high);
-        minPrice = Math.min(minPrice, c.low);
-        if (showBB && bb && bb.upper[idx] !== null) {
-            maxPrice = Math.max(maxPrice, bb.upper[idx]);
-            minPrice = Math.min(minPrice, bb.lower[idx]);
-        }
-    }
-    const priceRange = maxPrice - minPrice;
-    // Manuel zoom varsa override et
-    if (chartPriceMax !== null) maxPrice = chartPriceMax;
-    else maxPrice += priceRange * 0.06;
-    if (chartPriceMin !== null) minPrice = chartPriceMin;
-    else minPrice -= priceRange * 0.06;
-
-    // ── IZGARA ──
-    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
-    ctx.lineWidth = 1;
-    const gridCount = 5;
-    for (let i = 0; i <= gridCount; i++) {
-        const y = (i / gridCount) * priceAreaH;
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(chartWidth, y); ctx.stroke();
-    }
-
-    // Y eksen etiketleri
-    ctx.fillStyle = '#475569';
-    ctx.font = '9px "Space Mono", monospace';
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
-    for (let i = 0; i <= gridCount; i++) {
-        const val = maxPrice - (i / gridCount) * (maxPrice - minPrice);
-        const y   = getPixelY(val);
-        const fmt = val > 1 ? val.toLocaleString('tr-TR', {maximumFractionDigits:2}) : val.toFixed(5);
-        ctx.fillText(fmt, chartWidth + 5, y);
-    }
-
-    // X eksen etiketleri
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'top';
-    const xInterval = Math.max(1, Math.floor(vCount / 5));
-    for (let i = vCount - 1; i >= 0; i -= xInterval) {
-        const x = getPixelX(i);
-        const c = visibleCandles[i];
-        const d = new Date(c.time);
-        const lbl = d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
-        ctx.fillText(lbl, x, priceAreaH + volAreaH + 5);
-    }
-
-    // ── REGRESSION KANAlI ──
-    if (showRegression && regression) {
-        const { slope, intercept, stdDev, count } = regression;
-        const getRegY = (index, mult) => getPixelY(slope * index + intercept + mult * stdDev);
-        const x0 = getPixelX(0), x1 = getPixelX(count - 1);
-
-        // Üst dolgu (mavi)
-        ctx.fillStyle = 'rgba(59,130,246,0.08)';
-        ctx.beginPath();
-        ctx.moveTo(x0, getRegY(0, 2)); ctx.lineTo(x1, getRegY(count-1, 2));
-        ctx.lineTo(x1, getRegY(count-1, 0)); ctx.lineTo(x0, getRegY(0, 0));
-        ctx.closePath(); ctx.fill();
-
-        // Alt dolgu (kırmızı)
-        ctx.fillStyle = 'rgba(244,63,94,0.08)';
-        ctx.beginPath();
-        ctx.moveTo(x0, getRegY(0, 0)); ctx.lineTo(x1, getRegY(count-1, 0));
-        ctx.lineTo(x1, getRegY(count-1, -2)); ctx.lineTo(x0, getRegY(0, -2));
-        ctx.closePath(); ctx.fill();
-
-        ctx.lineWidth = 1.2;
-        ctx.strokeStyle = 'rgba(59,130,246,0.7)';
-        ctx.beginPath(); ctx.moveTo(x0, getRegY(0,2)); ctx.lineTo(x1, getRegY(count-1,2)); ctx.stroke();
-        ctx.strokeStyle = 'rgba(244,63,94,0.7)';
-        ctx.beginPath(); ctx.moveTo(x0, getRegY(0,-2)); ctx.lineTo(x1, getRegY(count-1,-2)); ctx.stroke();
-        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-        ctx.setLineDash([4,4]);
-        ctx.beginPath(); ctx.moveTo(x0, getRegY(0,0)); ctx.lineTo(x1, getRegY(count-1,0)); ctx.stroke();
-        ctx.setLineDash([]);
-    }
-
-    // ── BOLLINGER BANDS — fotodaki gibi dolgu ──
-    if (showBB && bb) {
-        // Üst alan (orta → üst) — mavi dolgu
-        ctx.fillStyle = 'rgba(59,130,246,0.13)';
-        ctx.beginPath();
-        let started = false;
-        for (let i = 0; i < vCount; i++) {
-            const idx = startIndex + i;
-            if (bb.upper[idx] !== null) {
-                const x = getPixelX(i), y = getPixelY(bb.upper[idx]);
-                started ? ctx.lineTo(x, y) : (ctx.moveTo(x, y), started = true);
-            }
-        }
-        for (let i = vCount - 1; i >= 0; i--) {
-            const idx = startIndex + i;
-            if (bb.middle[idx] !== null) ctx.lineTo(getPixelX(i), getPixelY(bb.middle[idx]));
-        }
-        ctx.closePath(); ctx.fill();
-
-        // Alt alan (alt → orta) — kırmızı dolgu
-        ctx.fillStyle = 'rgba(244,63,94,0.13)';
-        ctx.beginPath();
-        started = false;
-        for (let i = 0; i < vCount; i++) {
-            const idx = startIndex + i;
-            if (bb.middle[idx] !== null) {
-                const x = getPixelX(i), y = getPixelY(bb.middle[idx]);
-                started ? ctx.lineTo(x, y) : (ctx.moveTo(x, y), started = true);
-            }
-        }
-        for (let i = vCount - 1; i >= 0; i--) {
-            const idx = startIndex + i;
-            if (bb.lower[idx] !== null) ctx.lineTo(getPixelX(i), getPixelY(bb.lower[idx]));
-        }
-        ctx.closePath(); ctx.fill();
-
-        // BB çizgileri
-        const drawLine = (series, color) => {
-            ctx.strokeStyle = color; ctx.lineWidth = 1.2; ctx.beginPath();
-            let s = false;
-            for (let i = 0; i < vCount; i++) {
-                const idx = startIndex + i;
-                if (series[idx] !== null) {
-                    const x = getPixelX(i), y = getPixelY(series[idx]);
-                    s ? ctx.lineTo(x,y) : (ctx.moveTo(x,y), s=true);
-                }
-            }
-            ctx.stroke();
-        };
-        drawLine(bb.upper,  'rgba(59,130,246,0.7)');
-        drawLine(bb.lower,  'rgba(244,63,94,0.7)');
-        drawLine(bb.middle, 'rgba(255,255,255,0.2)');
-    }
-
-    // ── EMA 9 çizgisi ──
-    if (visibleCandles.length > 9) {
-        const allCloses = chartCandles.map(c => c.close);
-        const k = 2 / (9 + 1);
-        let ema = allCloses.slice(0, 9).reduce((a,b) => a+b) / 9;
-        const ema9Arr = new Array(9).fill(null);
-        for (let i = 9; i < allCloses.length; i++) {
-            ema = allCloses[i] * k + ema * (1 - k);
-            ema9Arr.push(ema);
-        }
-        ctx.strokeStyle = 'rgba(245,158,11,0.85)';
-        ctx.lineWidth = 1.2;
-        ctx.beginPath();
-        let s = false;
-        for (let i = 0; i < vCount; i++) {
-            const idx = startIndex + i;
-            if (ema9Arr[idx] != null) {
-                const x = getPixelX(i), y = getPixelY(ema9Arr[idx]);
-                s ? ctx.lineTo(x,y) : (ctx.moveTo(x,y), s=true);
-            }
-        }
-        ctx.stroke();
-    }
-
-    // ── MUMLAR ──
-    for (let i = 0; i < vCount; i++) {
-        const c  = visibleCandles[i];
-        const x  = getPixelX(i);
-        const isUp = c.close >= c.open;
-
-        // Fitil
-        ctx.strokeStyle = isUp ? 'rgba(16,185,129,0.9)' : 'rgba(244,63,94,0.9)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(x, getPixelY(c.high));
-        ctx.lineTo(x, getPixelY(c.low));
-        ctx.stroke();
-
-        // Gövde
-        const yO  = getPixelY(c.open);
-        const yC  = getPixelY(c.close);
-        const bH  = Math.max(1, Math.abs(yC - yO));
-        const bY  = Math.min(yO, yC);
-        ctx.fillStyle = isUp ? '#10b981' : '#f43f5e';
-        ctx.fillRect(x - bodyWidth/2, bY, bodyWidth, bH);
-    }
-
-    // ── HACİM — ayrı bölüm ──
-    const volTop    = priceAreaH + 4; // 4px ayırıcı
-    const maxVolume = Math.max(...visibleCandles.map(c => c.volume), 1);
-
-    // Hacim bölümü arka plan
-    ctx.fillStyle = 'rgba(255,255,255,0.015)';
-    ctx.fillRect(0, volTop, chartWidth, volAreaH);
-
-    for (let i = 0; i < vCount; i++) {
-        const c    = visibleCandles[i];
-        const x    = getPixelX(i);
-        const isUp = c.close >= c.open;
-        const vH   = (c.volume / maxVolume) * volAreaH * 0.9;
-        const vY   = volTop + volAreaH - vH;
-        ctx.fillStyle = isUp ? 'rgba(16,185,129,0.35)' : 'rgba(244,63,94,0.35)';
-        ctx.fillRect(x - bodyWidth/2, vY, bodyWidth, vH);
-    }
-
-    // Hacim etiket
-    const fmtVol = (v) => v >= 1e6 ? (v/1e6).toFixed(1)+'M' : v >= 1e3 ? (v/1e3).toFixed(0)+'K' : v.toFixed(0);
-    const lastVol = visibleCandles[vCount-1].volume;
-    ctx.font = '9px "Space Mono", monospace';
-    ctx.fillStyle = 'rgba(148,163,184,0.6)';
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'top';
-    ctx.fillText('VOL ' + fmtVol(lastVol), 4, volTop + 3);
-    
-    if (crosshairIdx >= startIndex && crosshairIdx < endIndex && !chartIsDragging) {
-        const localIdx = crosshairIdx - startIndex;
-        const cx = getPixelX(localIdx);
-        const activeCandle = chartCandles[crosshairIdx];
-        
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
-        ctx.lineWidth = 1;
-        ctx.setLineDash([4, 4]);
-        
-        ctx.beginPath();
-        ctx.moveTo(cx, 0);
-        ctx.lineTo(cx, priceAreaH + volAreaH);
-        ctx.stroke();
-        
-        if (crosshairY >= 0 && crosshairY < priceAreaH) {
-            ctx.beginPath();
-            ctx.moveTo(0, crosshairY);
-            ctx.lineTo(chartWidth, crosshairY);
-            ctx.stroke();
-        }
-        ctx.setLineDash([]);
-        
-        if (crosshairY >= 0 && crosshairY < priceAreaH) {
-            ctx.fillStyle = '#fff';
-            ctx.beginPath();
-            ctx.arc(cx, crosshairY, 3, 0, 2 * Math.PI);
-            ctx.fill();
-        }
-        
-        if (crosshairY >= 0 && crosshairY < priceAreaH) {
-            const priceAtVal = maxPrice - (crosshairY / priceAreaH) * (maxPrice - minPrice);
-            const priceStr = priceAtVal > 1 ? priceAtVal.toLocaleString('tr-TR', {maximumFractionDigits:2, minimumFractionDigits:2}) : priceAtVal.toFixed(5);
-            
-            ctx.fillStyle = '#3b82f6';
-            ctx.beginPath();
-            ctx.roundRect(chartWidth + 2, crosshairY - 8, width - chartWidth - 4, 15, 3);
-            ctx.fill();
-            
-            ctx.fillStyle = '#fff';
-            ctx.font = 'bold 9px "Space Mono", monospace';
-            ctx.fillText(priceStr, chartWidth + 5, crosshairY);
-        }
-        
-        const date = new Date(activeCandle.time);
-        const hrs = date.getHours().toString().padStart(2, '0');
-        const mins = date.getMinutes().toString().padStart(2, '0');
-        const dateStr = `${hrs}:${mins}`;
-        ctx.font = 'bold 9px "Space Mono", monospace';
-        const textW = ctx.measureText(dateStr).width + 10;
-        
-        ctx.fillStyle = '#3b82f6';
-        ctx.beginPath();
-        ctx.roundRect(cx - textW / 2, priceAreaH + volAreaH + 2, textW, 14, 3);
-        ctx.fill();
-        
-        ctx.fillStyle = '#fff';
-        ctx.fillText(dateStr, cx, priceAreaH + volAreaH + 9);
-        
-        const isUp = activeCandle.close >= activeCandle.open;
-        const classColor = isUp ? 'green' : 'red';
-        const fmtPrice = (v) => v > 1 ? v.toLocaleString('tr-TR', {maximumFractionDigits:2, minimumFractionDigits:2}) : v.toFixed(5);
-        
-        document.getElementById('tooltip-o').textContent = fmtPrice(activeCandle.open);
-        document.getElementById('tooltip-o').className = classColor;
-        document.getElementById('tooltip-h').textContent = fmtPrice(activeCandle.high);
-        document.getElementById('tooltip-h').className = classColor;
-        document.getElementById('tooltip-l').textContent = fmtPrice(activeCandle.low);
-        document.getElementById('tooltip-l').className = classColor;
-        document.getElementById('tooltip-c').textContent = fmtPrice(activeCandle.close);
-        document.getElementById('tooltip-c').className = classColor;
-        
-        const chg = ((activeCandle.close - activeCandle.open) / activeCandle.open) * 100;
-        const chgStr = ` (${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%)`;
-        document.getElementById('tooltip-c').innerHTML += `<span style="font-size:0.53rem;" class="${classColor}">${chgStr}</span>`;
-        
-        const fmtVol = (v) => {
-            if (v >= 1e6) return (v / 1e6).toFixed(2) + 'M';
-            if (v >= 1e3) return (v / 1e3).toFixed(1) + 'K';
-            return v.toFixed(0);
-        };
-        document.getElementById('tooltip-v').textContent = fmtVol(activeCandle.volume);
-        document.getElementById('tooltip-v').className = classColor;
-    } else {
-        const lastC = chartCandles[endIndex - 1];
-        if (lastC) {
-            const isUp = lastC.close >= lastC.open;
-            const classColor = isUp ? 'green' : 'red';
-            const fmtPrice = (v) => v > 1 ? v.toLocaleString('tr-TR', {maximumFractionDigits:2, minimumFractionDigits:2}) : v.toFixed(5);
-            
-            document.getElementById('tooltip-o').textContent = fmtPrice(lastC.open);
-            document.getElementById('tooltip-o').className = classColor;
-            document.getElementById('tooltip-h').textContent = fmtPrice(lastC.high);
-            document.getElementById('tooltip-h').className = classColor;
-            document.getElementById('tooltip-l').textContent = fmtPrice(lastC.low);
-            document.getElementById('tooltip-l').className = classColor;
-            document.getElementById('tooltip-c').textContent = fmtPrice(lastC.close);
-            document.getElementById('tooltip-c').className = classColor;
-            
-            const chg = ((lastC.close - lastC.open) / lastC.open) * 100;
-            const chgStr = ` (${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%)`;
-            document.getElementById('tooltip-c').innerHTML += `<span style="font-size:0.53rem;" class="${classColor}">${chgStr}</span>`;
-            
-            const fmtVol = (v) => {
-                if (v >= 1e6) return (v / 1e6).toFixed(2) + 'M';
-                if (v >= 1e3) return (v / 1e3).toFixed(1) + 'K';
-                return v.toFixed(0);
-            };
-            document.getElementById('tooltip-v').textContent = fmtVol(lastC.volume);
-            document.getElementById('tooltip-v').className = classColor;
-        }
-    }
-    
-    renderStochRsiPane(startIndex, endIndex, candleWidth, getPixelX);
-}
-
-function renderStochRsiPane(startIndex, endIndex, candleWidth, getPixelX) {
-    const showStoch = document.getElementById('cb-stoch-rsi').checked;
-    if (!showStoch) return;
-    
-    const canvas = document.getElementById('stoch-chart');
-    if (!canvas) return;
-    
-    const container = canvas.parentElement;
-    const rect = container.getBoundingClientRect();
-    if (rect.height === 0) return;
-    
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    
-    const ctx = canvas.getContext('2d');
-    ctx.scale(dpr, dpr);
-    
-    const width = rect.width;
-    const height = rect.height;
-    
-    const axisWidth = 62;
-    const axisHeight = 15;
-    const chartWidth = width - axisWidth;
-    const chartHeight = height - axisHeight;
-    
-    ctx.fillStyle = '#05070c';
-    ctx.fillRect(0, 0, width, height);
-    
-    const stochData = calculateStochRSIForChart(chartCandles);
-    if (!stochData) return;
-    
-    const vCount = endIndex - startIndex;
-    const getPixelY = (val) => chartHeight - (val / 100) * (chartHeight - 10) - 5;
-    
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
-    ctx.lineWidth = 1;
-    
-    const levels = [20, 50, 80];
-    ctx.fillStyle = '#475569';
-    ctx.font = '8px "Space Mono", monospace';
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
-    
-    for (const lvl of levels) {
-        const y = getPixelY(lvl);
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(chartWidth, y);
-        ctx.stroke();
-        
-        ctx.fillText(lvl.toString(), chartWidth + 6, y);
-    }
-    
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.01)';
-    const y80 = getPixelY(80);
-    const y20 = getPixelY(20);
-    ctx.fillRect(0, y80, chartWidth, y20 - y80);
-    
-    ctx.lineWidth = 1.25;
-    ctx.strokeStyle = '#3b82f6';
-    ctx.beginPath();
-    let startedK = false;
-    for (let i = 0; i < vCount; i++) {
-        const idx = startIndex + i;
-        if (stochData.k[idx] !== null) {
-            const x = getPixelX(i);
-            const y = getPixelY(stochData.k[idx]);
-            if (!startedK) {
-                ctx.moveTo(x, y);
-                startedK = true;
-            } else {
-                ctx.lineTo(x, y);
-            }
-        }
-    }
-    ctx.stroke();
-    
-    ctx.strokeStyle = '#f43f5e';
-    ctx.beginPath();
-    let startedD = false;
-    for (let i = 0; i < vCount; i++) {
-        const idx = startIndex + i;
-        if (stochData.d[idx] !== null) {
-            const x = getPixelX(i);
-            const y = getPixelY(stochData.d[idx]);
-            if (!startedD) {
-                ctx.moveTo(x, y);
-                startedD = true;
-            } else {
-                ctx.lineTo(x, y);
-            }
-        }
-    }
-    ctx.stroke();
-    
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-    ctx.beginPath();
-    ctx.moveTo(chartWidth, 0);
-    ctx.lineTo(chartWidth, chartHeight);
-    ctx.lineTo(width, chartHeight);
-    ctx.stroke();
-    
-    if (crosshairIdx >= startIndex && crosshairIdx < endIndex && !chartIsDragging) {
-        const localIdx = crosshairIdx - startIndex;
-        const cx = getPixelX(localIdx);
-        
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
-        ctx.setLineDash([4, 4]);
-        ctx.beginPath();
-        ctx.moveTo(cx, 0);
-        ctx.lineTo(cx, priceAreaH + volAreaH);
-        ctx.stroke();
-        ctx.setLineDash([]);
-        
-        const kVal = stochData.k[crosshairIdx];
-        const dVal = stochData.d[crosshairIdx];
-        if (kVal !== null && dVal !== null) {
-            ctx.fillStyle = '#94a3b8';
-            ctx.font = '8px "Space Mono", monospace';
-            ctx.textAlign = 'left';
-            ctx.textBaseline = 'top';
-            ctx.fillText(`Stoch RSI(14,3,3)  %K: `, 10, 4);
-            const kWidth = ctx.measureText(`Stoch RSI(14,3,3)  %K: `).width;
-            ctx.fillStyle = '#3b82f6';
-            ctx.fillText(kVal.toFixed(2), 10 + kWidth, 4);
-            const kValWidth = ctx.measureText(kVal.toFixed(2)).width;
-            ctx.fillStyle = '#94a3b8';
-            ctx.fillText(`  %D: `, 10 + kWidth + kValWidth, 4);
-            const dWidth = ctx.measureText(`  %D: `).width;
-            ctx.fillStyle = '#f43f5e';
-            ctx.fillText(dVal.toFixed(2), 10 + kWidth + kValWidth + dWidth, 4);
-        }
-    }
-}
-
-function captureChartSnapshot() {
-    const mainCanvas = document.getElementById('trading-chart');
-    const stochCanvas = document.getElementById('stoch-chart');
-    const showStoch = document.getElementById('cb-stoch-rsi').checked;
-    
-    if (!mainCanvas) return;
-    
-    const w = mainCanvas.width;
-    let h = mainCanvas.height;
-    if (showStoch && stochCanvas) {
-        h += stochCanvas.height;
-    }
-    
-    const captureCanvas = document.createElement('canvas');
-    captureCanvas.width = w;
-    captureCanvas.height = h;
-    const ctx = captureCanvas.getContext('2d');
-    
-    ctx.drawImage(mainCanvas, 0, 0);
-    if (showStoch && stochCanvas) {
-        ctx.drawImage(stochCanvas, 0, mainCanvas.height);
-    }
-    
-    const link = document.createElement('a');
-    link.download = `cyclemaster_chart_${currentCoin}_${chartTF}.png`;
-    link.href = captureCanvas.toDataURL('image/png');
-    link.click();
-    
-    showToast("📸 Ekran Görüntüsü", "Grafik resmi cihazınıza indirildi.");
-}
-
-// ── CHART STATE ──
-let chartPriceMin = null; // null = otomatik
-let chartPriceMax = null;
-let yAxisDragging = false;
-let yAxisDragStartY = 0;
-let yAxisDragStartMin = 0;
-let yAxisDragStartMax = 0;
-
-function setupChartListeners() {
-    const container = document.querySelector('.chart-container');
-    const canvas = document.getElementById('trading-chart');
-    if (!container || !canvas) return;
-    
-    const newCanvas = canvas.cloneNode(true);
-    canvas.parentNode.replaceChild(newCanvas, canvas);
-    
-    const stochCanvas = document.getElementById('stoch-chart');
-    if (stochCanvas) {
-        const newStochCanvas = stochCanvas.cloneNode(true);
-        stochCanvas.parentNode.replaceChild(newStochCanvas, stochCanvas);
-    }
-    
-    const activeCanvas = document.getElementById('trading-chart');
-    const activeStoch = document.getElementById('stoch-chart');
-
-    // Y ekseni alanı: sağ 62px
-    const isOnYAxis = (clientX, rect) => clientX > (rect.width - 62);
-
-    const onStart = (e) => {
-        const rect = activeCanvas.getBoundingClientRect();
-        const pageX = e.touches ? e.touches[0].pageX : e.pageX;
-        const pageY = e.touches ? e.touches[0].pageY : e.pageY;
-        const clientX = pageX - rect.left - window.scrollX;
-
-        if (isOnYAxis(clientX, rect)) {
-            // Y ekseni sürükleme başlat
-            yAxisDragging = true;
-            yAxisDragStartY = pageY;
-            // Şu anki min/max'ı yakala
-            const n = chartCandles.length;
-            const endIndex = Math.max(0, n - chartPanOffset);
-            const startIndex = Math.max(0, endIndex - visibleCandlesCount);
-            const visible = chartCandles.slice(startIndex, endIndex);
-            let mx = -Infinity, mn = Infinity;
-            visible.forEach(c => { mx = Math.max(mx, c.high); mn = Math.min(mn, c.low); });
-            const rng = mx - mn;
-            yAxisDragStartMax = chartPriceMax !== null ? chartPriceMax : mx + rng * 0.06;
-            yAxisDragStartMin = chartPriceMin !== null ? chartPriceMin : mn - rng * 0.06;
-        } else {
-            chartIsDragging = true;
-            chartDragStartX = pageX;
-            chartDragStartOffset = chartPanOffset;
-        }
-    };
-    
-    activeCanvas.addEventListener('mousedown', onStart);
-    activeCanvas.addEventListener('touchstart', onStart, { passive: true });
-    if (activeStoch) {
-        activeStoch.addEventListener('mousedown', onStart);
-        activeStoch.addEventListener('touchstart', onStart, { passive: true });
-    }
-    
-    const onMove = (e) => {
-        const rect = activeCanvas.getBoundingClientRect();
-        const pageX = e.touches ? e.touches[0].pageX : e.pageX;
-        const pageY = e.touches ? e.touches[0].pageY : e.pageY;
-        const clientX = pageX - rect.left - window.scrollX;
-        const clientY = pageY - rect.top - window.scrollY;
-
-        // Y ekseni zoom
-        if (yAxisDragging) {
-            const deltaY = pageY - yAxisDragStartY;
-            const range = yAxisDragStartMax - yAxisDragStartMin;
-            const mid   = (yAxisDragStartMax + yAxisDragStartMin) / 2;
-            // Yukarı sürükle = daralt, aşağı sürükle = genişlet
-            const factor = 1 + deltaY * 0.005;
-            const newRange = Math.max(range * 0.1, range * factor);
-            chartPriceMax = mid + newRange / 2;
-            chartPriceMin = mid - newRange / 2;
-            initAndRenderChart();
-            return;
-        }
-
-        if (chartIsDragging) {
-            const deltaX = pageX - chartDragStartX;
-            const candleWidth = (rect.width - 62) / visibleCandlesCount;
-            const deltaCandles = Math.round(deltaX / candleWidth);
-            const maxOffset = chartCandles.length - visibleCandlesCount;
-            chartPanOffset = Math.max(0, Math.min(maxOffset, chartDragStartOffset + deltaCandles));
-            initAndRenderChart();
-        } else {
-            // Y ekseni üzerindeyse cursor değiştir
-            activeCanvas.style.cursor = isOnYAxis(clientX, rect) ? 'ns-resize' : 'crosshair';
-
-            const chartWidth = rect.width - 62;
-            if (clientX >= 0 && clientX <= chartWidth) {
-                const candleWidth = chartWidth / visibleCandlesCount;
-                const localIdx = Math.floor(clientX / candleWidth);
-                const n = chartCandles.length;
-                const endIndex = Math.max(0, n - chartPanOffset);
-                const startIndex = Math.max(0, endIndex - visibleCandlesCount);
-                crosshairIdx = Math.max(startIndex, Math.min(endIndex - 1, startIndex + localIdx));
-                crosshairX = clientX;
-                crosshairY = clientY;
-            } else {
-                crosshairIdx = -1;
-            }
-            initAndRenderChart();
-        }
-    };
-    
-    activeCanvas.addEventListener('mousemove', onMove);
-    activeCanvas.addEventListener('touchmove', onMove, { passive: true });
-    if (activeStoch) {
-        activeStoch.addEventListener('mousemove', (e) => {
-            const rect = activeStoch.getBoundingClientRect();
-            const pageX = e.touches ? e.touches[0].pageX : e.pageX;
-            const clientX = pageX - rect.left - window.scrollX;
-            if (chartIsDragging) {
-                const deltaX = pageX - chartDragStartX;
-                const candleWidth = (rect.width - 62) / visibleCandlesCount;
-                const deltaCandles = Math.round(deltaX / candleWidth);
-                const maxOffset = chartCandles.length - visibleCandlesCount;
-                chartPanOffset = Math.max(0, Math.min(maxOffset, chartDragStartOffset + deltaCandles));
-                initAndRenderChart();
-            } else {
-                const chartWidth = rect.width - 62;
-                if (clientX >= 0 && clientX <= chartWidth) {
-                    const candleWidth = chartWidth / visibleCandlesCount;
-                    const localIdx = Math.floor(clientX / candleWidth);
-                    const n = chartCandles.length;
-                    const endIndex = Math.max(0, n - chartPanOffset);
-                    const startIndex = Math.max(0, endIndex - visibleCandlesCount);
-                    crosshairIdx = Math.max(startIndex, Math.min(endIndex - 1, startIndex + localIdx));
-                    crosshairY = -1;
-                } else {
-                    crosshairIdx = -1;
-                }
-                initAndRenderChart();
-            }
-        });
-        activeStoch.addEventListener('touchmove', onMove, { passive: true });
-    }
-    
-    const onEnd = () => {
-        chartIsDragging = false;
-        yAxisDragging = false;
-    };
-    window.addEventListener('mouseup', onEnd);
-    window.addEventListener('touchend', onEnd);
-
-    // Y eksenine çift tıklayınca otomatik aralığa dön
-    activeCanvas.addEventListener('dblclick', (e) => {
-        const rect = activeCanvas.getBoundingClientRect();
-        const clientX = e.clientX - rect.left;
-        if (isOnYAxis(clientX, rect)) {
-            chartPriceMin = null;
-            chartPriceMax = null;
-            initAndRenderChart();
-            showToast('🔄 Ölçek Sıfırlandı', 'Otomatik fiyat aralığına döndü.');
-        }
-    });
-    
-    const onLeave = () => {
-        if (!chartIsDragging && !yAxisDragging) {
-            crosshairIdx = -1;
-            activeCanvas.style.cursor = 'crosshair';
-            initAndRenderChart();
-        }
-    };
-    activeCanvas.addEventListener('mouseleave', onLeave);
-    if (activeStoch) activeStoch.addEventListener('mouseleave', onLeave);
-    
-    const onWheel = (e) => {
-        e.preventDefault();
-        const rect = activeCanvas.getBoundingClientRect();
-        const clientX = e.clientX - rect.left;
-
-        if (isOnYAxis(clientX, rect)) {
-            // Y ekseni üzerinde wheel = fiyat zoom
-            const n = chartCandles.length;
-            const endIndex = Math.max(0, n - chartPanOffset);
-            const startIndex = Math.max(0, endIndex - visibleCandlesCount);
-            const visible = chartCandles.slice(startIndex, endIndex);
-            let mx = -Infinity, mn = Infinity;
-            visible.forEach(c => { mx = Math.max(mx, c.high); mn = Math.min(mn, c.low); });
-            const rng = mx - mn;
-            const curMax = chartPriceMax !== null ? chartPriceMax : mx + rng * 0.06;
-            const curMin = chartPriceMin !== null ? chartPriceMin : mn - rng * 0.06;
-            const mid    = (curMax + curMin) / 2;
-            const factor = e.deltaY > 0 ? 1.15 : 0.87;
-            const newRange = (curMax - curMin) * factor;
-            chartPriceMax = mid + newRange / 2;
-            chartPriceMin = mid - newRange / 2;
-        } else {
-            // Normal X zoom
-            const zoomFactor = e.deltaY > 0 ? 1 : -1;
-            const oldVisible = visibleCandlesCount;
-            visibleCandlesCount = Math.max(20, Math.min(120, visibleCandlesCount + zoomFactor * 5));
-            const chartWidth = rect.width - 62;
-            const mouseRatio = Math.max(0, Math.min(1, (e.clientX - rect.left) / chartWidth));
-            const deltaVisible = visibleCandlesCount - oldVisible;
-            chartPanOffset = Math.max(0, Math.min(chartCandles.length - visibleCandlesCount,
-                Math.round(chartPanOffset - deltaVisible * (1 - mouseRatio))));
-        }
-        initAndRenderChart();
-    };
-    container.addEventListener('wheel', onWheel, { passive: false });
-    if (activeStoch) activeStoch.parentElement.addEventListener('wheel', onWheel, { passive: false });
-}
-
-window.addEventListener('resize', () => {
-    if (chartCandles && chartCandles.length > 0) {
-        initAndRenderChart();
-    }
-});
-
-let listenersAttached = false;
-const originalRender = initAndRenderChart;
-initAndRenderChart = function() {
-    originalRender();
-    if (!listenersAttached) {
-        setupChartListeners();
-        listenersAttached = true;
-    }
-};
 
 loadFromMemory();
 setInterval(updateCycle,1000);
