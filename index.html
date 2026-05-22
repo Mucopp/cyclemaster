@@ -766,10 +766,6 @@
                 <div class="ind-right"><span class="ind-val" id="bb-status">—</span><span class="ind-badge b-gray" id="bb-badge">—</span></div>
             </div>
             <div class="ind-row">
-                <div class="ind-left"><div id="regression-dot" class="dot"></div><span class="ind-name">Regresyon Kanalı</span></div>
-                <div class="ind-right"><span class="ind-val" id="regression-val">—</span><span class="ind-badge b-gray" id="regression-badge">—</span></div>
-            </div>
-            <div class="ind-row">
                 <div class="ind-left"><div id="rsi-dot" class="dot"></div><span class="ind-name">RSI (14)</span></div>
                 <div class="ind-right"><span class="ind-val" id="rsi-val">—</span><span class="ind-badge b-gray" id="rsi-badge">—</span></div>
             </div>
@@ -1019,7 +1015,6 @@ let vwapVal=0;
 let obvVal=0, obvMAVal=0;
 let mfiVal=50;
 let momVal=0;
-let regStatus="Mid", regCenterVal=0;
 let lastPrice=0;
 let isSoundEnabled=false, alertPlayedInThisWindow=false, isNotificationEnabled=false;
 let toastTimer=null;
@@ -1402,33 +1397,6 @@ async function fetchTechnical(){
         bbStatus = lp >= upper*0.995 ? "Top" : lp <= lower*1.005 ? "Bottom" : "Mid";
         document.getElementById('bb-status').textContent = bbStatus==="Top" ? "ÜST BAND" : bbStatus==="Bottom" ? "ALT BAND" : "ORTA";
         
-        // --- ALT TF REGRESSION CHANNEL ---
-        const altCandleObjects = kAltRaw.map(x => ({ close: parseFloat(x[4]) }));
-        const regAlt = calcLinearRegressionChannel(altCandleObjects, Math.max(0, altCandleObjects.length - 100), altCandleObjects.length);
-        if (regAlt) {
-            const count = regAlt.count;
-            const lastIdx = count - 1;
-            regCenterVal = regAlt.slope * lastIdx + regAlt.intercept;
-            const regUpperVal = regCenterVal + 2 * regAlt.stdDev;
-            const regLowerVal = regCenterVal - 2 * regAlt.stdDev;
-            
-            if (lp >= regUpperVal * 0.995) {
-                regStatus = "Top";
-            } else if (lp <= regLowerVal * 1.005) {
-                regStatus = "Bottom";
-            } else {
-                regStatus = "Mid";
-            }
-        } else {
-            regStatus = "Mid";
-            regCenterVal = lp;
-        }
-        
-        const regValEl = document.getElementById('regression-val');
-        if (regValEl) {
-            regValEl.textContent = lp > 1 ? regCenterVal.toLocaleString('tr-TR', {maximumFractionDigits:2}) : regCenterVal.toFixed(5);
-        }
-        
         const obvSeries = calcOBV(cAlt, vAlt);
         const obvMASeries = calcSMA(obvSeries, 20);
         obvVal = obvSeries[obvSeries.length-1];
@@ -1499,20 +1467,6 @@ function updateBadges(lp){
     if(bbStatus==="Top"){bb.textContent="ÜST";bb.className="ind-badge b-red";}
     else if(bbStatus==="Bottom"){bb.textContent="ALT";bb.className="ind-badge b-green";}
     else{bb.textContent="ORTA";bb.className="ind-badge b-gray";}
-
-    const regB = document.getElementById('regression-badge');
-    if (regB) {
-        if (regStatus === "Top") {
-            regB.textContent = "AŞIRI ALIM";
-            regB.className = "ind-badge b-red";
-        } else if (regStatus === "Bottom") {
-            regB.textContent = "AŞIRI SATIM";
-            regB.className = "ind-badge b-green";
-        } else {
-            regB.textContent = "NÖTR";
-            regB.className = "ind-badge b-gray";
-        }
-    }
 
     const emaB=document.getElementById('ema-badge');
     if(ema9Val>ema21Val&&ema21Val>ema50Val){emaB.textContent="BOĞA";emaB.className="ind-badge b-green";}
@@ -1701,8 +1655,6 @@ function runAgent(){
         document.getElementById('obv-dot').className='dot';
         document.getElementById('mfi-dot').className='dot';
         document.getElementById('mom-dot').className='dot';
-        const regDot = document.getElementById('regression-dot');
-        if (regDot) regDot.className='dot';
         return;
     }
 
@@ -1790,10 +1742,6 @@ function runAgent(){
     document.getElementById('obv-dot').className='dot '+(obvOk?'active':'warn');
     document.getElementById('mfi-dot').className='dot '+(mfiOk?'active':'warn');
     document.getElementById('mom-dot').className='dot '+(momOk?'active':'warn');
-
-    const regOk = lastMode==='SHORT' ? regStatus==="Top" : regStatus==="Bottom";
-    const regDot = document.getElementById('regression-dot');
-    if (regDot) regDot.className = 'dot '+(regOk?'active':'warn');
 
     const banner=document.getElementById('signal-banner');
     if(score>=75){
@@ -2140,255 +2088,232 @@ function initAndRenderChart() {
     
     const showBB = document.getElementById('cb-bb').checked;
     const showRegression = document.getElementById('cb-regression').checked;
-    
+
+    // ── ALAN BÖLÜMÜ: %78 fiyat, %22 hacim ──
+    const volAreaH   = Math.floor(chartHeight * 0.22);
+    const priceAreaH = chartHeight - volAreaH - 4; // 4px ayırıcı
+
+    const getPixelY = (price) => priceAreaH - ((price - minPrice) / (maxPrice - minPrice)) * priceAreaH;
+    const getPixelX = (i) => i * candleWidth + candleWidth / 2;
+
+    // BB serisi
     let bb = null;
-    if (showBB) {
-        bb = calcBBSeriesForChart(chartCandles);
-    }
-    
+    if (showBB) bb = calcBBSeriesForChart(chartCandles);
+
+    // Regression
     let regression = null;
-    if (showRegression) {
-        regression = calcLinearRegressionChannel(chartCandles, startIndex, endIndex);
-    }
-    
-    let maxPrice = -Infinity;
-    let minPrice = Infinity;
+    if (showRegression) regression = calcLinearRegressionChannel(chartCandles, startIndex, endIndex);
+
+    // Fiyat aralığını BB dahil hesapla
+    let maxPrice = -Infinity, minPrice = Infinity;
     for (let i = 0; i < vCount; i++) {
         const c = visibleCandles[i];
         const idx = startIndex + i;
         maxPrice = Math.max(maxPrice, c.high);
         minPrice = Math.min(minPrice, c.low);
-        
         if (showBB && bb && bb.upper[idx] !== null) {
             maxPrice = Math.max(maxPrice, bb.upper[idx]);
             minPrice = Math.min(minPrice, bb.lower[idx]);
         }
     }
-    
     const priceRange = maxPrice - minPrice;
-    maxPrice += priceRange * 0.06;
-    minPrice -= priceRange * 0.06;
-    
-    const getPixelY = (price) => chartHeight - ((price - minPrice) / (maxPrice - minPrice)) * chartHeight;
-    const getPixelX = (i) => i * candleWidth + candleWidth / 2;
-    
+    // Manuel zoom varsa override et
+    if (chartPriceMax !== null) maxPrice = chartPriceMax;
+    else maxPrice += priceRange * 0.06;
+    if (chartPriceMin !== null) minPrice = chartPriceMin;
+    else minPrice -= priceRange * 0.06;
+
+    // ── IZGARA ──
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
     ctx.lineWidth = 1;
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
-    
-    const yLabelCount = 6;
+    const gridCount = 5;
+    for (let i = 0; i <= gridCount; i++) {
+        const y = (i / gridCount) * priceAreaH;
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(chartWidth, y); ctx.stroke();
+    }
+
+    // Y eksen etiketleri
     ctx.fillStyle = '#475569';
     ctx.font = '9px "Space Mono", monospace';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    
-    for (let i = 0; i < yLabelCount; i++) {
-        const val = minPrice + (i / (yLabelCount - 1)) * (maxPrice - minPrice);
-        const y = getPixelY(val);
-        
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(chartWidth, y);
-        ctx.stroke();
-        
-        const fmt = val > 1 ? val.toLocaleString('tr-TR', {maximumFractionDigits:2, minimumFractionDigits:2}) : val.toFixed(5);
-        ctx.fillText(fmt, chartWidth + 6, y);
+    for (let i = 0; i <= gridCount; i++) {
+        const val = maxPrice - (i / gridCount) * (maxPrice - minPrice);
+        const y   = getPixelY(val);
+        const fmt = val > 1 ? val.toLocaleString('tr-TR', {maximumFractionDigits:2}) : val.toFixed(5);
+        ctx.fillText(fmt, chartWidth + 5, y);
     }
-    
+
+    // X eksen etiketleri
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
-    const xLabelInterval = Math.max(1, Math.floor(vCount / 5));
-    for (let i = vCount - 1; i >= 0; i -= xLabelInterval) {
+    const xInterval = Math.max(1, Math.floor(vCount / 5));
+    for (let i = vCount - 1; i >= 0; i -= xInterval) {
         const x = getPixelX(i);
         const c = visibleCandles[i];
-        
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, chartHeight);
-        ctx.stroke();
-        
-        const date = new Date(c.time);
-        const hrs = date.getHours().toString().padStart(2, '0');
-        const mins = date.getMinutes().toString().padStart(2, '0');
-        const timeStr = `${hrs}:${mins}`;
-        ctx.fillText(timeStr, x, chartHeight + 6);
+        const d = new Date(c.time);
+        const lbl = d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+        ctx.fillText(lbl, x, priceAreaH + volAreaH + 5);
     }
-    
+
+    // ── REGRESSION KANAlI ──
     if (showRegression && regression) {
         const { slope, intercept, stdDev, count } = regression;
-        
-        ctx.lineWidth = 1.5;
-        
-        const getRegY = (index, mult = 0) => {
-            const regVal = slope * index + intercept + mult * stdDev;
-            return getPixelY(regVal);
-        };
-        
-        const xStart = getPixelX(0);
-        const xEnd = getPixelX(count - 1);
-        const yCenterStart = getRegY(0, 0);
-        const yCenterEnd = getRegY(count - 1, 0);
-        const yUpperStart = getRegY(0, 2);
-        const yUpperEnd = getRegY(count - 1, 2);
-        const yLowerStart = getRegY(0, -2);
-        const yLowerEnd = getRegY(count - 1, -2);
-        
-        ctx.fillStyle = 'rgba(59, 130, 246, 0.07)';
+        const getRegY = (index, mult) => getPixelY(slope * index + intercept + mult * stdDev);
+        const x0 = getPixelX(0), x1 = getPixelX(count - 1);
+
+        // Üst dolgu (mavi)
+        ctx.fillStyle = 'rgba(59,130,246,0.08)';
         ctx.beginPath();
-        ctx.moveTo(xStart, yUpperStart);
-        ctx.lineTo(xEnd, yUpperEnd);
-        ctx.lineTo(xEnd, yCenterEnd);
-        ctx.lineTo(xStart, yCenterStart);
-        ctx.closePath();
-        ctx.fill();
-        
-        ctx.fillStyle = 'rgba(244, 63, 94, 0.07)';
+        ctx.moveTo(x0, getRegY(0, 2)); ctx.lineTo(x1, getRegY(count-1, 2));
+        ctx.lineTo(x1, getRegY(count-1, 0)); ctx.lineTo(x0, getRegY(0, 0));
+        ctx.closePath(); ctx.fill();
+
+        // Alt dolgu (kırmızı)
+        ctx.fillStyle = 'rgba(244,63,94,0.08)';
         ctx.beginPath();
-        ctx.moveTo(xStart, yCenterStart);
-        ctx.lineTo(xEnd, yCenterEnd);
-        ctx.lineTo(xEnd, yLowerStart);
-        ctx.lineTo(xStart, yLowerStart);
-        ctx.closePath();
-        ctx.fill();
-        
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
-        ctx.setLineDash([4, 4]);
-        ctx.beginPath();
-        ctx.moveTo(xStart, yCenterStart);
-        ctx.lineTo(xEnd, yCenterEnd);
-        ctx.stroke();
-        ctx.setLineDash([]);
-        
-        ctx.strokeStyle = 'rgba(59, 130, 246, 0.65)';
-        ctx.beginPath();
-        ctx.moveTo(xStart, yUpperStart);
-        ctx.lineTo(xEnd, yUpperEnd);
-        ctx.stroke();
-        
-        ctx.strokeStyle = 'rgba(244, 63, 94, 0.65)';
-        ctx.beginPath();
-        ctx.moveTo(xStart, yLowerStart);
-        ctx.lineTo(xEnd, yLowerEnd);
-        ctx.stroke();
-    }
-    
-    if (showBB && bb) {
+        ctx.moveTo(x0, getRegY(0, 0)); ctx.lineTo(x1, getRegY(count-1, 0));
+        ctx.lineTo(x1, getRegY(count-1, -2)); ctx.lineTo(x0, getRegY(0, -2));
+        ctx.closePath(); ctx.fill();
+
         ctx.lineWidth = 1.2;
-        
-        ctx.strokeStyle = 'rgba(16, 185, 129, 0.55)';
+        ctx.strokeStyle = 'rgba(59,130,246,0.7)';
+        ctx.beginPath(); ctx.moveTo(x0, getRegY(0,2)); ctx.lineTo(x1, getRegY(count-1,2)); ctx.stroke();
+        ctx.strokeStyle = 'rgba(244,63,94,0.7)';
+        ctx.beginPath(); ctx.moveTo(x0, getRegY(0,-2)); ctx.lineTo(x1, getRegY(count-1,-2)); ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+        ctx.setLineDash([4,4]);
+        ctx.beginPath(); ctx.moveTo(x0, getRegY(0,0)); ctx.lineTo(x1, getRegY(count-1,0)); ctx.stroke();
+        ctx.setLineDash([]);
+    }
+
+    // ── BOLLINGER BANDS — fotodaki gibi dolgu ──
+    if (showBB && bb) {
+        // Üst alan (orta → üst) — mavi dolgu
+        ctx.fillStyle = 'rgba(59,130,246,0.13)';
         ctx.beginPath();
-        let startedUpper = false;
+        let started = false;
         for (let i = 0; i < vCount; i++) {
             const idx = startIndex + i;
             if (bb.upper[idx] !== null) {
-                const x = getPixelX(i);
-                const y = getPixelY(bb.upper[idx]);
-                if (!startedUpper) {
-                    ctx.moveTo(x, y);
-                    startedUpper = true;
-                } else {
-                    ctx.lineTo(x, y);
-                }
+                const x = getPixelX(i), y = getPixelY(bb.upper[idx]);
+                started ? ctx.lineTo(x, y) : (ctx.moveTo(x, y), started = true);
             }
         }
-        ctx.stroke();
-        
-        ctx.strokeStyle = 'rgba(16, 185, 129, 0.55)';
-        ctx.beginPath();
-        let startedLower = false;
-        for (let i = 0; i < vCount; i++) {
+        for (let i = vCount - 1; i >= 0; i--) {
             const idx = startIndex + i;
-            if (bb.lower[idx] !== null) {
-                const x = getPixelX(i);
-                const y = getPixelY(bb.lower[idx]);
-                if (!startedLower) {
-                    ctx.moveTo(x, y);
-                    startedLower = true;
-                } else {
-                    ctx.lineTo(x, y);
-                }
-            }
+            if (bb.middle[idx] !== null) ctx.lineTo(getPixelX(i), getPixelY(bb.middle[idx]));
         }
-        ctx.stroke();
-        
-        ctx.strokeStyle = 'rgba(16, 185, 129, 0.2)';
-        ctx.setLineDash([2, 2]);
+        ctx.closePath(); ctx.fill();
+
+        // Alt alan (alt → orta) — kırmızı dolgu
+        ctx.fillStyle = 'rgba(244,63,94,0.13)';
         ctx.beginPath();
-        let startedMid = false;
+        started = false;
         for (let i = 0; i < vCount; i++) {
             const idx = startIndex + i;
             if (bb.middle[idx] !== null) {
-                const x = getPixelX(i);
-                const y = getPixelY(bb.middle[idx]);
-                if (!startedMid) {
-                    ctx.moveTo(x, y);
-                    startedMid = true;
-                } else {
-                    ctx.lineTo(x, y);
+                const x = getPixelX(i), y = getPixelY(bb.middle[idx]);
+                started ? ctx.lineTo(x, y) : (ctx.moveTo(x, y), started = true);
+            }
+        }
+        for (let i = vCount - 1; i >= 0; i--) {
+            const idx = startIndex + i;
+            if (bb.lower[idx] !== null) ctx.lineTo(getPixelX(i), getPixelY(bb.lower[idx]));
+        }
+        ctx.closePath(); ctx.fill();
+
+        // BB çizgileri
+        const drawLine = (series, color) => {
+            ctx.strokeStyle = color; ctx.lineWidth = 1.2; ctx.beginPath();
+            let s = false;
+            for (let i = 0; i < vCount; i++) {
+                const idx = startIndex + i;
+                if (series[idx] !== null) {
+                    const x = getPixelX(i), y = getPixelY(series[idx]);
+                    s ? ctx.lineTo(x,y) : (ctx.moveTo(x,y), s=true);
                 }
+            }
+            ctx.stroke();
+        };
+        drawLine(bb.upper,  'rgba(59,130,246,0.7)');
+        drawLine(bb.lower,  'rgba(244,63,94,0.7)');
+        drawLine(bb.middle, 'rgba(255,255,255,0.2)');
+    }
+
+    // ── EMA 9 çizgisi ──
+    if (visibleCandles.length > 9) {
+        const allCloses = chartCandles.map(c => c.close);
+        const k = 2 / (9 + 1);
+        let ema = allCloses.slice(0, 9).reduce((a,b) => a+b) / 9;
+        const ema9Arr = new Array(9).fill(null);
+        for (let i = 9; i < allCloses.length; i++) {
+            ema = allCloses[i] * k + ema * (1 - k);
+            ema9Arr.push(ema);
+        }
+        ctx.strokeStyle = 'rgba(245,158,11,0.85)';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        let s = false;
+        for (let i = 0; i < vCount; i++) {
+            const idx = startIndex + i;
+            if (ema9Arr[idx] != null) {
+                const x = getPixelX(i), y = getPixelY(ema9Arr[idx]);
+                s ? ctx.lineTo(x,y) : (ctx.moveTo(x,y), s=true);
             }
         }
         ctx.stroke();
-        ctx.setLineDash([]);
     }
-    
-    const maxVolume = Math.max(...visibleCandles.map(c => c.volume), 1);
-    
+
+    // ── MUMLAR ──
     for (let i = 0; i < vCount; i++) {
-        const c = visibleCandles[i];
-        const x = getPixelX(i);
+        const c  = visibleCandles[i];
+        const x  = getPixelX(i);
         const isUp = c.close >= c.open;
-        
-        const candleColor = isUp ? '#10b981' : '#f43f5e';
-        const wickColor = isUp ? 'rgba(16, 185, 129, 0.8)' : 'rgba(244, 63, 94, 0.8)';
-        
-        ctx.strokeStyle = wickColor;
-        ctx.lineWidth = 1.2;
+
+        // Fitil
+        ctx.strokeStyle = isUp ? 'rgba(16,185,129,0.9)' : 'rgba(244,63,94,0.9)';
+        ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(x, getPixelY(c.high));
         ctx.lineTo(x, getPixelY(c.low));
         ctx.stroke();
-        
-        ctx.fillStyle = candleColor;
-        const yOpen = getPixelY(c.open);
-        const yClose = getPixelY(c.close);
-        const bodyH = Math.max(1, Math.abs(yClose - yOpen));
-        const bodyY = Math.min(yOpen, yClose);
-        
-        ctx.fillRect(x - bodyWidth / 2, bodyY, bodyWidth, bodyH);
-        
-        const volH = (c.volume / maxVolume) * (chartHeight * 0.16);
-        const volY = chartHeight - volH;
-        ctx.fillStyle = isUp ? 'rgba(16, 185, 129, 0.22)' : 'rgba(244, 63, 94, 0.22)';
-        ctx.fillRect(x - bodyWidth / 2, volY, bodyWidth, volH);
+
+        // Gövde
+        const yO  = getPixelY(c.open);
+        const yC  = getPixelY(c.close);
+        const bH  = Math.max(1, Math.abs(yC - yO));
+        const bY  = Math.min(yO, yC);
+        ctx.fillStyle = isUp ? '#10b981' : '#f43f5e';
+        ctx.fillRect(x - bodyWidth/2, bY, bodyWidth, bH);
     }
-    
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(chartWidth, 0);
-    ctx.lineTo(chartWidth, chartHeight);
-    ctx.lineTo(width, chartHeight);
-    ctx.stroke();
-    
-    const displayIdx = crosshairIdx >= 0 ? crosshairIdx : endIndex - 1;
-    if (displayIdx >= startIndex && displayIdx < endIndex) {
-        const activeCandle = chartCandles[displayIdx];
-        const fmtVol = (v) => {
-            if (v >= 1e6) return (v / 1e6).toFixed(2) + 'M';
-            if (v >= 1e3) return (v / 1e3).toFixed(1) + 'K';
-            return v.toFixed(0);
-        };
-        
-        const volText = fmtVol(activeCandle.volume);
-        ctx.font = 'bold 9px "Space Mono", monospace';
-        const volW = ctx.measureText(volText).width + 8;
-        ctx.fillStyle = 'rgba(16, 185, 129, 0.85)';
-        ctx.beginPath();
-        ctx.roundRect(chartWidth + 3, chartHeight - 16, volW, 13, 3);
-        ctx.fill();
-        ctx.fillStyle = '#000';
-        ctx.fillText(volText, chartWidth + 7, chartHeight - 10);
+
+    // ── HACİM — ayrı bölüm ──
+    const volTop    = priceAreaH + 4; // 4px ayırıcı
+    const maxVolume = Math.max(...visibleCandles.map(c => c.volume), 1);
+
+    // Hacim bölümü arka plan
+    ctx.fillStyle = 'rgba(255,255,255,0.015)';
+    ctx.fillRect(0, volTop, chartWidth, volAreaH);
+
+    for (let i = 0; i < vCount; i++) {
+        const c    = visibleCandles[i];
+        const x    = getPixelX(i);
+        const isUp = c.close >= c.open;
+        const vH   = (c.volume / maxVolume) * volAreaH * 0.9;
+        const vY   = volTop + volAreaH - vH;
+        ctx.fillStyle = isUp ? 'rgba(16,185,129,0.35)' : 'rgba(244,63,94,0.35)';
+        ctx.fillRect(x - bodyWidth/2, vY, bodyWidth, vH);
     }
+
+    // Hacim etiket
+    const fmtVol = (v) => v >= 1e6 ? (v/1e6).toFixed(1)+'M' : v >= 1e3 ? (v/1e3).toFixed(0)+'K' : v.toFixed(0);
+    const lastVol = visibleCandles[vCount-1].volume;
+    ctx.font = '9px "Space Mono", monospace';
+    ctx.fillStyle = 'rgba(148,163,184,0.6)';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillText('VOL ' + fmtVol(lastVol), 4, volTop + 3);
     
     if (crosshairIdx >= startIndex && crosshairIdx < endIndex && !chartIsDragging) {
         const localIdx = crosshairIdx - startIndex;
@@ -2401,10 +2326,10 @@ function initAndRenderChart() {
         
         ctx.beginPath();
         ctx.moveTo(cx, 0);
-        ctx.lineTo(cx, chartHeight);
+        ctx.lineTo(cx, priceAreaH + volAreaH);
         ctx.stroke();
         
-        if (crosshairY >= 0 && crosshairY < chartHeight) {
+        if (crosshairY >= 0 && crosshairY < priceAreaH) {
             ctx.beginPath();
             ctx.moveTo(0, crosshairY);
             ctx.lineTo(chartWidth, crosshairY);
@@ -2412,15 +2337,15 @@ function initAndRenderChart() {
         }
         ctx.setLineDash([]);
         
-        if (crosshairY >= 0 && crosshairY < chartHeight) {
+        if (crosshairY >= 0 && crosshairY < priceAreaH) {
             ctx.fillStyle = '#fff';
             ctx.beginPath();
             ctx.arc(cx, crosshairY, 3, 0, 2 * Math.PI);
             ctx.fill();
         }
         
-        if (crosshairY >= 0 && crosshairY < chartHeight) {
-            const priceAtVal = maxPrice - (crosshairY / chartHeight) * (maxPrice - minPrice);
+        if (crosshairY >= 0 && crosshairY < priceAreaH) {
+            const priceAtVal = maxPrice - (crosshairY / priceAreaH) * (maxPrice - minPrice);
             const priceStr = priceAtVal > 1 ? priceAtVal.toLocaleString('tr-TR', {maximumFractionDigits:2, minimumFractionDigits:2}) : priceAtVal.toFixed(5);
             
             ctx.fillStyle = '#3b82f6';
@@ -2442,11 +2367,11 @@ function initAndRenderChart() {
         
         ctx.fillStyle = '#3b82f6';
         ctx.beginPath();
-        ctx.roundRect(cx - textW / 2, chartHeight + 2, textW, 14, 3);
+        ctx.roundRect(cx - textW / 2, priceAreaH + volAreaH + 2, textW, 14, 3);
         ctx.fill();
         
         ctx.fillStyle = '#fff';
-        ctx.fillText(dateStr, cx, chartHeight + 9);
+        ctx.fillText(dateStr, cx, priceAreaH + volAreaH + 9);
         
         const isUp = activeCandle.close >= activeCandle.open;
         const classColor = isUp ? 'green' : 'red';
@@ -2616,7 +2541,7 @@ function renderStochRsiPane(startIndex, endIndex, candleWidth, getPixelX) {
         ctx.setLineDash([4, 4]);
         ctx.beginPath();
         ctx.moveTo(cx, 0);
-        ctx.lineTo(cx, chartHeight);
+        ctx.lineTo(cx, priceAreaH + volAreaH);
         ctx.stroke();
         ctx.setLineDash([]);
         
@@ -2672,6 +2597,14 @@ function captureChartSnapshot() {
     showToast("📸 Ekran Görüntüsü", "Grafik resmi cihazınıza indirildi.");
 }
 
+// ── CHART STATE ──
+let chartPriceMin = null; // null = otomatik
+let chartPriceMax = null;
+let yAxisDragging = false;
+let yAxisDragStartY = 0;
+let yAxisDragStartMin = 0;
+let yAxisDragStartMax = 0;
+
 function setupChartListeners() {
     const container = document.querySelector('.chart-container');
     const canvas = document.getElementById('trading-chart');
@@ -2688,12 +2621,35 @@ function setupChartListeners() {
     
     const activeCanvas = document.getElementById('trading-chart');
     const activeStoch = document.getElementById('stoch-chart');
-    
+
+    // Y ekseni alanı: sağ 62px
+    const isOnYAxis = (clientX, rect) => clientX > (rect.width - 62);
+
     const onStart = (e) => {
-        chartIsDragging = true;
+        const rect = activeCanvas.getBoundingClientRect();
         const pageX = e.touches ? e.touches[0].pageX : e.pageX;
-        chartDragStartX = pageX;
-        chartDragStartOffset = chartPanOffset;
+        const pageY = e.touches ? e.touches[0].pageY : e.pageY;
+        const clientX = pageX - rect.left - window.scrollX;
+
+        if (isOnYAxis(clientX, rect)) {
+            // Y ekseni sürükleme başlat
+            yAxisDragging = true;
+            yAxisDragStartY = pageY;
+            // Şu anki min/max'ı yakala
+            const n = chartCandles.length;
+            const endIndex = Math.max(0, n - chartPanOffset);
+            const startIndex = Math.max(0, endIndex - visibleCandlesCount);
+            const visible = chartCandles.slice(startIndex, endIndex);
+            let mx = -Infinity, mn = Infinity;
+            visible.forEach(c => { mx = Math.max(mx, c.high); mn = Math.min(mn, c.low); });
+            const rng = mx - mn;
+            yAxisDragStartMax = chartPriceMax !== null ? chartPriceMax : mx + rng * 0.06;
+            yAxisDragStartMin = chartPriceMin !== null ? chartPriceMin : mn - rng * 0.06;
+        } else {
+            chartIsDragging = true;
+            chartDragStartX = pageX;
+            chartDragStartOffset = chartPanOffset;
+        }
     };
     
     activeCanvas.addEventListener('mousedown', onStart);
@@ -2707,28 +2663,41 @@ function setupChartListeners() {
         const rect = activeCanvas.getBoundingClientRect();
         const pageX = e.touches ? e.touches[0].pageX : e.pageX;
         const pageY = e.touches ? e.touches[0].pageY : e.pageY;
-        
         const clientX = pageX - rect.left - window.scrollX;
         const clientY = pageY - rect.top - window.scrollY;
-        
+
+        // Y ekseni zoom
+        if (yAxisDragging) {
+            const deltaY = pageY - yAxisDragStartY;
+            const range = yAxisDragStartMax - yAxisDragStartMin;
+            const mid   = (yAxisDragStartMax + yAxisDragStartMin) / 2;
+            // Yukarı sürükle = daralt, aşağı sürükle = genişlet
+            const factor = 1 + deltaY * 0.005;
+            const newRange = Math.max(range * 0.1, range * factor);
+            chartPriceMax = mid + newRange / 2;
+            chartPriceMin = mid - newRange / 2;
+            initAndRenderChart();
+            return;
+        }
+
         if (chartIsDragging) {
             const deltaX = pageX - chartDragStartX;
             const candleWidth = (rect.width - 62) / visibleCandlesCount;
             const deltaCandles = Math.round(deltaX / candleWidth);
-            
             const maxOffset = chartCandles.length - visibleCandlesCount;
             chartPanOffset = Math.max(0, Math.min(maxOffset, chartDragStartOffset + deltaCandles));
             initAndRenderChart();
         } else {
+            // Y ekseni üzerindeyse cursor değiştir
+            activeCanvas.style.cursor = isOnYAxis(clientX, rect) ? 'ns-resize' : 'crosshair';
+
             const chartWidth = rect.width - 62;
             if (clientX >= 0 && clientX <= chartWidth) {
                 const candleWidth = chartWidth / visibleCandlesCount;
                 const localIdx = Math.floor(clientX / candleWidth);
-                
                 const n = chartCandles.length;
                 const endIndex = Math.max(0, n - chartPanOffset);
                 const startIndex = Math.max(0, endIndex - visibleCandlesCount);
-                
                 crosshairIdx = Math.max(startIndex, Math.min(endIndex - 1, startIndex + localIdx));
                 crosshairX = clientX;
                 crosshairY = clientY;
@@ -2746,7 +2715,6 @@ function setupChartListeners() {
             const rect = activeStoch.getBoundingClientRect();
             const pageX = e.touches ? e.touches[0].pageX : e.pageX;
             const clientX = pageX - rect.left - window.scrollX;
-            
             if (chartIsDragging) {
                 const deltaX = pageX - chartDragStartX;
                 const candleWidth = (rect.width - 62) / visibleCandlesCount;
@@ -2775,47 +2743,69 @@ function setupChartListeners() {
     
     const onEnd = () => {
         chartIsDragging = false;
+        yAxisDragging = false;
     };
-    
     window.addEventListener('mouseup', onEnd);
     window.addEventListener('touchend', onEnd);
+
+    // Y eksenine çift tıklayınca otomatik aralığa dön
+    activeCanvas.addEventListener('dblclick', (e) => {
+        const rect = activeCanvas.getBoundingClientRect();
+        const clientX = e.clientX - rect.left;
+        if (isOnYAxis(clientX, rect)) {
+            chartPriceMin = null;
+            chartPriceMax = null;
+            initAndRenderChart();
+            showToast('🔄 Ölçek Sıfırlandı', 'Otomatik fiyat aralığına döndü.');
+        }
+    });
     
     const onLeave = () => {
-        if (!chartIsDragging) {
+        if (!chartIsDragging && !yAxisDragging) {
             crosshairIdx = -1;
+            activeCanvas.style.cursor = 'crosshair';
             initAndRenderChart();
         }
     };
     activeCanvas.addEventListener('mouseleave', onLeave);
-    if (activeStoch) {
-        activeStoch.addEventListener('mouseleave', onLeave);
-    }
+    if (activeStoch) activeStoch.addEventListener('mouseleave', onLeave);
     
     const onWheel = (e) => {
         e.preventDefault();
-        
-        const zoomFactor = e.deltaY > 0 ? 1 : -1;
-        const oldVisible = visibleCandlesCount;
-        
-        visibleCandlesCount = Math.max(20, Math.min(120, visibleCandlesCount + zoomFactor * 5));
-        
         const rect = activeCanvas.getBoundingClientRect();
         const clientX = e.clientX - rect.left;
-        const chartWidth = rect.width - 62;
-        
-        if (clientX >= 0 && clientX <= chartWidth) {
-            const mouseRatio = clientX / chartWidth;
+
+        if (isOnYAxis(clientX, rect)) {
+            // Y ekseni üzerinde wheel = fiyat zoom
+            const n = chartCandles.length;
+            const endIndex = Math.max(0, n - chartPanOffset);
+            const startIndex = Math.max(0, endIndex - visibleCandlesCount);
+            const visible = chartCandles.slice(startIndex, endIndex);
+            let mx = -Infinity, mn = Infinity;
+            visible.forEach(c => { mx = Math.max(mx, c.high); mn = Math.min(mn, c.low); });
+            const rng = mx - mn;
+            const curMax = chartPriceMax !== null ? chartPriceMax : mx + rng * 0.06;
+            const curMin = chartPriceMin !== null ? chartPriceMin : mn - rng * 0.06;
+            const mid    = (curMax + curMin) / 2;
+            const factor = e.deltaY > 0 ? 1.15 : 0.87;
+            const newRange = (curMax - curMin) * factor;
+            chartPriceMax = mid + newRange / 2;
+            chartPriceMin = mid - newRange / 2;
+        } else {
+            // Normal X zoom
+            const zoomFactor = e.deltaY > 0 ? 1 : -1;
+            const oldVisible = visibleCandlesCount;
+            visibleCandlesCount = Math.max(20, Math.min(120, visibleCandlesCount + zoomFactor * 5));
+            const chartWidth = rect.width - 62;
+            const mouseRatio = Math.max(0, Math.min(1, (e.clientX - rect.left) / chartWidth));
             const deltaVisible = visibleCandlesCount - oldVisible;
-            chartPanOffset = Math.max(0, Math.min(chartCandles.length - visibleCandlesCount, Math.round(chartPanOffset - deltaVisible * (1 - mouseRatio))));
+            chartPanOffset = Math.max(0, Math.min(chartCandles.length - visibleCandlesCount,
+                Math.round(chartPanOffset - deltaVisible * (1 - mouseRatio))));
         }
-        
         initAndRenderChart();
     };
-    
     container.addEventListener('wheel', onWheel, { passive: false });
-    if (activeStoch) {
-        activeStoch.parentElement.addEventListener('wheel', onWheel, { passive: false });
-    }
+    if (activeStoch) activeStoch.parentElement.addEventListener('wheel', onWheel, { passive: false });
 }
 
 window.addEventListener('resize', () => {
