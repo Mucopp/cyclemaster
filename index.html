@@ -13,15 +13,15 @@
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <style>
         :root {
-            --bg: #060910;
-            --surface: #0d1524;
-            --surface2: #111f35;
-            --border: rgba(255,255,255,0.07);
+            --bg: #030712;
+            --surface: rgba(13, 21, 37, 0.5);
+            --surface2: rgba(17, 31, 53, 0.6);
+            --border: rgba(255, 255, 255, 0.05);
             --blue: #3b82f6;
             --red: #f43f5e;
             --gold: #f59e0b;
             --green: #10b981;
-            --text: #f1f5f9;
+            --text: #f8fafc;
             --text2: #94a3b8;
             --text3: #475569;
             --accent: var(--blue);
@@ -41,21 +41,23 @@
             min-height: 100dvh;
             overflow-x: hidden;
             padding-bottom: calc(var(--bottom-h) + var(--safe-bottom));
+            letter-spacing: -0.2px;
         }
 
         body::before {
             content:'';
             position:fixed; inset:0;
             background:
-                radial-gradient(ellipse 80% 40% at 50% 0%, rgba(59,130,246,0.08) 0%, transparent 60%),
-                radial-gradient(ellipse 50% 50% at 80% 80%, rgba(245,158,11,0.04) 0%, transparent 60%);
+                radial-gradient(ellipse 70% 30% at 50% 0%, rgba(59,130,246,0.1) 0%, transparent 65%),
+                radial-gradient(ellipse 60% 40% at 90% 80%, rgba(16,185,129,0.04) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 50% at 10% 50%, rgba(244,63,94,0.03) 0%, transparent 60%);
             pointer-events:none; z-index:0;
         }
 
         /* HEADER */
         .header {
             position: sticky; top: 0; z-index: 50;
-            background: rgba(6,9,16,0.95);
+            background: rgba(3,7,18,0.85);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
@@ -64,17 +66,23 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
-        .logo { display:flex; align-items:center; gap:9px; }
+        .logo { display:flex; align-items:center; gap:10px; }
         .logo-icon {
             width:34px; height:34px;
             background: linear-gradient(135deg,var(--blue),#1d4ed8);
-            border-radius:9px;
+            border-radius:10px;
             display:flex; align-items:center; justify-content:center;
-            font-size:1rem;
-            box-shadow: 0 0 16px rgba(59,130,246,0.35);
+            font-size:1.05rem;
+            box-shadow: 0 0 20px rgba(59,130,246,0.4);
+            animation: logoPulse 3s infinite alternate;
         }
-        .logo-name { font-size:1rem; font-weight:700; }
+        @keyframes logoPulse {
+            0% { box-shadow: 0 0 14px rgba(59,130,246,0.3); }
+            100% { box-shadow: 0 0 24px rgba(59,130,246,0.6); }
+        }
+        .logo-name { font-size:1rem; font-weight:700; letter-spacing:-0.5px; }
         .badge-ai {
             background:linear-gradient(90deg,var(--gold),#d97706);
             color:#000; font-size:0.48rem; font-weight:700;
@@ -83,15 +91,16 @@
         }
         .header-right { display:flex; align-items:center; gap:8px; }
         .live-pill {
-            display:flex; align-items:center; gap:5px;
-            background: rgba(16,185,129,0.1);
-            border:1px solid rgba(16,185,129,0.2);
-            border-radius:100px; padding:5px 10px;
+            display:flex; align-items:center; gap:6px;
+            background: rgba(16,185,129,0.08);
+            border:1px solid rgba(16,185,129,0.15);
+            border-radius:100px; padding:6px 12px;
             font-size:0.52rem; font-weight:700; color:var(--green);
+            letter-spacing: 0.5px;
         }
         .live-dot {
-            width:5px;height:5px;border-radius:50%;
-            background:var(--green); box-shadow:0 0 5px var(--green);
+            width:6px;height:6px;border-radius:50%;
+            background:var(--green); box-shadow:0 0 6px var(--green);
             animation:blink 1.5s infinite;
         }
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
@@ -102,45 +111,75 @@
             border-radius:10px;
             display:flex; align-items:center; justify-content:center;
             cursor:pointer; font-size:1rem;
-            transition: all 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        .icon-btn:hover { border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.03); }
         .icon-btn.active { border-color:rgba(16,185,129,0.4); background:rgba(16,185,129,0.1); }
 
         /* PAGES */
         .content { position:relative; z-index:1; padding:8px 8px 0; }
-        .page { display:none; flex-direction:column; gap:8px; }
-        .page.active { display:flex; }
+        .page { display:none; flex-direction:column; gap:10px; }
+        
+        /* Slide-up & Fade-in page transition */
+        @keyframes pageIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .page.active { 
+            display:flex; 
+            animation: pageIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
 
         /* COIN BAR */
-        .coin-bar { display:flex; gap:6px; }
+        .coin-bar { display:flex; gap:8px; }
         .coin-input {
-            flex:1; background:var(--surface2);
+            flex:1; background:rgba(255, 255, 255, 0.02);
             border:1.5px solid var(--border);
-            border-radius:10px; padding:0 12px;
+            border-radius:12px; padding:0 14px;
             color:var(--text); font-family:'Space Mono',monospace;
             font-size:0.9rem; font-weight:700;
-            outline:none; height:42px;
+            outline:none; height:44px;
             text-transform:uppercase;
-            transition: border-color 0.2s;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .coin-input:focus { border-color:var(--blue); }
+        .coin-input:focus { 
+            border-color:var(--blue); 
+            background: rgba(59, 130, 246, 0.03);
+            box-shadow: 0 0 16px rgba(59, 130, 246, 0.15);
+        }
         .analyze-btn {
-            background:linear-gradient(135deg,var(--blue),#2563eb);
-            border:none; border-radius:10px;
-            padding:0 16px; color:#fff;
+            background:linear-gradient(135deg,var(--blue),#1d4ed8);
+            border:none; border-radius:12px;
+            padding:0 20px; color:#fff;
             font-family:'Space Grotesk',sans-serif;
             font-weight:700; font-size:0.8rem;
-            cursor:pointer; height:42px;
-            box-shadow:0 4px 14px rgba(59,130,246,0.3);
-            transition: transform 0.15s;
+            cursor:pointer; height:44px;
+            box-shadow:0 4px 18px rgba(59,130,246,0.3);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             white-space:nowrap;
         }
-        .analyze-btn:active { transform:scale(0.96); }
+        .analyze-btn:hover { 
+            box-shadow:0 4px 24px rgba(59,130,246,0.45);
+            transform: translateY(-1px);
+        }
+        .analyze-btn:active { transform:translateY(1px); }
+
+        /* PREMIUM WIDGET CARDS */
+        .market-hero, .cycle-card, .chart-card, .agent-card, .tech-card, .tf-card, .settings-section {
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.24);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+        }
+        .market-hero:hover, .cycle-card:hover, .chart-card:hover, .agent-card:hover, .tech-card:hover, .tf-card:hover, .settings-section:hover {
+            border-color: rgba(255,255,255,0.12);
+            transform: translateY(-2px);
+        }
 
         /* MARKET HERO */
         .market-hero {
             background:var(--surface); border:1px solid var(--border);
-            border-radius:12px; padding:8px 12px; position:relative; overflow:hidden;
+            border-radius:14px; padding:10px 14px; position:relative; overflow:hidden;
         }
         .market-hero::before {
             content:''; position:absolute; top:0; left:0; right:0; height:3px;
@@ -151,6 +190,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            row-gap: 8px;
         }
         .market-brand {
             display: flex;
@@ -165,32 +206,34 @@
         }
         .market-price {
             font-family: 'Space Mono', monospace;
-            font-size: 1.3rem;
+            font-size: 1.35rem;
             font-weight: 700;
             letter-spacing: -0.5px;
             line-height: 1.1;
         }
         .market-stats {
             display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 4px;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
         }
         .price-pill {
-            font-size: 0.6rem;
+            font-size: 0.85rem;
             font-weight: 700;
-            padding: 2px 6px;
+            padding: 4px 10px;
             border-radius: 100px;
             font-family: 'Space Mono', monospace;
+            white-space: nowrap;
         }
-        .price-pill.up { background:rgba(16,185,129,0.12); color:var(--green); }
-        .price-pill.dn { background:rgba(244,63,94,0.12); color:var(--red); }
+        .price-pill.up { background:rgba(16,185,129,0.12); color:var(--green); border: 1px solid rgba(16,185,129,0.15); }
+        .price-pill.dn { background:rgba(244,63,94,0.12); color:var(--red); border: 1px solid rgba(244,63,94,0.15); }
         .hl-compact {
             display: flex;
-            gap: 6px;
+            gap: 8px;
             font-family: 'Space Mono', monospace;
-            font-size: 0.55rem;
+            font-size: 0.85rem;
             color: var(--text2);
+            white-space: nowrap;
         }
         .hl-compact span span {
             color: var(--text);
@@ -199,21 +242,21 @@
 
         /* SIGNAL BANNER */
         .signal-banner {
-            border-radius:12px; padding:10px 14px;
-            text-align:center; font-weight:700; font-size:0.9rem;
+            border-radius:14px; padding:16px 20px;
+            text-align:center; font-weight:700; font-size:1.15rem;
             line-height:1.2; transition:all 0.3s; border:1.5px solid transparent;
         }
         .signal-wait { background:rgba(245,158,11,0.07); color:var(--gold); border-color:rgba(245,158,11,0.2); }
-        .signal-long { background:linear-gradient(135deg,rgba(16,185,129,0.18),rgba(16,185,129,0.05)); color:#fff; border-color:rgba(16,185,129,0.5); box-shadow:0 0 28px rgba(16,185,129,0.15); animation:pulse 1.3s ease-in-out infinite; }
-        .signal-short { background:linear-gradient(135deg,rgba(244,63,94,0.18),rgba(244,63,94,0.05)); color:#fff; border-color:rgba(244,63,94,0.5); box-shadow:0 0 28px rgba(244,63,94,0.15); animation:pulse 1.3s ease-in-out infinite; }
+        .signal-long { background:linear-gradient(135deg,rgba(16,185,129,0.18),rgba(16,185,129,0.05)); color:#fff; border-color:rgba(16,185,129,0.4); box-shadow:0 0 28px rgba(16,185,129,0.15); animation:pulse 1.3s ease-in-out infinite; }
+        .signal-short { background:linear-gradient(135deg,rgba(244,63,94,0.18),rgba(244,63,94,0.05)); color:#fff; border-color:rgba(244,63,94,0.4); box-shadow:0 0 28px rgba(244,63,94,0.15); animation:pulse 1.3s ease-in-out infinite; }
         @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.015)} }
-        .signal-sub { font-size:0.55rem; font-weight:400; opacity:0.7; margin-top:2px; }
+        .signal-sub { font-size:0.75rem; font-weight:400; opacity:0.7; margin-top:6px; }
 
         /* CYCLE CARD */
-        .cycle-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:10px 14px; display:flex; align-items:center; justify-content:center; gap:18px; }
+        .cycle-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:10px 14px; display:flex; align-items:center; justify-content:center; gap:18px; }
         .timer-wrap { position:relative; width:70px; height:70px; flex-shrink:0; }
         .timer-svg { width:100%; height:100%; transform:rotate(-90deg); }
-        circle.ring-bg { fill:none; stroke:rgba(255,255,255,0.04); stroke-width:7; }
+        circle.ring-bg { fill:none; stroke:rgba(255,255,255,0.03); stroke-width:7; }
         circle.ring-prog { fill:none; stroke:var(--accent); stroke-width:7; stroke-linecap:round; stroke-dasharray:270; stroke-dashoffset:0; transition: stroke-dashoffset 1s linear, stroke 0.6s; filter:drop-shadow(0 0 5px var(--accent)); }
         .timer-inner { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
         .timer-num { font-family:'Space Mono',monospace; font-size:1.0rem; font-weight:700; line-height:1; }
@@ -239,8 +282,19 @@
         .score-fill { height:100%; width:0%; background:linear-gradient(90deg,var(--gold),#ef4444); border-radius:100px; transition: width 1s cubic-bezier(0.4,0,0.2,1); }
         .reasoning { background:rgba(0,0,0,0.3); border:1px solid var(--border); border-left:3px solid var(--gold); border-radius:12px; padding:12px 14px; font-size:0.68rem; line-height:1.65; color:var(--text2); margin-bottom:12px; }
         .reasoning strong { color:var(--text); }
+        
+        /* Interactive Metric Rows */
         .cond-list { display:flex; flex-direction:column; gap:7px; }
-        .cond-row { display:flex; align-items:center; gap:10px; padding:10px 13px; background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:12px; }
+        .cond-row { 
+            display:flex; align-items:center; gap:10px; padding:10px 13px; 
+            background:rgba(255,255,255,0.01); border:1px solid var(--border); border-radius:12px; 
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .cond-row:hover {
+            background: rgba(255,255,255,0.03);
+            border-color: rgba(255,255,255,0.08);
+            transform: translateX(4px);
+        }
         .cond-icon { width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.55rem; font-weight:700; flex-shrink:0; }
         .cond-icon.ok { background:rgba(16,185,129,0.15); color:var(--green); }
         .cond-icon.no { background:rgba(255,255,255,0.05); color:var(--text3); }
@@ -248,8 +302,17 @@
 
         /* TECH CARD */
         .tech-card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:18px; }
-        .ind-row { display:flex; align-items:center; justify-content:space-between; padding:13px 14px; background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:13px; margin-bottom:8px; }
+        .ind-row { 
+            display:flex; align-items:center; justify-content:space-between; padding:13px 14px; 
+            background:rgba(255,255,255,0.01); border:1px solid var(--border); border-radius:13px; margin-bottom:8px; 
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
         .ind-row:last-child { margin-bottom:0; }
+        .ind-row:hover {
+            background: rgba(255,255,255,0.03);
+            border-color: rgba(255,255,255,0.08);
+            transform: translateX(4px);
+        }
         .ind-left { display:flex; align-items:center; gap:11px; }
         .dot { width:9px; height:9px; border-radius:50%; background:var(--text3); transition:all 0.4s; flex-shrink:0; }
         .dot.active { background:var(--green); box-shadow:0 0 10px rgba(16,185,129,0.5); }
@@ -261,7 +324,7 @@
         .b-green { background:rgba(16,185,129,0.12); color:var(--green); }
         .b-red   { background:rgba(244,63,94,0.12);  color:var(--red); }
         .b-gray  { background:rgba(255,255,255,0.05); color:var(--text2); }
-        .update-row { display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding:10px 13px; background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:12px; }
+        .update-row { display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding:10px 13px; background:rgba(255,255,255,0.01); border:1px solid var(--border); border-radius:12px; }
         .update-lbl { font-size:0.5rem; color:var(--text3); text-transform:uppercase; letter-spacing:1px; }
         .update-val { font-family:'Space Mono',monospace; font-size:0.6rem; color:var(--text2); }
 
@@ -287,18 +350,19 @@
         .bottom-nav {
             position:fixed; bottom:0; left:0; right:0; z-index:100;
             height: calc(var(--bottom-h) + var(--safe-bottom));
-            background:rgba(6,9,16,0.97);
-            backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
-            border-top:1px solid var(--border);
-            display:flex; align-items:flex-start; padding-top:6px;
+            background: rgba(6, 9, 16, 0.85);
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border-top: 1px solid rgba(255,255,255,0.06);
+            display: flex; align-items: flex-start; padding-top: 6px;
             padding-bottom: var(--safe-bottom);
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
         }
         .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:8px 0; cursor:pointer; }
-        .nav-icon { font-size:1.25rem; transition:transform 0.2s; }
+        .nav-icon { font-size:1.25rem; transition:transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .nav-label { font-size:0.48rem; font-weight:600; color:var(--text3); letter-spacing:0.5px; text-transform:uppercase; transition:color 0.2s; }
         .nav-dot { width:3px; height:3px; border-radius:50%; background:transparent; margin-top:1px; transition:background 0.2s; }
         .nav-item.active .nav-label { color:var(--accent); }
-        .nav-item.active .nav-icon { transform:scale(1.15); }
+        .nav-item.active .nav-icon { transform:scale(1.18); }
         .nav-item.active .nav-dot { background:var(--accent); }
 
         .agent-svg-icon {
@@ -407,7 +471,7 @@
         .tf-card-title { font-size:0.54rem; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:2px; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
         .tf-card-title::before { content:''; width:3px; height:3px; border-radius:50%; background:var(--accent); }
         .tf-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
-        .tf-box { background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:14px; padding:12px 8px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px; }
+        .tf-box { background:rgba(255,255,255,0.01); border:1px solid var(--border); border-radius:14px; padding:12px 8px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px; }
         .tf-name { font-size:0.58rem; color:var(--text3); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
         .tf-name span { color:var(--accent); font-family:'Space Mono',monospace; }
         .tf-badge { font-size:0.52rem; font-weight:700; padding:4px 10px; border-radius:100px; text-transform:uppercase; font-family:'Space Mono',monospace; letter-spacing:0.5px; min-width:60px; text-align:center; }
@@ -427,7 +491,7 @@
             flex-direction: column;
         }
         .chart-indicators-header {
-            background: #090e17;
+            background: rgba(3, 7, 18, 0.7);
             padding: 10px 16px;
             border-bottom: 1px solid var(--border);
             display: flex;
@@ -435,7 +499,7 @@
             flex-wrap: nowrap;
             overflow-x: auto;
             white-space: nowrap;
-            gap: 14px;
+            gap: 12px;
             scrollbar-width: none;
         }
         .chart-indicators-header::-webkit-scrollbar {
@@ -444,52 +508,54 @@
         .chart-title {
             font-size: 0.58rem;
             font-weight: 700;
-            color: var(--text2);
+            color: var(--text3);
             text-transform: uppercase;
             letter-spacing: 1.5px;
+            margin-right: 4px;
         }
+        
+        /* PREMIUM TOGGLE CHIPS */
         .chart-indicator-cb {
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 100px;
             cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             user-select: none;
+        }
+        .chart-indicator-cb input[type="checkbox"] {
+            display: none; /* Hide standard square checkbox completely */
         }
         .chart-indicator-cb span {
             font-family: 'Space Grotesk', sans-serif;
             font-weight: 700;
             color: var(--text2);
-            font-size: 0.72rem;
+            font-size: 0.65rem;
+            text-transform: uppercase;
             letter-spacing: 0.5px;
-            transition: color 0.2s;
+            transition: color 0.25s ease;
         }
-        .chart-indicator-cb input[type="checkbox"] {
-            appearance: none;
-            width: 14px;
-            height: 14px;
-            border: 1px solid var(--border);
-            border-radius: 3px;
-            background: var(--surface2);
-            outline: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
+        .chart-indicator-cb:hover {
+            border-color: rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.04);
         }
-        .chart-indicator-cb input[type="checkbox"]:checked {
-            background: var(--green);
+        /* Active Chip Styling via CSS Parent Selector:has */
+        .chart-indicator-cb:has(input[type="checkbox"]:checked) {
+            background: rgba(16, 185, 129, 0.08);
             border-color: var(--green);
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
         }
-        .chart-indicator-cb input[type="checkbox"]:checked::after {
-            content: '✓';
-            color: #000;
-            font-size: 0.55rem;
-            font-weight: 900;
+        .chart-indicator-cb:has(input[type="checkbox"]:checked) span {
+            color: var(--green);
         }
+        /* Bulletproof fallback sibling selector for span color */
         .chart-indicator-cb input[type="checkbox"]:checked + span {
             color: var(--green);
         }
+
         .chart-toolbar {
             display: flex;
             justify-content: space-between;
@@ -741,6 +807,8 @@
                 <div class="cond-row"><div class="cond-icon no" id="cond-obv">·</div><span class="cond-text" id="cond-obv-text">OBV bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-mfi">·</div><span class="cond-text" id="cond-mfi-text">MFI bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-mom">·</div><span class="cond-text" id="cond-mom-text">Momentum bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-regr">·</div><span class="cond-text" id="cond-regr-text">Regresyon Kanalı bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-liq">·</div><span class="cond-text" id="cond-liq-text">Likidite (CMF) bekleniyor</span></div>
             </div>
         </div>
     </div>
@@ -780,6 +848,14 @@
             <div class="ind-row">
                 <div class="ind-left"><div id="mom-dot" class="dot"></div><span class="ind-name">Momentum (10)</span></div>
                 <div class="ind-right"><span class="ind-val" id="mom-val">—</span><span class="ind-badge b-gray" id="mom-badge">—</span></div>
+            </div>
+            <div class="ind-row">
+                <div class="ind-left"><div id="regr-chan-dot" class="dot"></div><span class="ind-name">Regresyon Kanalı</span></div>
+                <div class="ind-right"><span class="ind-val" id="regr-chan-val">—</span><span class="ind-badge b-gray" id="regr-chan-badge">—</span></div>
+            </div>
+            <div class="ind-row">
+                <div class="ind-left"><div id="liq-dot" class="dot"></div><span class="ind-name">Likidite (CMF)</span></div>
+                <div class="ind-right"><span class="ind-val" id="liq-val">—</span><span class="ind-badge b-gray" id="liq-badge">—</span></div>
             </div>
             <div class="update-row">
                 <span class="update-lbl">Son Güncelleme</span>
@@ -1007,6 +1083,7 @@ let vwapVal=0;
 let obvVal=0, obvMAVal=0;
 let mfiVal=50;
 let momVal=0;
+let regrChanVal={center:0,upper:0,lower:0}, liqVal=0;
 let lastPrice=0;
 let isSoundEnabled=false, alertPlayedInThisWindow=false, isNotificationEnabled=false;
 let toastTimer=null;
@@ -1409,6 +1486,13 @@ async function fetchTechnical(){
         momVal = momSeries[momSeries.length-1];
         document.getElementById('mom-val').textContent = momVal.toFixed(2);
         
+        regrChanVal = calcRegressionChannel(cAlt, 50);
+        document.getElementById('regr-chan-val').textContent = `C: ${fmtPrice(regrChanVal.center)}`;
+        
+        const cmfSeries = calcCMF(hAlt, lAlt, cAlt, vAlt, 21);
+        liqVal = cmfSeries.length > 0 ? cmfSeries[cmfSeries.length-1] : 0;
+        document.getElementById('liq-val').textContent = liqVal.toFixed(3);
+        
         let altTFTrend = "NÖTR";
         if(stochRsiValue < 20 || bbStatus === "Bottom") {
             altTFTrend = "GİRİŞ AL";
@@ -1480,6 +1564,69 @@ function updateBadges(lp){
     if(momVal>0){momB.textContent="POZİTİF";momB.className="ind-badge b-green";}
     else if(momVal<0){momB.textContent="NEGATİF";momB.className="ind-badge b-red";}
     else{momB.textContent="NÖTR";momB.className="ind-badge b-gray";}
+
+    const regrB=document.getElementById('regr-chan-badge');
+    if(lp>=regrChanVal.upper*0.995){regrB.textContent="AŞIRI ALIM";regrB.className="ind-badge b-red";}
+    else if(lp<=regrChanVal.lower*1.005){regrB.textContent="AŞIRI SATIM";regrB.className="ind-badge b-green";}
+    else{regrB.textContent="NÖTR";regrB.className="ind-badge b-gray";}
+
+    const liqB=document.getElementById('liq-badge');
+    if(liqVal>0.05){liqB.textContent="BOĞA";liqB.className="ind-badge b-green";}
+    else if(liqVal<-0.05){liqB.textContent="AYI";liqB.className="ind-badge b-red";}
+    else{liqB.textContent="NÖTR";liqB.className="ind-badge b-gray";}
+}
+
+function calcRegressionChannel(prices, period = 50) {
+    if (prices.length < period) return { center: prices[prices.length-1], upper: prices[prices.length-1], lower: prices[prices.length-1] };
+    const N = period;
+    const y = prices.slice(prices.length - N);
+    const x = Array.from({length: N}, (_, i) => i);
+    
+    let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+    for (let i = 0; i < N; i++) {
+        sumX += x[i];
+        sumY += y[i];
+        sumXY += x[i] * y[i];
+        sumXX += x[i] * x[i];
+    }
+    
+    const slope = (N * sumXY - sumX * sumY) / (N * sumXX - sumX * sumX);
+    const intercept = (sumY - slope * sumX) / N;
+    
+    const fitVal = slope * (N - 1) + intercept;
+    
+    let sumSqDiff = 0;
+    for (let i = 0; i < N; i++) {
+        const fit = slope * i + intercept;
+        const diff = y[i] - fit;
+        sumSqDiff += diff * diff;
+    }
+    const stdDev = Math.sqrt(sumSqDiff / N);
+    
+    return {
+        center: fitVal,
+        upper: fitVal + 2 * stdDev,
+        lower: fitVal - 2 * stdDev
+    };
+}
+
+function calcCMF(highs, lows, closes, volumes, period = 21) {
+    if (closes.length < period) return [];
+    const s = [];
+    for (let i = 0; i < closes.length; i++) {
+        const h = highs[i], l = lows[i], c = closes[i], v = volumes[i];
+        const range = h - l;
+        const multiplier = range === 0 ? 0 : ((c - l) - (h - c)) / range;
+        s.push({ mfv: multiplier * v, vol: v });
+    }
+    const cmf = [];
+    for (let i = period; i <= s.length; i++) {
+        const slice = s.slice(i - period, i);
+        const sumMFV = slice.reduce((a, b) => a + b.mfv, 0);
+        const sumVol = slice.reduce((a, b) => a + b.vol, 0);
+        cmf.push(sumVol === 0 ? 0 : sumMFV / sumVol);
+    }
+    return cmf;
 }
 
 function calcRSI(c,p=14){
@@ -1639,6 +1786,8 @@ function runAgent(){
         setC('cond-obv','cond-obv-text',false,'OBV hacim şartı yok');
         setC('cond-mfi','cond-mfi-text',false,`MFI ${mfiVal.toFixed(1)} — şart yok`);
         setC('cond-mom','cond-mom-text',false,`Momentum ${momVal.toFixed(2)} — şart yok`);
+        setC('cond-regr','cond-regr-text',false,`Regresyon Kanalı — şart yok`);
+        setC('cond-liq','cond-liq-text',false,`Likidite (CMF) — şart yok`);
         
         document.getElementById('stoch-dot').className='dot';
         document.getElementById('bb-dot').className='dot';
@@ -1648,6 +1797,8 @@ function runAgent(){
         document.getElementById('obv-dot').className='dot';
         document.getElementById('mfi-dot').className='dot';
         document.getElementById('mom-dot').className='dot';
+        document.getElementById('regr-chan-dot').className='dot';
+        document.getElementById('liq-dot').className='dot';
         return;
     }
 
@@ -1659,16 +1810,20 @@ function runAgent(){
     const obvOk=lastMode==='SHORT'?obvVal<obvMAVal:obvVal>obvMAVal;
     const mfiOk=lastMode==='SHORT'?mfiVal<40:mfiVal>60;
     const momOk=lastMode==='SHORT'?momVal<0:momVal>0;
+    const regrChanOk=lastMode==='SHORT'?lastPrice>=regrChanVal.upper*0.995:lastPrice<=regrChanVal.lower*1.005;
+    const liqOk=lastMode==='SHORT'?liqVal<0:liqVal>0;
 
     let score=0;
-    if(emaOk) score+=35;
+    if(emaOk) score+=25;
     if(vwapOk) score+=15;
     if(rsiOk) score+=10;
     if(stochOk) score+=10;
     if(bbOk) score+=10;
+    if(regrChanOk) score+=10;
     if(obvOk) score+=10;
-    if(mfiOk) score+=5;
-    if(momOk) score+=5;
+    if(liqOk) score+=5;
+    if(mfiOk) score+=3;
+    if(momOk) score+=2;
 
     document.getElementById('agent-score').textContent=score+"%";
     document.getElementById('agent-score-fill').style.width=score+"%";
@@ -1703,7 +1858,9 @@ function runAgent(){
     if(rsiOk) reasons.push(`Orta TF (${ortaTF}) RSI Trend Momentum Onayı`);
     if(stochOk) reasons.push(`Alt TF (${altTF}) Stoch RSI Onaylandı`);
     if(bbOk) reasons.push(`Alt TF (${altTF}) Bollinger Bant Teması`);
+    if(regrChanOk) reasons.push(`Alt TF (${altTF}) Regresyon Kanalı Teması`);
     if(obvOk) reasons.push(`Alt TF (${altTF}) Hacim Desteği (OBV)`);
+    if(liqOk) reasons.push(`Alt TF (${altTF}) CMF Likidite Para Akış Uyumu`);
     if(mfiOk) reasons.push(`Alt TF (${altTF}) Para Akışı Uyumu (MFI)`);
     if(momOk) reasons.push(`Alt TF (${altTF}) Momentum Teyidi`);
 
@@ -1726,6 +1883,8 @@ function runAgent(){
     setC('cond-obv','cond-obv-text',obvOk,obvOk?`Alt TF OBV Hacim Onayı ✓`:'Alt TF OBV şartı yok');
     setC('cond-mfi','cond-mfi-text',mfiOk,mfiOk?`Alt TF MFI Para Akışı Onayı ✓`:'Alt TF MFI şartı yok');
     setC('cond-mom','cond-mom-text',momOk,momOk?`Alt TF Momentum Onayı ✓`:'Alt TF Momentum şartı yok');
+    setC('cond-regr','cond-regr-text',regrChanOk,regrChanOk?`Alt TF Regresyon Kanalı Onayı ✓`:`Alt TF Regresyon Kanalı şartı yok`);
+    setC('cond-liq','cond-liq-text',liqOk,liqOk?`Alt TF CMF Likidite Para Akış Onayı ✓`:`Alt TF CMF Likidite şartı yok`);
 
     document.getElementById('stoch-dot').className='dot '+(stochOk?'active':'warn');
     document.getElementById('bb-dot').className='dot '+(bbOk?'active':'warn');
@@ -1735,6 +1894,8 @@ function runAgent(){
     document.getElementById('obv-dot').className='dot '+(obvOk?'active':'warn');
     document.getElementById('mfi-dot').className='dot '+(mfiOk?'active':'warn');
     document.getElementById('mom-dot').className='dot '+(momOk?'active':'warn');
+    document.getElementById('regr-chan-dot').className='dot '+(regrChanOk?'active':'warn');
+    document.getElementById('liq-dot').className='dot '+(liqOk?'active':'warn');
 
     const banner=document.getElementById('signal-banner');
     if(score>=75){
