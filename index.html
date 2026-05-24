@@ -33,14 +33,20 @@
 
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
+        html {
+            height: 100%;
+            overflow: hidden;
+        }
+
         body {
             font-family: 'Space Grotesk', sans-serif;
             background: var(--bg);
             color: var(--text);
-            min-height: 100vh;
-            min-height: 100dvh;
-            overflow-x: hidden;
-            padding-bottom: calc(var(--bottom-h) + var(--safe-bottom));
+            height: 100%;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
             letter-spacing: -0.2px;
         }
 
@@ -117,7 +123,14 @@
         .icon-btn.active { border-color:rgba(16,185,129,0.4); background:rgba(16,185,129,0.1); }
 
         /* PAGES */
-        .content { position:relative; z-index:1; padding:8px 8px 0; }
+        .content {
+            position:relative;
+            z-index:1;
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 8px 8px calc(var(--bottom-h) + var(--safe-bottom) + 16px);
+        }
         .page { display:none; flex-direction:column; gap:10px; }
         
         /* Slide-up & Fade-in page transition */
@@ -229,14 +242,24 @@
         .price-pill.dn { background:rgba(244,63,94,0.12); color:var(--red); border: 1px solid rgba(244,63,94,0.15); }
         .hl-compact {
             display: flex;
-            gap: 8px;
+            flex-direction: column;
+            gap: 2px;
             font-family: 'Space Mono', monospace;
-            font-size: 0.85rem;
-            color: var(--text2);
+            font-size: 0.76rem;
             white-space: nowrap;
         }
-        .hl-compact span span {
-            color: var(--text);
+        .hl-compact .hl-h {
+            color: var(--green);
+        }
+        .hl-compact .hl-h span {
+            color: var(--green);
+            font-weight: 700;
+        }
+        .hl-compact .hl-l {
+            color: var(--red);
+        }
+        .hl-compact .hl-l span {
+            color: var(--red);
             font-weight: 700;
         }
 
@@ -720,8 +743,8 @@
                 <div class="market-stats">
                     <span id="price-change" class="price-pill">%0.00</span>
                     <div class="hl-compact">
-                        <span>H: <span id="h24">—</span></span>
-                        <span>L: <span id="l24">—</span></span>
+                        <span class="hl-h">H: <span id="h24">—</span></span>
+                        <span class="hl-l">L: <span id="l24">—</span></span>
                     </div>
                 </div>
             </div>
@@ -806,9 +829,18 @@
                 <div class="cond-row"><div class="cond-icon no" id="cond-vwap">·</div><span class="cond-text" id="cond-vwap-text">VWAP bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-obv">·</div><span class="cond-text" id="cond-obv-text">OBV bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-mfi">·</div><span class="cond-text" id="cond-mfi-text">MFI bekleniyor</span></div>
-                <div class="cond-row"><div class="cond-icon no" id="cond-mom">·</div><span class="cond-text" id="cond-mom-text">Momentum bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-mom">·</div><span class="cond-text" id="cond-mom-text">Momentum (10) bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-regr">·</div><span class="cond-text" id="cond-regr-text">Regresyon Kanalı bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-liq">·</div><span class="cond-text" id="cond-liq-text">Likidite (CMF) bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-atr">·</div><span class="cond-text" id="cond-atr-text">ATR Volatilite bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-vwap-sapma">·</div><span class="cond-text" id="cond-vwap-sapma-text">VWAP Sapması bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-regr-slope">·</div><span class="cond-text" id="cond-regr-slope-text">Lineer Regresyon Eğimi bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-mom5">·</div><span class="cond-text" id="cond-mom5-text">Momentum (5) bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-squeeze">·</div><span class="cond-text" id="cond-squeeze-text">Bollinger Sıkışması bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-obi">·</div><span class="cond-text" id="cond-obi-text">Emir Defteri Baskısı (OBI) bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-htf-ema">·</div><span class="cond-text" id="cond-htf-ema-text">HTF Trend (EMA 9/21) bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-htf-rsi">·</div><span class="cond-text" id="cond-htf-rsi-text">HTF RSI bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-pattern">·</div><span class="cond-text" id="cond-pattern-text">Canlı Mum Formasyonları bekleniyor</span></div>
             </div>
         </div>
     </div>
@@ -857,9 +889,65 @@
                 <div class="ind-left"><div id="liq-dot" class="dot"></div><span class="ind-name">Likidite (CMF)</span></div>
                 <div class="ind-right"><span class="ind-val" id="liq-val">—</span><span class="ind-badge b-gray" id="liq-badge">—</span></div>
             </div>
+            <div class="ind-row">
+                <div class="ind-left"><div id="atr-dot" class="dot"></div><span class="ind-name">ATR (14) Volatilite</span></div>
+                <div class="ind-right"><span class="ind-val" id="atr-val">—</span><span class="ind-badge b-gray" id="atr-badge">—</span></div>
+            </div>
+            <div class="ind-row">
+                <div class="ind-left"><div id="vwap-sapma-dot" class="dot"></div><span class="ind-name">VWAP Sapması</span></div>
+                <div class="ind-right"><span class="ind-val" id="vwap-sapma-val">—</span><span class="ind-badge b-gray" id="vwap-sapma-badge">—</span></div>
+            </div>
+            <div class="ind-row">
+                <div class="ind-left"><div id="regr-slope-dot" class="dot"></div><span class="ind-name">Regresyon Eğimi</span></div>
+                <div class="ind-right"><span class="ind-val" id="regr-slope-val">—</span><span class="ind-badge b-gray" id="regr-slope-badge">—</span></div>
+            </div>
+            <div class="ind-row">
+                <div class="ind-left"><div id="mom5-dot" class="dot"></div><span class="ind-name">Momentum (5)</span></div>
+                <div class="ind-right"><span class="ind-val" id="mom5-val">—</span><span class="ind-badge b-gray" id="mom5-badge">—</span></div>
+            </div>
+            <div class="ind-row">
+                <div class="ind-left"><div id="squeeze-dot" class="dot"></div><span class="ind-name">Bollinger Sıkışması</span></div>
+                <div class="ind-right"><span class="ind-val" id="squeeze-val">—</span><span class="ind-badge b-gray" id="squeeze-badge">—</span></div>
+            </div>
+            <div class="ind-row">
+                <div class="ind-left"><div id="obi-dot" class="dot"></div><span class="ind-name">Emir Dengesizliği (OBI)</span></div>
+                <div class="ind-right"><span class="ind-val" id="obi-val">—</span><span class="ind-badge b-gray" id="obi-badge">—</span></div>
+            </div>
+            <div class="ind-row">
+                <div class="ind-left"><div id="htf-ema-dot" class="dot"></div><span class="ind-name">HTF EMA (9/21)</span></div>
+                <div class="ind-right"><span class="ind-val" id="htf-ema-val">—</span><span class="ind-badge b-gray" id="htf-ema-badge">—</span></div>
+            </div>
+            <div class="ind-row">
+                <div class="ind-left"><div id="htf-rsi-dot" class="dot"></div><span class="ind-name">HTF RSI (14)</span></div>
+                <div class="ind-right"><span class="ind-val" id="htf-rsi-val">—</span><span class="ind-badge b-gray" id="htf-rsi-badge">—</span></div>
+            </div>
             <div class="update-row">
                 <span class="update-lbl">Son Güncelleme</span>
                 <span class="update-val" id="last-update">—</span>
+            </div>
+        </div>
+
+        <div class="sec-title" style="margin-top: 16px;">Mum Formasyonu Analizi</div>
+        <div class="tech-card">
+            <div class="ind-row">
+                <div class="ind-left"><div id="pattern-hammer-dot" class="dot"></div><span class="ind-name">Hammer (Çekiç - Dip Dönüşü)</span></div>
+                <div class="ind-right"><span class="ind-badge b-gray" id="pattern-hammer-badge">YOK</span></div>
+            </div>
+            <div class="ind-row">
+                <div class="ind-left"><div id="pattern-shooting-dot" class="dot"></div><span class="ind-name">Shooting Star (Kayan Yıldız - Tepe Dönüşü)</span></div>
+                <div class="ind-right"><span class="ind-badge b-gray" id="pattern-shooting-badge">YOK</span></div>
+            </div>
+            <div class="ind-row">
+                <div class="ind-left"><div id="pattern-doji-dot" class="dot"></div><span class="ind-name">Doji (Kararsızlık)</span></div>
+                <div class="ind-right"><span class="ind-badge b-gray" id="pattern-doji-badge">YOK</span></div>
+            </div>
+            <div class="ind-row">
+                <div class="ind-left"><div id="pattern-engulfing-dot" class="dot"></div><span class="ind-name">Engulfing (Yutan Mum - Güçlü Dönüş)</span></div>
+                <div class="ind-right"><span class="ind-badge b-gray" id="pattern-engulfing-badge">YOK</span></div>
+            </div>
+            <div class="ind-row">
+                <div class="ind-left"><div id="pattern-marubozu-dot" class="dot"></div><span class="ind-name">Marubozu (Güçlü Yön)</span></div>
+                <div class="ind-right"><span class="ind-badge b-gray" id="pattern-marubozu-badge">YOK</span></div>
             </div>
         </div>
     </div>
@@ -1084,6 +1172,15 @@ let obvVal=0, obvMAVal=0;
 let mfiVal=50;
 let momVal=0;
 let regrChanVal={center:0,upper:0,lower:0}, liqVal=0;
+let atrVal=0, atrMAVal=0;
+let vwapSapmaVal=0;
+let regrSlopeVal=0;
+let mom5Val=0;
+let squeezeVal=false, bandwidthVal=0;
+let obiVal=0;
+let htfEma9Val=0, htfEma21Val=0;
+let htfRsiVal=50;
+let candlePatterns={ hammer: false, shooting: false, doji: false, engulfing: "YOK", marubozu: false };
 let lastPrice=0;
 let isSoundEnabled=false, alertPlayedInThisWindow=false, isNotificationEnabled=false;
 let toastTimer=null;
@@ -1493,6 +1590,83 @@ async function fetchTechnical(){
         liqVal = cmfSeries.length > 0 ? cmfSeries[cmfSeries.length-1] : 0;
         document.getElementById('liq-val').textContent = liqVal.toFixed(3);
         
+        // --- 7 NEW INDICATOR CALCULATIONS ---
+        // 1. ATR (14) Volatility
+        const atrSeries = calcATR(hAlt, lAlt, cAlt, 14);
+        atrVal = atrSeries[atrSeries.length - 1];
+        const atrMASeries = calcSMA(atrSeries, 20);
+        atrMAVal = atrMASeries[atrMASeries.length - 1];
+        document.getElementById('atr-val').textContent = atrVal.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2});
+        
+        // 2. VWAP Sapması
+        vwapSapmaVal = vwapVal === 0 ? 0 : ((lp - vwapVal) / vwapVal) * 100;
+        document.getElementById('vwap-sapma-val').textContent = (vwapSapmaVal >= 0 ? "+" : "") + vwapSapmaVal.toFixed(2) + "%";
+        
+        // 3. Lineer Regresyon Eğimi
+        regrSlopeVal = regrChanVal.slope || 0;
+        document.getElementById('regr-slope-val').textContent = (regrSlopeVal >= 0 ? "+" : "") + regrSlopeVal.toLocaleString('tr-TR', {minimumFractionDigits:3, maximumFractionDigits:3});
+        
+        // 4. Momentum (5)
+        const mom5Series = calcMOM(cAlt, 5);
+        mom5Val = mom5Series[mom5Series.length - 1];
+        document.getElementById('mom5-val').textContent = mom5Val.toFixed(2);
+        
+        // 5. BB Sıkışması (Squeeze)
+        const squeezeInfo = checkBBSqueeze(cAlt, 20, 100);
+        bandwidthVal = squeezeInfo.bandwidth;
+        squeezeVal = squeezeInfo.isSqueeze;
+        document.getElementById('squeeze-val').textContent = bandwidthVal.toFixed(3);
+        
+        // 6. OBI (Order Book Imbalance)
+        obiVal = await fetchOKXOrderBook(currentCoin);
+        document.getElementById('obi-val').textContent = (obiVal >= 0 ? "+" : "") + obiVal.toFixed(3);
+        
+        // 7. HTF EMA (EMA 9/21 kesişimi)
+        htfEma9Val = ema9Val;
+        htfEma21Val = ema21Val;
+        document.getElementById('htf-ema-val').textContent = `9: ${fmtPrice(htfEma9Val)} | 21: ${fmtPrice(htfEma21Val)}`;
+        
+        // 8. HTF RSI (RSI 14 based on Üst TF)
+        const htfRsiSeries = calcRSI(cUst, 14);
+        htfRsiVal = htfRsiSeries[htfRsiSeries.length - 1];
+        document.getElementById('htf-rsi-val').textContent = htfRsiVal.toFixed(1);
+        
+        // 9. Mum Formasyonu Analizi
+        candlePatterns = detectCandlePatterns(
+            parse(kAltRaw, 1), // opens
+            hAlt,
+            lAlt,
+            cAlt
+        );
+        
+        const setPatternBadge = (id, active, activeText = "VAR", activeClass = "b-green") => {
+            const badge = document.getElementById(id);
+            const dot = document.getElementById(id.replace("badge", "dot"));
+            if (active) {
+                badge.textContent = activeText;
+                badge.className = "ind-badge " + activeClass;
+                dot.className = "dot active";
+            } else {
+                badge.textContent = "YOK";
+                badge.className = "ind-badge b-gray";
+                dot.className = "dot";
+            }
+        };
+        
+        setPatternBadge('pattern-hammer-badge', candlePatterns.hammer, "ÇEKİÇ", "b-green");
+        setPatternBadge('pattern-shooting-badge', candlePatterns.shooting, "KAYAN YILDIZ", "b-red");
+        setPatternBadge('pattern-doji-badge', candlePatterns.doji, "DOJİ", "b-gray");
+        
+        if (candlePatterns.engulfing === "BOĞA") {
+            setPatternBadge('pattern-engulfing-badge', true, "YUTAN BOĞA", "b-green");
+        } else if (candlePatterns.engulfing === "AYI") {
+            setPatternBadge('pattern-engulfing-badge', true, "YUTAN AYI", "b-red");
+        } else {
+            setPatternBadge('pattern-engulfing-badge', false);
+        }
+        
+        setPatternBadge('pattern-marubozu-badge', candlePatterns.marubozu, "MARUBOZU", "b-green");
+
         let altTFTrend = "NÖTR";
         if(stochRsiValue < 20 || bbStatus === "Bottom") {
             altTFTrend = "GİRİŞ AL";
@@ -1574,6 +1748,49 @@ function updateBadges(lp){
     if(liqVal>0.05){liqB.textContent="BOĞA";liqB.className="ind-badge b-green";}
     else if(liqVal<-0.05){liqB.textContent="AYI";liqB.className="ind-badge b-red";}
     else{liqB.textContent="NÖTR";liqB.className="ind-badge b-gray";}
+
+    // 1. ATR (14) Volatility
+    const atrB=document.getElementById('atr-badge');
+    if(atrVal>atrMAVal){atrB.textContent="YÜKSEK";atrB.className="ind-badge b-red";}
+    else{atrB.textContent="DÜŞÜK";atrB.className="ind-badge b-gray";}
+    
+    // 2. VWAP Sapması
+    const vwapSapmaB=document.getElementById('vwap-sapma-badge');
+    if(vwapSapmaVal>0.5){vwapSapmaB.textContent="AŞIRI ALIM";vwapSapmaB.className="ind-badge b-red";}
+    else if(vwapSapmaVal<-0.5){vwapSapmaB.textContent="AŞIRI SATIM";vwapSapmaB.className="ind-badge b-green";}
+    else{vwapSapmaB.textContent="NÖTR";vwapSapmaB.className="ind-badge b-gray";}
+    
+    // 3. Regresyon Eğimi
+    const slopeB=document.getElementById('regr-slope-badge');
+    if(regrSlopeVal>0){slopeB.textContent="YUKARI";slopeB.className="ind-badge b-green";}
+    else if(regrSlopeVal<0){slopeB.textContent="AŞAĞI";slopeB.className="ind-badge b-red";}
+    else{slopeB.textContent="YATAY";slopeB.className="ind-badge b-gray";}
+    
+    // 4. Momentum (5)
+    const mom5B=document.getElementById('mom5-badge');
+    if(mom5Val>0){mom5B.textContent="POZİTİF";mom5B.className="ind-badge b-green";}
+    else if(mom5Val<0){mom5B.textContent="NEGATİF";mom5B.className="ind-badge b-red";}
+    else{mom5B.textContent="NÖTR";mom5B.className="ind-badge b-gray";}
+    
+    // 5. BB Sıkışması
+    const squeezeB=document.getElementById('squeeze-badge');
+    if(squeezeVal){squeezeB.textContent="SIKIŞMA";squeezeB.className="ind-badge b-green";}
+    else{squeezeB.textContent="NORMAL";squeezeB.className="ind-badge b-gray";}
+    
+    // 6. OBI (Emir Baskısı)
+    const obiB=document.getElementById('obi-badge');
+    if(obiVal>0.05){obiB.textContent="ALICI BSK";obiB.className="ind-badge b-green";}
+    else if(obiVal<-0.05){obiB.textContent="SATICI BSK";obiB.className="ind-badge b-red";}
+    else{obiB.textContent="DENGELİ";obiB.className="ind-badge b-gray";}
+    
+    // 7. HTF EMA (EMA 9/21)
+    const htfEmaB=document.getElementById('htf-ema-badge');
+    if(htfEma9Val>htfEma21Val){htfEmaB.textContent="BOĞA";htfEmaB.className="ind-badge b-green";}
+    else if(htfEma9Val<htfEma21Val){htfEmaB.textContent="AYI";htfEmaB.className="ind-badge b-red";}
+    else{htfEmaB.textContent="KARIŞIK";htfEmaB.className="ind-badge b-gray";}
+    
+    // 8. HTF RSI
+    setBadge('htf-rsi-badge',htfRsiVal,70,30);
 }
 
 function calcRegressionChannel(prices, period = 50) {
@@ -1606,7 +1823,8 @@ function calcRegressionChannel(prices, period = 50) {
     return {
         center: fitVal,
         upper: fitVal + 2 * stdDev,
-        lower: fitVal - 2 * stdDev
+        lower: fitVal - 2 * stdDev,
+        slope: slope
     };
 }
 
@@ -1748,6 +1966,99 @@ function calcMOM(closes, p = 10) {
     return momSeries;
 }
 
+function calcATR(highs, lows, closes, period = 14) {
+    if (closes.length < 2) return new Array(closes.length).fill(0);
+    const tr = [highs[0] - lows[0]];
+    for (let i = 1; i < closes.length; i++) {
+        const trVal = Math.max(
+            highs[i] - lows[i],
+            Math.abs(highs[i] - closes[i - 1]),
+            Math.abs(lows[i] - closes[i - 1])
+        );
+        tr.push(trVal);
+    }
+    const atr = new Array(closes.length).fill(0);
+    let sum = 0;
+    for (let i = 0; i < period; i++) sum += tr[i];
+    atr[period - 1] = sum / period;
+    for (let i = period; i < closes.length; i++) {
+        atr[i] = (atr[i - 1] * (period - 1) + tr[i]) / period;
+    }
+    return atr;
+}
+
+function checkBBSqueeze(closes, period = 20, historyLen = 100) {
+    if (closes.length < historyLen + period) return { bandwidth: 0.1, isSqueeze: false };
+    const bandwidths = [];
+    for (let i = closes.length - historyLen; i < closes.length; i++) {
+        const slice = closes.slice(0, i + 1);
+        const { upper, lower } = calcBB(slice, period, 2);
+        const s = slice.slice(-period), middle = s.reduce((a, b) => a + b) / period;
+        bandwidths.push(middle === 0 ? 0 : (upper - lower) / middle);
+    }
+    const currentBandwidth = bandwidths[bandwidths.length - 1];
+    const sorted = [...bandwidths].sort((a, b) => a - b);
+    const percentile25 = sorted[Math.floor(sorted.length * 0.25)];
+    return {
+        bandwidth: currentBandwidth,
+        isSqueeze: currentBandwidth <= percentile25
+    };
+}
+
+function detectCandlePatterns(opens, highs, lows, closes) {
+    if (closes.length < 3) return { hammer: false, shooting: false, doji: false, engulfing: "YOK", marubozu: false };
+    const idx = closes.length - 2;
+    const o = opens[idx], h = highs[idx], l = lows[idx], c = closes[idx];
+    const oPrev = opens[idx - 1], cPrev = closes[idx - 1];
+    
+    const body = Math.abs(c - o);
+    const range = h - l;
+    const lowerShadow = Math.min(o, c) - l;
+    const upperShadow = h - Math.max(o, c);
+    
+    const isDoji = range > 0 && body <= range * 0.05;
+    const isHammer = range > 0 && lowerShadow >= body * 2 && upperShadow <= range * 0.15;
+    const isShootingStar = range > 0 && upperShadow >= body * 2 && lowerShadow <= range * 0.15;
+    
+    let engulfing = "YOK";
+    const bodyPrev = cPrev - oPrev;
+    const bodyCurr = c - o;
+    if (bodyPrev < 0 && bodyCurr > 0 && o <= cPrev && c >= oPrev) {
+        engulfing = "BOĞA";
+    } else if (bodyPrev > 0 && bodyCurr < 0 && o >= cPrev && c <= oPrev) {
+        engulfing = "AYI";
+    }
+    
+    const isMarubozu = range > 0 && body >= range * 0.94;
+    
+    return {
+        hammer: isHammer,
+        shooting: isShootingStar,
+        doji: isDoji,
+        engulfing: engulfing,
+        marubozu: isMarubozu
+    };
+}
+
+async function fetchOKXOrderBook(symbol) {
+    try {
+        const okxSymbol = symbol.replace("USDT", "-USDT");
+        const r = await fetch(`https://www.okx.com/api/v5/market/books?instId=${okxSymbol}&sz=5`);
+        const d = await r.json();
+        if (d.code === "0" && d.data && d.data[0]) {
+            const book = d.data[0];
+            const sumBids = book.bids.slice(0, 5).reduce((acc, curr) => acc + parseFloat(curr[1]), 0);
+            const sumAsks = book.asks.slice(0, 5).reduce((acc, curr) => acc + parseFloat(curr[1]), 0);
+            const total = sumBids + sumAsks;
+            if (total === 0) return 0;
+            return (sumBids - sumAsks) / total;
+        }
+    } catch (e) {
+        console.error("fetchOKXOrderBook error:", e);
+    }
+    return 0;
+}
+
 function updateCycle(){
     const now=new Date();
     const ts=now.toLocaleTimeString('tr-TR');
@@ -1774,31 +2085,42 @@ function runAgent(){
         
         const setC=(id,textId,ok,text)=>{
             const el=document.getElementById(id);
-            el.className='cond-icon no';
-            el.textContent='·';
-            document.getElementById(textId).textContent=text;
+            if (el) {
+                el.className='cond-icon no';
+                el.textContent='·';
+            }
+            const txtEl = document.getElementById(textId);
+            if (txtEl) txtEl.textContent=text;
         };
         setC('cond-stoch','cond-stoch-text',false,`Stoch RSI ${stochRsiValue.toFixed(1)} — şart yok`);
         setC('cond-bb','cond-bb-text',false,'Bollinger şartı yok');
-        setC('cond-rsi','cond-rsi-text',false,`RSI ${rsiValue.toFixed(1)} — şart yok`);
-        setC('cond-ema','cond-ema-text',false,'EMA dizilim şartı yok');
+        setC('cond-rsi','cond-rsi-text',false,`RSI (14) ${rsiValue.toFixed(1)} — şart yok`);
+        setC('cond-ema','cond-ema-text',false,'EMA 9/21/50 dizilim şartı yok');
         setC('cond-vwap','cond-vwap-text',false,'VWAP şartı yok');
         setC('cond-obv','cond-obv-text',false,'OBV hacim şartı yok');
-        setC('cond-mfi','cond-mfi-text',false,`MFI ${mfiVal.toFixed(1)} — şart yok`);
-        setC('cond-mom','cond-mom-text',false,`Momentum ${momVal.toFixed(2)} — şart yok`);
+        setC('cond-mfi','cond-mfi-text',false,`MFI (14) ${mfiVal.toFixed(1)} — şart yok`);
+        setC('cond-mom','cond-mom-text',false,`Momentum (10) ${momVal.toFixed(2)} — şart yok`);
         setC('cond-regr','cond-regr-text',false,`Regresyon Kanalı — şart yok`);
         setC('cond-liq','cond-liq-text',false,`Likidite (CMF) — şart yok`);
         
-        document.getElementById('stoch-dot').className='dot';
-        document.getElementById('bb-dot').className='dot';
-        document.getElementById('rsi-dot').className='dot';
-        document.getElementById('ema-dot').className='dot';
-        document.getElementById('vwap-dot').className='dot';
-        document.getElementById('obv-dot').className='dot';
-        document.getElementById('mfi-dot').className='dot';
-        document.getElementById('mom-dot').className='dot';
-        document.getElementById('regr-chan-dot').className='dot';
-        document.getElementById('liq-dot').className='dot';
+        setC('cond-atr','cond-atr-text',false,`ATR Volatilite ${atrVal.toFixed(2)} — şart yok`);
+        setC('cond-vwap-sapma','cond-vwap-sapma-text',false,`VWAP Sapması ${vwapSapmaVal.toFixed(2)}% — şart yok`);
+        setC('cond-regr-slope','cond-regr-slope-text',false,`Lineer Regresyon Eğimi — şart yok`);
+        setC('cond-mom5','cond-mom5-text',false,`Momentum (5) ${mom5Val.toFixed(2)} — şart yok`);
+        setC('cond-squeeze','cond-squeeze-text',false,`Bollinger Sıkışması — şart yok`);
+        setC('cond-obi','cond-obi-text',false,`Emir Dengesizliği (OBI) ${obiVal.toFixed(3)} — şart yok`);
+        setC('cond-htf-ema','cond-htf-ema-text',false,`HTF Trend (EMA 9/21) — şart yok`);
+        setC('cond-htf-rsi','cond-htf-rsi-text',false,`HTF RSI ${htfRsiVal.toFixed(1)} — şart yok`);
+        setC('cond-pattern','cond-pattern-text',false,`Canlı Mum Formasyonları — şart yok`);
+        
+        const resetDot = (id) => {
+            const el = document.getElementById(id);
+            if (el) el.className = 'dot';
+        };
+        resetDot('stoch-dot'); resetDot('bb-dot'); resetDot('rsi-dot'); resetDot('ema-dot'); resetDot('vwap-dot');
+        resetDot('obv-dot'); resetDot('mfi-dot'); resetDot('mom-dot'); resetDot('regr-chan-dot'); resetDot('liq-dot');
+        resetDot('atr-dot'); resetDot('vwap-sapma-dot'); resetDot('regr-slope-dot'); resetDot('mom5-dot');
+        resetDot('squeeze-dot'); resetDot('obi-dot'); resetDot('htf-ema-dot'); resetDot('htf-rsi-dot');
         return;
     }
 
@@ -1812,24 +2134,39 @@ function runAgent(){
     const momOk=lastMode==='SHORT'?momVal<0:momVal>0;
     const regrChanOk=lastMode==='SHORT'?lastPrice>=regrChanVal.upper*0.995:lastPrice<=regrChanVal.lower*1.005;
     const liqOk=lastMode==='SHORT'?liqVal<0:liqVal>0;
+    
+    // 7 NEW INDICATOR EVALUATIONS
+    const atrOk = atrVal > atrMAVal;
+    const vwapSapmaOk = lastMode==='SHORT' ? vwapSapmaVal < 0 : vwapSapmaVal > 0;
+    const regrSlopeOk = lastMode==='SHORT' ? regrSlopeVal < 0 : regrSlopeVal > 0;
+    const mom5Ok = lastMode==='SHORT' ? mom5Val < 0 : mom5Val > 0;
+    const squeezeOk = squeezeVal;
+    const obiOk = lastMode==='SHORT' ? obiVal < -0.05 : obiVal > 0.05;
+    const htfEmaOk = lastMode==='SHORT' ? htfEma9Val < htfEma21Val : htfEma9Val > htfEma21Val;
+    const htfRsiOk = lastMode==='SHORT' ? htfRsiVal < 50 : htfRsiVal > 50;
+    const patternOk = lastMode==='SHORT' 
+        ? (candlePatterns.shooting || candlePatterns.engulfing === 'AYI')
+        : (candlePatterns.hammer || candlePatterns.engulfing === 'BOĞA');
 
+    // Balanced Weighted Score out of 100%
     let score=0;
-    if(emaOk) score+=25;
-    if(vwapOk) score+=15;
-    if(rsiOk) score+=10;
-    if(stochOk) score+=10;
-    if(bbOk) score+=10;
-    if(regrChanOk) score+=10;
-    if(obvOk) score+=10;
-    if(liqOk) score+=5;
-    if(mfiOk) score+=3;
-    if(momOk) score+=2;
+    if(htfEmaOk) score+=15;
+    if(vwapSapmaOk && vwapOk) score+=15;
+    if(regrChanOk && regrSlopeOk) score+=15;
+    if(bbOk && squeezeOk) score+=10;
+    if(rsiOk) score+=8;
+    if(stochOk) score+=8;
+    if(obiOk) score+=8;
+    if(htfRsiOk) score+=5;
+    if(momOk && mom5Ok) score+=5;
+    if(obvOk && atrOk) score+=5;
+    if(patternOk) score+=3;
+    if(mfiOk && liqOk) score+=3;
 
     document.getElementById('agent-score').textContent=score+"%";
     document.getElementById('agent-score-fill').style.width=score+"%";
     document.getElementById('timer-display').textContent=score+"%";
     
-    // Dynamic progress circle styling based on score
     const circleEl=document.getElementById('progress-circle');
     circleEl.style.strokeDashoffset=270*(1-score/100);
     if(score>=75){
@@ -1853,16 +2190,15 @@ function runAgent(){
     }
 
     const reasons=[];
-    if(emaOk) reasons.push(`Üst TF (${ustTF}) ${lastMode==='SHORT'?'Ayı':'Boğa'} Trend Hizalanması`);
-    if(vwapOk) reasons.push(`Orta TF (${ortaTF}) VWAP Fiyat Uyumu`);
-    if(rsiOk) reasons.push(`Orta TF (${ortaTF}) RSI Trend Momentum Onayı`);
-    if(stochOk) reasons.push(`Alt TF (${altTF}) Stoch RSI Onaylandı`);
-    if(bbOk) reasons.push(`Alt TF (${altTF}) Bollinger Bant Teması`);
-    if(regrChanOk) reasons.push(`Alt TF (${altTF}) Regresyon Kanalı Teması`);
-    if(obvOk) reasons.push(`Alt TF (${altTF}) Hacim Desteği (OBV)`);
-    if(liqOk) reasons.push(`Alt TF (${altTF}) CMF Likidite Para Akış Uyumu`);
-    if(mfiOk) reasons.push(`Alt TF (${altTF}) Para Akışı Uyumu (MFI)`);
-    if(momOk) reasons.push(`Alt TF (${altTF}) Momentum Teyidi`);
+    if(htfEmaOk) reasons.push(`Üst TF Trend EMA (9/21) Yön Teyidi`);
+    if(vwapSapmaOk) reasons.push(`VWAP Sapma & Yön Hizalanması`);
+    if(regrSlopeOk) reasons.push(`Lineer Regresyon Açı & Eğim Onayı`);
+    if(squeezeOk) reasons.push(`Bollinger Sıkışması (Kırılım Yakın)`);
+    if(obiOk) reasons.push(`Emir Defteri Derinlik Baskısı (OBI)`);
+    if(htfRsiOk) reasons.push(`Üst TF RSI Momentum Onayı`);
+    if(mom5Ok) reasons.push(`Kısa Vadeli Momentum (Mom5) Teyidi`);
+    if(atrOk) reasons.push(`ATR Volatilite & Hacim Teyidi`);
+    if(patternOk) reasons.push(`Canlı Mum Formasyonu Giriş Sinyali`);
 
     const rBox=document.getElementById('agent-reasoning');
     rBox.innerHTML=score>=75
@@ -1871,9 +2207,12 @@ function runAgent(){
 
     const setC=(id,textId,ok,text)=>{
         const el=document.getElementById(id);
-        el.className='cond-icon '+(ok?'ok':'no');
-        el.textContent=ok?'✓':'·';
-        document.getElementById(textId).textContent=text;
+        if (el) {
+            el.className='cond-icon '+(ok?'ok':'no');
+            el.textContent=ok?'✓':'·';
+        }
+        const txtEl = document.getElementById(textId);
+        if (txtEl) txtEl.textContent=text;
     };
     setC('cond-stoch','cond-stoch-text',stochOk,stochOk?`Alt TF Stoch RSI Onayı ✓`:`Alt TF Stoch RSI şartı yok`);
     setC('cond-bb','cond-bb-text',bbOk,bbOk?`Alt TF Bollinger Band Teması ✓`:'Alt TF Bollinger şartı yok');
@@ -1885,17 +2224,39 @@ function runAgent(){
     setC('cond-mom','cond-mom-text',momOk,momOk?`Alt TF Momentum Onayı ✓`:'Alt TF Momentum şartı yok');
     setC('cond-regr','cond-regr-text',regrChanOk,regrChanOk?`Alt TF Regresyon Kanalı Onayı ✓`:`Alt TF Regresyon Kanalı şartı yok`);
     setC('cond-liq','cond-liq-text',liqOk,liqOk?`Alt TF CMF Likidite Para Akış Onayı ✓`:`Alt TF CMF Likidite şartı yok`);
+    
+    setC('cond-atr','cond-atr-text',atrOk,atrOk?`ATR Volatilite Teyidi ✓`:`ATR Volatilite şartı yok`);
+    setC('cond-vwap-sapma','cond-vwap-sapma-text',vwapSapmaOk,vwapSapmaOk?`VWAP Sapma & Fiyat Uyumu ✓`:`VWAP Sapma şartı yok`);
+    setC('cond-regr-slope','cond-regr-slope-text',regrSlopeOk,regrSlopeOk?`Lineer Regresyon Eğimi Yön Onayı ✓`:`Lineer Regresyon Eğimi şartı yok`);
+    setC('cond-mom5','cond-mom5-text',mom5Ok,mom5Ok?`Mom5 Kısa Vadeli İvme Onayı ✓`:`Momentum (5) şartı yok`);
+    setC('cond-squeeze','cond-squeeze-text',squeezeOk,squeezeOk?`Bollinger Sıkışması (Kırılım Yakın) ✓`:`Bollinger Sıkışma şartı yok`);
+    setC('cond-obi','cond-obi-text',obiOk,obiOk?`Emir Defteri Baskı (OBI) Teyidi ✓`:`Emir Baskı (OBI) şartı yok`);
+    setC('cond-htf-ema','cond-htf-ema-text',htfEmaOk,htfEmaOk?`Üst TF Trend EMA (9/21) Onayı ✓`:`Üst TF Trend EMA şartı yok`);
+    setC('cond-htf-rsi','cond-htf-rsi-text',htfRsiOk,htfRsiOk?`Üst TF RSI Trend Onayı ✓`:`Üst TF RSI şartı yok`);
+    setC('cond-pattern','cond-pattern-text',patternOk,patternOk?`Canlı Mum Formasyonu Kırılım Sinyali ✓`:`Mum Formasyonu şartı yok`);
 
-    document.getElementById('stoch-dot').className='dot '+(stochOk?'active':'warn');
-    document.getElementById('bb-dot').className='dot '+(bbOk?'active':'warn');
-    document.getElementById('rsi-dot').className='dot '+(rsiOk?'active':'warn');
-    document.getElementById('ema-dot').className='dot '+(emaOk?'active':'warn');
-    document.getElementById('vwap-dot').className='dot '+(vwapOk?'active':'warn');
-    document.getElementById('obv-dot').className='dot '+(obvOk?'active':'warn');
-    document.getElementById('mfi-dot').className='dot '+(mfiOk?'active':'warn');
-    document.getElementById('mom-dot').className='dot '+(momOk?'active':'warn');
-    document.getElementById('regr-chan-dot').className='dot '+(regrChanOk?'active':'warn');
-    document.getElementById('liq-dot').className='dot '+(liqOk?'active':'warn');
+    const updateDot = (id, ok) => {
+        const el = document.getElementById(id);
+        if (el) el.className = 'dot ' + (ok ? 'active' : 'warn');
+    };
+    updateDot('stoch-dot', stochOk);
+    updateDot('bb-dot', bbOk);
+    updateDot('rsi-dot', rsiOk);
+    updateDot('ema-dot', emaOk);
+    updateDot('vwap-dot', vwapOk);
+    updateDot('obv-dot', obvOk);
+    updateDot('mfi-dot', mfiOk);
+    updateDot('mom-dot', momOk);
+    updateDot('regr-chan-dot', regrChanOk);
+    updateDot('liq-dot', liqOk);
+    updateDot('atr-dot', atrOk);
+    updateDot('vwap-sapma-dot', vwapSapmaOk);
+    updateDot('regr-slope-dot', regrSlopeOk);
+    updateDot('mom5-dot', mom5Ok);
+    updateDot('squeeze-dot', squeezeOk);
+    updateDot('obi-dot', obiOk);
+    updateDot('htf-ema-dot', htfEmaOk);
+    updateDot('htf-rsi-dot', htfRsiOk);
 
     const banner=document.getElementById('signal-banner');
     if(score>=75){
