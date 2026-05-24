@@ -285,10 +285,10 @@
         .timer-num { font-family:'Space Mono',monospace; font-size:1.0rem; font-weight:700; line-height:1; }
         .timer-lbl { font-size:0.4rem; color:var(--text3); text-transform:uppercase; letter-spacing:1px; margin-top:2px; }
         .cycle-info { flex:0 1 auto; }
-        .cycle-strat { font-size:0.5rem; font-weight:600; color:var(--accent); letter-spacing:1.5px; text-transform:uppercase; opacity:0.85; margin-bottom:2px; transition:color 0.6s; }
+        .cycle-strat { font-size:0.75rem; font-weight:600; color:var(--accent); letter-spacing:1.5px; text-transform:uppercase; opacity:0.85; margin-bottom:2px; transition:color 0.6s; }
         .cycle-mode { font-size:1.6rem; font-weight:700; color:var(--accent); letter-spacing:-1px; line-height:1; transition:color 0.6s; }
         .mode-icon { font-size:1.0rem; vertical-align:middle; display:inline-block; margin-right:6px; line-height:1; position:relative; top:-2px; }
-        .cycle-time { font-family:'Space Mono',monospace; font-size:0.55rem; color:var(--text3); margin-top:4px; }
+        .cycle-time { font-family:'Space Mono',monospace; font-size:0.8rem; color:var(--text3); margin-top:4px; }
 
         /* SEC TITLE */
         .sec-title { font-size:0.54rem; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:2px; margin-bottom:2px; display:flex; align-items:center; gap:6px; }
@@ -579,6 +579,28 @@
             color: var(--green);
         }
 
+        .chart-reset-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 28px; height: 28px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text2);
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-left: auto;
+        }
+        .chart-reset-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: var(--text);
+            transform: rotate(-180deg);
+        }
+        .chart-reset-btn:active {
+            transform: scale(0.9) rotate(-180deg);
+        }
+
         .chart-toolbar {
             display: flex;
             justify-content: space-between;
@@ -719,6 +741,42 @@
         .chart-candle-tooltip span.red {
             color: var(--red);
         }
+        
+        /* REFRESH BUTTON */
+        .refresh-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0 16px; color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700; font-size: 0.8rem;
+            cursor: pointer; height: 44px;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+        }
+        .refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+        }
+        .refresh-btn:active {
+            transform: translateY(1px);
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .refresh-icon {
+            display: inline-block;
+            font-size: 1rem;
+            line-height: 1;
+            transition: transform 0.2s ease;
+        }
+        .refresh-icon.spinning {
+            animation: spin 0.8s linear;
+        }
     </style>
 </head>
 <body>
@@ -730,8 +788,12 @@
         <div class="coin-bar">
             <input type="text" id="coin-input" class="coin-input" value="BTCUSDT"
                 onkeydown="if(event.key==='Enter'){updateCoin();this.blur()}"
+                onfocus="if(this.value==='Sembol Bulunamadı'){this.value=''}"
                 autocomplete="off" autocorrect="off" spellcheck="false" placeholder="BTCUSDT">
             <button class="analyze-btn" onclick="updateCoin()">▶ Takip</button>
+            <button class="refresh-btn" onclick="refreshDataWithAnimation(this)">
+                <span class="refresh-icon">↻</span> Yenile
+            </button>
         </div>
 
         <div class="market-hero">
@@ -789,6 +851,7 @@
                     <input type="checkbox" id="cb-stoch-rsi" onchange="toggleIndicator('stoch')">
                     <span>STOK RSI</span>
                 </label>
+                <button class="chart-reset-btn" onclick="resetChartView()" title="Grafik Görünümünü Sıfırla">↺</button>
             </div>
             <div id="chart-container-id" style="width: 100%; flex: 1;"></div>
             
@@ -1346,6 +1409,7 @@ function applyProfile(){
     if(k==='custom') return;
     const p=profiles[k];
     altTF=p.alt; ortaTF=p.orta; ustTF=p.ust;
+    chartTF=p.alt;
     document.getElementById('alt-tf-select').value=altTF;
     document.getElementById('orta-tf-select').value=ortaTF;
     document.getElementById('ust-tf-select').value=ustTF;
@@ -1357,6 +1421,7 @@ function updateSettings(){
     altTF=document.getElementById('alt-tf-select').value;
     ortaTF=document.getElementById('orta-tf-select').value;
     ustTF=document.getElementById('ust-tf-select').value;
+    chartTF=altTF;
     const found=Object.values(profiles).find(p=>p.alt===altTF&&p.orta===ortaTF&&p.ust===ustTF);
     document.getElementById('profile-select').value=found?Object.keys(profiles).find(key=>profiles[key]===found):"custom";
     document.getElementById('strategy-name').textContent=found?found.name:"⚙️ ÖZEL MOD";
@@ -1364,7 +1429,8 @@ function updateSettings(){
 }
 
 function updateCoin(){
-    const v=document.getElementById('coin-input').value.toUpperCase().trim();
+    let v=document.getElementById('coin-input').value.toUpperCase().trim();
+    v = v.replace("SEMBOL BULUNAMADI", "").replace("SEMBOL", "").replace("BULUNAMADI", "").trim();
     if(!v) return;
     currentCoin=v.includes("USDT")?v:v+"USDT";
     document.getElementById('coin-input').value=currentCoin;
@@ -1372,14 +1438,110 @@ function updateCoin(){
     saveToMemory(); fetchData();
 }
 
-async function fetchData(){ fetchPrice(); fetchTechnical(); }
+function refreshDataWithAnimation(btn) {
+    const icon = btn.querySelector('.refresh-icon');
+    if (icon) {
+        icon.classList.add('spinning');
+    }
+    setTimeout(() => {
+        window.location.reload();
+    }, 250);
+}
 
-async function fetchPrice(){
+function handleInvalidSymbol() {
+    document.getElementById('coin-input').value = "Sembol Bulunamadı";
+    resetMarketDataToZero();
+}
+
+function resetMarketDataToZero() {
+    document.getElementById('display-price').textContent = "0.00";
+    const el = document.getElementById('price-change');
+    if (el) {
+        el.textContent = "%0.00";
+        el.className = 'price-pill dn';
+    }
+    const h24El = document.getElementById('h24');
+    if (h24El) h24El.textContent = "0.00";
+    const l24El = document.getElementById('l24');
+    if (l24El) l24El.textContent = "0.00";
+    
+    // Reset technical indicators
+    const updateText = (id, val) => {
+        const item = document.getElementById(id);
+        if (item) item.textContent = val;
+    };
+    
+    updateText('stoch-rsi-val', "0.0");
+    updateText('bb-status', "SIFIR");
+    updateText('rsi-val', "0.0");
+    updateText('ema-val', "9: 0.0 | 21: 0.0 | 50: 0.0");
+    updateText('vwap-val', "0.0");
+    updateText('obv-val', "0");
+    updateText('mfi-val', "0.0");
+    updateText('mom-val', "0.00");
+    updateText('regr-chan-val', "C: 0.0");
+    updateText('liq-val', "0.000");
+    updateText('atr-val', "0.00");
+    updateText('vwap-sapma-val', "0.00%");
+    updateText('regr-slope-val', "0.000");
+    updateText('mom5-val', "0.00");
+    updateText('squeeze-val', "0.000");
+    updateText('obi-val', "0.000");
+    updateText('htf-ema-val', "9: 0.0 | 21: 0.0");
+    updateText('htf-rsi-val', "0.0");
+    
+    // Reset status dots
+    const resetDot = (id) => {
+        const item = document.getElementById(id);
+        if (item) item.className = 'dot';
+    };
+    resetDot('stoch-dot'); resetDot('bb-dot'); resetDot('rsi-dot'); resetDot('ema-dot'); resetDot('vwap-dot');
+    resetDot('obv-dot'); resetDot('mfi-dot'); resetDot('mom-dot'); resetDot('regr-chan-dot'); resetDot('liq-dot');
+    resetDot('atr-dot'); resetDot('vwap-sapma-dot'); resetDot('regr-slope-dot'); resetDot('mom5-dot');
+    resetDot('squeeze-dot'); resetDot('obi-dot'); resetDot('htf-ema-dot'); resetDot('htf-rsi-dot');
+    
+    // Reset signals and agent card
+    updateText('agent-score', "0%");
+    const fillEl = document.getElementById('agent-score-fill');
+    if (fillEl) fillEl.style.width = "0%";
+    updateText('timer-display', "0%");
+    
+    const circleEl = document.getElementById('progress-circle');
+    if (circleEl) {
+        circleEl.style.strokeDashoffset = 270;
+        circleEl.style.stroke = 'var(--text3)';
+        circleEl.style.filter = 'none';
+    }
+    
+    const stateEl = document.getElementById('agent-state');
+    if (stateEl) {
+        stateEl.textContent = 'Sembol Bulunamadı';
+        stateEl.style.color = 'var(--red)';
+    }
+    
+    const rBox = document.getElementById('agent-reasoning');
+    if (rBox) {
+        rBox.innerHTML = `<strong>GEÇERSİZ SEMBOL.</strong><br>Belirtilen sembol borsada bulunamadı. Lütfen geçerli bir sembol girin (örn. BTCUSDT).`;
+    }
+    
+    const banner = document.getElementById('signal-banner');
+    if (banner) {
+        banner.innerHTML = `❌ BORSADA BULUNAMADI<div class="signal-sub">Lütfen geçerli bir sembol girin.</div>`;
+        banner.className = 'signal-banner signal-short';
+    }
+}
+
+async function fetchData(){ fetchPrice(true); fetchTechnical(true); }
+
+async function fetchPrice(isExplicit = false){
     try{
         const okxSymbol = currentCoin.replace("USDT","-USDT");
         const r=await fetch(`https://www.okx.com/api/v5/market/ticker?instId=${okxSymbol}`);
         const d=await r.json();
-        if(!d.data||!d.data[0]) return;
+        if(d.code!=="0"||!d.data||!d.data[0]) {
+            if (isExplicit) handleInvalidSymbol();
+            return;
+        }
         const t=d.data[0];
         const p=parseFloat(t.last);
         lastPrice=p;
@@ -1391,7 +1553,10 @@ async function fetchPrice(){
         el.className='price-pill '+(c>=0?'up':'dn');
         document.getElementById('h24').textContent=parseFloat(t.high24h).toLocaleString('tr-TR');
         document.getElementById('l24').textContent=parseFloat(t.low24h).toLocaleString('tr-TR');
-    }catch(e){ console.error("fetchPrice error:", e); }
+    }catch(e){ 
+        console.error("fetchPrice error:", e);
+        if (isExplicit) handleInvalidSymbol();
+    }
 }
 
 function toOKXInterval(tf){
@@ -1411,7 +1576,7 @@ async function fetchOKXKlines(symbol, interval, limit){
     return d.data.reverse(); // eskiden yeniye
 }
 
-async function fetchTechnical(){
+async function fetchTechnical(isExplicit = false){
     try{
         let fetchPromises = [
             fetchOKXKlines(currentCoin, altTF, 150),
@@ -1429,8 +1594,14 @@ async function fetchTechnical(){
         const kUstRaw = results[2];
         const kChartRaw = chartTF === altTF ? kAltRaw : results[3];
 
-        if(!kAltRaw||!kOrtaRaw||!kUstRaw||!kChartRaw) return;
-        if(kAltRaw.length<50||kOrtaRaw.length<50||kUstRaw.length<50||kChartRaw.length<50) return;
+        if(!kAltRaw||!kOrtaRaw||!kUstRaw||!kChartRaw) {
+            if (isExplicit) handleInvalidSymbol();
+            return;
+        }
+        if(kAltRaw.length<50||kOrtaRaw.length<50||kUstRaw.length<50||kChartRaw.length<50) {
+            if (isExplicit) handleInvalidSymbol();
+            return;
+        }
 
         // OKX format: [ts, open, high, low, close, vol, volCcy, volCcyQuote, confirm]
         const parse=(k,idx)=>k.map(x=>parseFloat(x[idx]));
@@ -1696,7 +1867,10 @@ async function fetchTechnical(){
         document.getElementById('last-update').textContent = new Date().toLocaleTimeString('tr-TR');
         runAgent();
         updateTVWidget();
-    }catch(e){ console.error("fetchTechnical error:", e); }
+    }catch(e){ 
+        console.error("fetchTechnical error:", e); 
+        if (isExplicit) handleInvalidSymbol();
+    }
 }
 
 function updateBadges(lp){
@@ -2305,7 +2479,11 @@ function loadFromMemory(){
     if(alt) altTF=alt;
     if(orta) ortaTF=orta;
     if(ust) ustTF=ust;
-    if(chTf) chartTF=chTf;
+    if(chTf) {
+        chartTF=chTf;
+    } else if(alt) {
+        chartTF=alt;
+    }
     if(s==='true'){isSoundEnabled=true;syncSoundUI();}
     if(n==='true'){
         // Bildirim izni hâlâ geçerliyse geri yükle
@@ -2431,6 +2609,16 @@ function changeChartTimeframe(val) {
     chartTF = val;
     localStorage.setItem('cm_chart_tf', chartTF);
     fetchTechnical();
+}
+
+function resetChartView() {
+    visibleCandlesCount = 60;
+    chartPanOffset = 0;
+    if (typeof initAndRenderChart === 'function') {
+        initAndRenderChart();
+    }
+    updateTVWidget(true);
+    showToast("↺ Grafik Sıfırlandı", "Grafik görünümü varsayılan ayarlara döndürüldü.");
 }
 
 function toggleStochRsiCheckbox() {
@@ -3369,32 +3557,55 @@ function updateTVWidget(force = false) {
     
     container.innerHTML = '';
     
-    tvWidget = new TradingView.widget({
-        "autosize": true,
-        "symbol": symbol,
-        "interval": interval,
-        "timezone": "Europe/Istanbul",
-        "theme": "dark",
-        "style": "1",
-        "locale": "tr",
-        "toolbar_bg": "#131722",
-        "enable_publishing": false,
-        "hide_side_toolbar": true,
-        "hide_legend": true,
-        "allow_symbol_change": true,
-        "container_id": "chart-container-id",
-        "studies": studies,
-        "show_popup_button": true,
-        "popup_width": "1000",
-        "popup_height": "650",
-        "disabled_features": ["header_chart_type", "header_compare", "header_indicators"]
-    });
+    setTimeout(() => {
+        tvWidget = new TradingView.widget({
+            "autosize": true,
+            "symbol": symbol,
+            "interval": interval,
+            "timezone": "Europe/Istanbul",
+            "theme": "dark",
+            "style": "1",
+            "locale": "tr",
+            "toolbar_bg": "#131722",
+            "enable_publishing": false,
+            "hide_side_toolbar": true,
+            "hide_legend": true,
+            "hide_volume": true,
+            "allow_symbol_change": false,
+            "container_id": "chart-container-id",
+            "studies": studies,
+            "show_popup_button": true,
+            "popup_width": "1000",
+            "popup_height": "650",
+            "disabled_features": ["header_chart_type", "header_compare", "header_indicators", "use_localstorage_for_settings"]
+        });
+    }, 50);
 }
 
 loadFromMemory();
+
+// Arama kutusu odaklanma, tıklama veya tuş basımı durumunda hata mesajını temizle
+const coinInput = document.getElementById('coin-input');
+if (coinInput) {
+    const clearError = () => {
+        const val = coinInput.value.toUpperCase().trim();
+        if (val === "SEMBOL BULUNAMADI") {
+            coinInput.value = "";
+        }
+    };
+    coinInput.addEventListener('focus', clearError);
+    coinInput.addEventListener('click', clearError);
+    coinInput.addEventListener('keydown', (e) => {
+        const val = coinInput.value.toUpperCase().trim();
+        if (val === "SEMBOL BULUNAMADI" && e.key !== 'Enter') {
+            coinInput.value = "";
+        }
+    });
+}
+
 setInterval(updateCycle,1000);
-setInterval(fetchPrice,3000);
-setInterval(fetchTechnical,30000);
+setInterval(() => fetchPrice(false), 3000);
+setInterval(() => fetchTechnical(false), 30000);
 updateCycle(); fetchData();
 </script>
 </body>
