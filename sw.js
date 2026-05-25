@@ -41,7 +41,7 @@ self.addEventListener('notificationclick', event => {
 });
 
 // Statik cache
-const CACHE_NAME = 'cyclemaster-v26';
+const CACHE_NAME = 'cyclemaster-v27';
 const STATIC_ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', event => {
