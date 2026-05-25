@@ -40,38 +40,18 @@ self.addEventListener('notificationclick', event => {
     );
 });
 
-// Statik cache
-const CACHE_NAME = 'cyclemaster-v27';
-const STATIC_ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
+// Çevrimdışı çalışma (caching) iptal edildi.
+// Sadece eski önbellekleri temizleme işlemi yapılıyor.
 
 self.addEventListener('install', event => {
-    event.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(STATIC_ASSETS).catch(()=>{})));
     self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
+    // Eski versiyonlardan kalan tüm önbellekleri temizle
     event.waitUntil(caches.keys().then(keys =>
-        Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+        Promise.all(keys.map(k => caches.delete(k)))
     ));
     self.clients.claim();
 });
 
-self.addEventListener('fetch', event => {
-    const url = event.request.url;
-    if (url.includes('binance.com') || url.includes('okx.com') || url.includes('googleapis') || url.includes('gstatic')) {
-        event.respondWith(fetch(event.request).catch(() => new Response('{}')));
-        return;
-    }
-    event.respondWith(
-        caches.match(event.request).then(cached => {
-            if (cached) return cached;
-            return fetch(event.request).then(response => {
-                if (response && response.status === 200) {
-                    const clone = response.clone();
-                    caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
-                }
-                return response;
-            }).catch(() => caches.match('./index.html'));
-        })
-    );
-});
