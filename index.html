@@ -542,7 +542,7 @@
         .chart-indicator-cb {
             display: inline-flex;
             align-items: center;
-            padding: 6px 12px;
+            padding: 4px 10px;
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--border);
             border-radius: 100px;
@@ -557,7 +557,7 @@
             font-family: 'Space Grotesk', sans-serif;
             font-weight: 700;
             color: var(--text2);
-            font-size: 0.65rem;
+            font-size: 0.60rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             transition: color 0.25s ease;
@@ -884,17 +884,16 @@
         <div class="chart-card" style="flex: 1; min-height: 250px; padding: 0; position: relative;">
             <div class="chart-indicators-header" style="justify-content: flex-start; gap: 12px;">
                 <span id="chart-symbol-display" style="color: var(--gold); font-weight: 700; font-size: 1rem; font-family: 'Space Mono', monospace; letter-spacing: 0.5px;">BTCUSDT</span>
-                <button class="chart-reset-btn" onclick="updateTVWidget(true)" title="Grafiği Sıfırla" style="width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0;">
-                    <span class="refresh-icon" style="font-size: 14px;">↻</span>
-                </button>
                 <select id="parent-tf-select" class="parent-tf-select" onchange="setParentTimeframe(this.value)">
                     <option value="1m">1m</option>
                     <option value="3m">3m</option>
                     <option value="5m">5m</option>
-                    <option value="15m">15m</option>
+                    <option value="15m" selected>15m</option>
                     <option value="30m">30m</option>
                     <option value="1h">1s</option>
+                    <option value="2h">2s</option>
                     <option value="4h">4s</option>
+                    <option value="12h">12s</option>
                     <option value="1d">1G</option>
                     <option value="1w">1Haf</option>
                     <option value="1M">1Ayl</option>
@@ -2696,13 +2695,13 @@ function changeChartTimeframe(val) {
 function autoScaleTimeframes(baseTF) {
     const scale = {
         "1m": { alt: "1m", orta: "3m", ust: "15m" },
-        "3m": { alt: "3m", orta: "15m", ust: "1h" },
+        "3m": { alt: "3m", orta: "5m", ust: "15m" },
         "5m": { alt: "5m", orta: "15m", ust: "1h" },
         "15m": { alt: "15m", orta: "1h", ust: "4h" },
         "30m": { alt: "30m", orta: "1h", ust: "4h" },
         "1h": { alt: "1h", orta: "4h", ust: "1d" },
         "2h": { alt: "2h", orta: "4h", ust: "1d" },
-        "4h": { alt: "4h", orta: "1d", ust: "1w" },
+        "4h": { alt: "4h", orta: "12h", ust: "1d" },
         "12h": { alt: "12h", orta: "1d", ust: "1w" },
         "1d": { alt: "1d", orta: "1w", ust: "1M" },
         "1w": { alt: "1w", orta: "1M", ust: "1y" },
