@@ -127,11 +127,13 @@
             position:relative;
             z-index:1;
             flex: 1;
+            display: flex;
+            flex-direction: column;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             padding: 8px 8px calc(var(--bottom-h) + var(--safe-bottom) + 16px);
         }
-        .page { display:none; flex-direction:column; gap:10px; }
+        .page { display:none; flex-direction:column; gap:10px; flex: 1; min-height: 0; }
         
         /* Slide-up & Fade-in page transition */
         @keyframes pageIn {
@@ -534,7 +536,6 @@
             color: var(--text3);
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            margin-right: 4px;
         }
         
         /* PREMIUM TOGGLE CHIPS */
@@ -579,17 +580,52 @@
             color: var(--green);
         }
 
-        .chart-reset-btn {
+        .parent-tf-select {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text2);
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 4px 24px 4px 10px;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            margin-right: auto;
+            margin-left: 0;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='12' viewBox='0 0 24 24' width='12' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 6px center;
+            background-size: 14px;
+        }
+
+        .parent-tf-select:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: var(--text);
+        }
+
+        .parent-tf-select option {
+            background: #131722;
+            color: var(--text);
+        }
+
+        .chart-reset-btn, .chart-header-btn {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border);
             border-radius: 50%;
             width: 28px; height: 28px;
             display: flex; align-items: center; justify-content: center;
             color: var(--text2);
-            font-size: 1.05rem;
             cursor: pointer;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            margin-left: auto;
+            margin-left: 0;
+        }
+        .chart-reset-btn {
+            font-size: 1.05rem;
         }
         .chart-reset-btn:hover {
             background: rgba(255, 255, 255, 0.08);
@@ -599,6 +635,15 @@
         }
         .chart-reset-btn:active {
             transform: scale(0.9) rotate(-180deg);
+        }
+        .chart-header-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: var(--text);
+            transform: translateY(-1px);
+        }
+        .chart-header-btn:active {
+            transform: translateY(1px);
         }
 
         .chart-toolbar {
@@ -836,22 +881,40 @@
         </div>
 
         <!-- GRAPH CARD -->
-        <div class="chart-card" style="height: 330px; padding: 0; position: relative;">
-            <div class="chart-indicators-header">
-                <span class="chart-title">GÖSTERGELER:</span>
+        <div class="chart-card" style="flex: 1; min-height: 250px; padding: 0; position: relative;">
+            <div class="chart-indicators-header" style="justify-content: flex-start; gap: 12px;">
+                <span id="chart-symbol-display" style="color: var(--gold); font-weight: 700; font-size: 1rem; font-family: 'Space Mono', monospace; letter-spacing: 0.5px;">BTCUSDT</span>
+                <button class="chart-reset-btn" onclick="updateTVWidget(true)" title="Grafiği Sıfırla" style="width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0;">
+                    <span class="refresh-icon" style="font-size: 14px;">↻</span>
+                </button>
+                <select id="parent-tf-select" class="parent-tf-select" onchange="setParentTimeframe(this.value)">
+                    <option value="1m">1m</option>
+                    <option value="3m">3m</option>
+                    <option value="5m">5m</option>
+                    <option value="15m">15m</option>
+                    <option value="30m">30m</option>
+                    <option value="1h">1s</option>
+                    <option value="4h">4s</option>
+                    <option value="1d">1G</option>
+                    <option value="1w">1Haf</option>
+                    <option value="1M">1Ayl</option>
+                    <option value="1y">1Yıl</option>
+                </select>
                 <label class="chart-indicator-cb">
                     <input type="checkbox" id="cb-bb" onchange="toggleIndicator('bb')" checked>
                     <span>BB</span>
                 </label>
                 <label class="chart-indicator-cb">
                     <input type="checkbox" id="cb-regression" onchange="toggleIndicator('regr')" checked>
-                    <span>REGR</span>
+                    <span>REG</span>
                 </label>
                 <label class="chart-indicator-cb">
                     <input type="checkbox" id="cb-stoch-rsi" onchange="toggleIndicator('stoch')">
-                    <span>STOK RSI</span>
+                    <span>RSI</span>
                 </label>
-                <button class="chart-reset-btn" onclick="resetChartView()" title="Grafik Görünümünü Sıfırla">↺</button>
+                <button class="chart-header-btn" onclick="openChartPopup()" title="Açılır Pencerede Aç" style="width: 28px; height: 28px; border-radius: 6px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0;">
+                    <span style="font-size: 14px;">⧉</span>
+                </button>
             </div>
             <div id="chart-container-id" style="width: 100%; flex: 1;"></div>
             
@@ -866,7 +929,6 @@
                 <select id="chart-tf-display">
                     <option value="1m">1m</option>
                 </select>
-                <span id="chart-symbol-display"></span>
             </div>
         </div>
     </div>
@@ -1032,22 +1094,28 @@
             <div class="setting-row">
                 <div><div class="setting-name">Üst TF (Zaman Dilimi)</div><div class="setting-sub">Makro yön tayini için</div></div>
                 <select id="ust-tf-select" class="setting-control" onchange="updateSettings()">
-                    <option value="15m">15m</option><option value="30m">30m</option>
-                    <option value="1h" selected>1h</option><option value="4h">4h</option>
+                    <option value="1m">1m</option><option value="3m">3m</option><option value="5m">5m</option>
+                    <option value="15m">15m</option><option value="30m">30m</option><option value="1h" selected>1h</option>
+                    <option value="2h">2h</option><option value="4h">4h</option><option value="12h">12h</option>
+                    <option value="1d">1d</option><option value="1w">1w</option><option value="1M">1M</option><option value="1y">1y</option>
                 </select>
             </div>
             <div class="setting-row">
                 <div><div class="setting-name">Orta TF (Zaman Dilimi)</div><div class="setting-sub">Ara momentum doğrulaması</div></div>
                 <select id="orta-tf-select" class="setting-control" onchange="updateSettings()">
-                    <option value="5m">5m</option><option value="15m" selected>15m</option><option value="30m">30m</option>
-                    <option value="1h">1h</option>
+                    <option value="1m">1m</option><option value="3m">3m</option><option value="5m">5m</option>
+                    <option value="15m" selected>15m</option><option value="30m">30m</option><option value="1h">1h</option>
+                    <option value="2h">2h</option><option value="4h">4h</option><option value="12h">12h</option>
+                    <option value="1d">1d</option><option value="1w">1w</option><option value="1M">1M</option><option value="1y">1y</option>
                 </select>
             </div>
             <div class="setting-row">
                 <div><div class="setting-name">Alt TF (Zaman Dilimi)</div><div class="setting-sub">Nokta atışı giriş sinyali için</div></div>
                 <select id="alt-tf-select" class="setting-control" onchange="updateSettings()">
                     <option value="1m">1m</option><option value="3m">3m</option><option value="5m" selected>5m</option>
-                    <option value="15m">15m</option>
+                    <option value="15m">15m</option><option value="30m">30m</option><option value="1h">1h</option>
+                    <option value="2h">2h</option><option value="4h">4h</option><option value="12h">12h</option>
+                    <option value="1d">1d</option><option value="1w">1w</option><option value="1M">1M</option><option value="1y">1y</option>
                 </select>
             </div>
         </div>
@@ -1414,7 +1482,9 @@ function applyProfile(){
     document.getElementById('orta-tf-select').value=ortaTF;
     document.getElementById('ust-tf-select').value=ustTF;
     document.getElementById('strategy-name').textContent=p.name;
-    saveToMemory(); fetchTechnical();
+    saveToMemory();
+    syncParentTfUI();
+    fetchTechnical();
 }
 
 function updateSettings(){
@@ -1425,7 +1495,9 @@ function updateSettings(){
     const found=Object.values(profiles).find(p=>p.alt===altTF&&p.orta===ortaTF&&p.ust===ustTF);
     document.getElementById('profile-select').value=found?Object.keys(profiles).find(key=>profiles[key]===found):"custom";
     document.getElementById('strategy-name').textContent=found?found.name:"⚙️ ÖZEL MOD";
-    saveToMemory(); fetchTechnical();
+    saveToMemory();
+    syncParentTfUI();
+    fetchTechnical();
 }
 
 function updateCoin(){
@@ -1562,7 +1634,7 @@ async function fetchPrice(isExplicit = false){
 function toOKXInterval(tf){
     const map={
         "1m":"1m", "3m":"3m", "5m":"5m", "15m":"15m", "30m":"30m",
-        "1h":"1H", "2h":"2H", "4h":"4H", "12h":"12H", "1d":"1D", "1w":"1W"
+        "1h":"1H", "2h":"2H", "4h":"4H", "12h":"12H", "1d":"1D", "1w":"1W", "1M":"1M", "1y":"1Y"
     };
     return map[tf]||"1H";
 }
@@ -1640,7 +1712,15 @@ async function fetchTechnical(isExplicit = false){
         const tfLabelEl = document.getElementById('chart-tf-display');
         const symbolLabelEl = document.getElementById('chart-symbol-display');
         if (tfLabelEl) tfLabelEl.value = chartTF;
-        if (symbolLabelEl) symbolLabelEl.textContent = currentCoin.replace("USDT","USD");
+        if (symbolLabelEl) {
+            let sym = currentCoin;
+            if (sym.endsWith("USDT")) {
+                sym = sym.replace("USDT", "/USD");
+            } else if (sym.endsWith("USD")) {
+                sym = sym.replace("USD", "/USD");
+            }
+            symbolLabelEl.textContent = sym;
+        }
         
         // --- ÜST TF INDICATORS (EMA 9/21/50) ---
         const ema9Series = calcEMA(cUst, 9);
@@ -2512,6 +2592,7 @@ function loadFromMemory(){
     if (cbBBVal !== null) document.getElementById('cb-bb').checked = (cbBBVal === 'true');
     if (cbRegrVal !== null) document.getElementById('cb-regression').checked = (cbRegrVal === 'true');
     if (cbStochVal !== null) document.getElementById('cb-stoch-rsi').checked = (cbStochVal === 'true');
+    syncParentTfUI();
 }
 
 // ── PWA INSTALL ──
@@ -2608,7 +2689,63 @@ function goToSettings() {
 function changeChartTimeframe(val) {
     chartTF = val;
     localStorage.setItem('cm_chart_tf', chartTF);
+    syncParentTfUI();
     fetchTechnical();
+}
+
+function autoScaleTimeframes(baseTF) {
+    const scale = {
+        "1m": { alt: "1m", orta: "3m", ust: "15m" },
+        "3m": { alt: "3m", orta: "15m", ust: "1h" },
+        "5m": { alt: "5m", orta: "15m", ust: "1h" },
+        "15m": { alt: "15m", orta: "1h", ust: "4h" },
+        "30m": { alt: "30m", orta: "1h", ust: "4h" },
+        "1h": { alt: "1h", orta: "4h", ust: "1d" },
+        "2h": { alt: "2h", orta: "4h", ust: "1d" },
+        "4h": { alt: "4h", orta: "1d", ust: "1w" },
+        "12h": { alt: "12h", orta: "1d", ust: "1w" },
+        "1d": { alt: "1d", orta: "1w", ust: "1M" },
+        "1w": { alt: "1w", orta: "1M", ust: "1y" },
+        "1M": { alt: "1M", orta: "1y", ust: "1y" },
+        "1y": { alt: "1y", orta: "1y", ust: "1y" }
+    };
+    
+    if (scale[baseTF]) {
+        altTF = scale[baseTF].alt;
+        ortaTF = scale[baseTF].orta;
+        ustTF = scale[baseTF].ust;
+        
+        const altSelect = document.getElementById('alt-tf-select');
+        const ortaSelect = document.getElementById('orta-tf-select');
+        const ustSelect = document.getElementById('ust-tf-select');
+        if (altSelect) altSelect.value = altTF;
+        if (ortaSelect) ortaSelect.value = ortaTF;
+        if (ustSelect) ustSelect.value = ustTF;
+        
+        const found=Object.values(profiles).find(p=>p.alt===altTF&&p.orta===ortaTF&&p.ust===ustTF);
+        document.getElementById('profile-select').value=found?Object.keys(profiles).find(key=>profiles[key]===found):"custom";
+        document.getElementById('strategy-name').textContent=found?found.name:("⚙️ ÖZEL MOD");
+    }
+}
+
+function setParentTimeframe(val) {
+    chartTF = val;
+    localStorage.setItem('cm_chart_tf', chartTF);
+    syncParentTfUI();
+    
+    // Auto scale analysis timeframes
+    autoScaleTimeframes(chartTF);
+    saveToMemory();
+    
+    updateTVWidget(true);
+    fetchTechnical();
+}
+
+function syncParentTfUI() {
+    const selectEl = document.getElementById('parent-tf-select');
+    if (selectEl) {
+        selectEl.value = chartTF;
+    }
 }
 
 function resetChartView() {
@@ -2619,6 +2756,24 @@ function resetChartView() {
     }
     updateTVWidget(true);
     showToast("↺ Grafik Sıfırlandı", "Grafik görünümü varsayılan ayarlara döndürüldü.");
+}
+
+function popoutChart() {
+    const intervalMap = {
+        "1m": "1", "3m": "3", "5m": "5", "15m": "15", "30m": "30",
+        "1h": "60", "2h": "120", "4h": "240", "12h": "720", "1d": "D",
+        "1w": "W", "1M": "M", "1y": "12M"
+    };
+    const interval = intervalMap[chartTF] || "5";
+    const url = `https://s.tradingview.com/widgetembed/?symbol=OKX:${currentCoin}&interval=${interval}&theme=dark&style=1&timezone=Europe%2FIstanbul&locale=tr`;
+    window.open(url, 'TradingViewChart', 'width=1000,height=650');
+    showToast("🗖 Yeni Pencere", "Grafik bağımsız bir pencerede açıldı.");
+}
+
+function openAdvancedChart() {
+    const url = `https://tr.tradingview.com/chart/?symbol=OKX:${currentCoin}`;
+    window.open(url, '_blank');
+    showToast("📈 Gelişmiş Grafik", "Gelişmiş analiz sayfası yeni sekmede açıldı.");
 }
 
 function toggleStochRsiCheckbox() {
@@ -3525,7 +3680,9 @@ function updateTVWidget(force = false) {
         "4h": "240",
         "12h": "720",
         "1d": "D",
-        "1w": "W"
+        "1w": "W",
+        "1M": "M",
+        "1y": "12M"
     };
     const interval = intervalMap[chartTF] || "5";
     
@@ -3574,12 +3731,20 @@ function updateTVWidget(force = false) {
             "allow_symbol_change": false,
             "container_id": "chart-container-id",
             "studies": studies,
-            "show_popup_button": true,
-            "popup_width": "1000",
-            "popup_height": "650",
-            "disabled_features": ["header_chart_type", "header_compare", "header_indicators", "use_localstorage_for_settings"]
+            "show_popup_button": false,
+            "hide_top_toolbar": true,
+            "disabled_features": ["use_localstorage_for_settings"]
         });
     }, 50);
+}
+
+function openChartPopup() {
+    const iframe = document.querySelector('#chart-container-id iframe');
+    if (iframe && iframe.src) {
+        window.open(iframe.src, '_blank', 'width=1000,height=650');
+    } else {
+        alert("Grafik henüz yüklenmedi.");
+    }
 }
 
 loadFromMemory();
