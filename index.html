@@ -338,6 +338,10 @@
             border-color: rgba(255,255,255,0.08);
             transform: translateX(4px);
         }
+        .ind-row:has(input[type="checkbox"]:not(:checked)) {
+            opacity: 0.4;
+            filter: grayscale(100%);
+        }
         .ind-left { display:flex; align-items:center; gap:11px; }
         .dot { width:9px; height:9px; border-radius:50%; background:var(--text3); transition:all 0.4s; flex-shrink:0; }
         .dot.active { background:var(--green); box-shadow:0 0 10px rgba(16,185,129,0.5); }
@@ -973,78 +977,78 @@
     <div class="page" id="page-tech">
         <div class="sec-title">Teknik Tarama</div>
         <div class="tech-card">
-            <div class="ind-row">
-                <div class="ind-left"><div id="stoch-dot" class="dot"></div><span class="ind-name">Stoch RSI</span></div>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-stoch" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="stoch-dot" class="dot"></div><span class="ind-name">Stoch RSI</span></div>
                 <div class="ind-right"><span class="ind-val" id="stoch-rsi-val">—</span><span class="ind-badge b-gray" id="stoch-badge">—</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="bb-dot" class="dot"></div><span class="ind-name">Bollinger</span></div>
+            </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-bb" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="bb-dot" class="dot"></div><span class="ind-name">Bollinger</span></div>
                 <div class="ind-right"><span class="ind-val" id="bb-status">—</span><span class="ind-badge b-gray" id="bb-badge">—</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="rsi-dot" class="dot"></div><span class="ind-name">RSI (14)</span></div>
+            </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-rsi" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="rsi-dot" class="dot"></div><span class="ind-name">RSI (14)</span></div>
                 <div class="ind-right"><span class="ind-val" id="rsi-val">—</span><span class="ind-badge b-gray" id="rsi-badge">—</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="ema-dot" class="dot"></div><span class="ind-name">EMA (9/21/50)</span></div>
+            </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-ema" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="ema-dot" class="dot"></div><span class="ind-name">EMA (9/21/50)</span></div>
                 <div class="ind-right"><span class="ind-val" id="ema-val">—</span><span class="ind-badge b-gray" id="ema-badge">—</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="vwap-dot" class="dot"></div><span class="ind-name">VWAP</span></div>
+            </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-vwap" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="vwap-dot" class="dot"></div><span class="ind-name">VWAP</span></div>
                 <div class="ind-right"><span class="ind-val" id="vwap-val">—</span><span class="ind-badge b-gray" id="vwap-badge">—</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="obv-dot" class="dot"></div><span class="ind-name">OBV</span></div>
+            </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-obv" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="obv-dot" class="dot"></div><span class="ind-name">OBV</span></div>
                 <div class="ind-right"><span class="ind-val" id="obv-val">—</span><span class="ind-badge b-gray" id="obv-badge">—</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="mfi-dot" class="dot"></div><span class="ind-name">MFI (14)</span></div>
+            </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-mfi" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="mfi-dot" class="dot"></div><span class="ind-name">MFI (14)</span></div>
                 <div class="ind-right"><span class="ind-val" id="mfi-val">—</span><span class="ind-badge b-gray" id="mfi-badge">—</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="mom-dot" class="dot"></div><span class="ind-name">Momentum (10)</span></div>
+            </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-mom" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="mom-dot" class="dot"></div><span class="ind-name">Momentum (10)</span></div>
                 <div class="ind-right"><span class="ind-val" id="mom-val">—</span><span class="ind-badge b-gray" id="mom-badge">—</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="regr-chan-dot" class="dot"></div><span class="ind-name">Regresyon Kanalı</span></div>
+            </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-regr-chan" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="regr-chan-dot" class="dot"></div><span class="ind-name">Regresyon Kanalı</span></div>
                 <div class="ind-right"><span class="ind-val" id="regr-chan-val">—</span><span class="ind-badge b-gray" id="regr-chan-badge">—</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="liq-dot" class="dot"></div><span class="ind-name">Likidite (CMF)</span></div>
+            </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-liq" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="liq-dot" class="dot"></div><span class="ind-name">Likidite (CMF)</span></div>
                 <div class="ind-right"><span class="ind-val" id="liq-val">—</span><span class="ind-badge b-gray" id="liq-badge">—</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="atr-dot" class="dot"></div><span class="ind-name">ATR (14) Volatilite</span></div>
+            </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-atr" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="atr-dot" class="dot"></div><span class="ind-name">ATR (14) Volatilite</span></div>
                 <div class="ind-right"><span class="ind-val" id="atr-val">—</span><span class="ind-badge b-gray" id="atr-badge">—</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="vwap-sapma-dot" class="dot"></div><span class="ind-name">VWAP Sapması</span></div>
+            </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-vwap-sapma" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="vwap-sapma-dot" class="dot"></div><span class="ind-name">VWAP Sapması</span></div>
                 <div class="ind-right"><span class="ind-val" id="vwap-sapma-val">—</span><span class="ind-badge b-gray" id="vwap-sapma-badge">—</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="regr-slope-dot" class="dot"></div><span class="ind-name">Regresyon Eğimi</span></div>
+            </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-regr-slope" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="regr-slope-dot" class="dot"></div><span class="ind-name">Regresyon Eğimi</span></div>
                 <div class="ind-right"><span class="ind-val" id="regr-slope-val">—</span><span class="ind-badge b-gray" id="regr-slope-badge">—</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="mom5-dot" class="dot"></div><span class="ind-name">Momentum (5)</span></div>
+            </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-mom5" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="mom5-dot" class="dot"></div><span class="ind-name">Momentum (5)</span></div>
                 <div class="ind-right"><span class="ind-val" id="mom5-val">—</span><span class="ind-badge b-gray" id="mom5-badge">—</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="squeeze-dot" class="dot"></div><span class="ind-name">Bollinger Sıkışması</span></div>
+            </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-squeeze" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="squeeze-dot" class="dot"></div><span class="ind-name">Bollinger Sıkışması</span></div>
                 <div class="ind-right"><span class="ind-val" id="squeeze-val">—</span><span class="ind-badge b-gray" id="squeeze-badge">—</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="obi-dot" class="dot"></div><span class="ind-name">Emir Dengesizliği (OBI)</span></div>
+            </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-obi" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="obi-dot" class="dot"></div><span class="ind-name">Emir Dengesizliği (OBI)</span></div>
                 <div class="ind-right"><span class="ind-val" id="obi-val">—</span><span class="ind-badge b-gray" id="obi-badge">—</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="htf-ema-dot" class="dot"></div><span class="ind-name">HTF EMA (9/21)</span></div>
+            </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-htf-ema" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="htf-ema-dot" class="dot"></div><span class="ind-name">HTF EMA (9/21)</span></div>
                 <div class="ind-right"><span class="ind-val" id="htf-ema-val">—</span><span class="ind-badge b-gray" id="htf-ema-badge">—</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="htf-rsi-dot" class="dot"></div><span class="ind-name">HTF RSI (14)</span></div>
+            </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-htf-rsi" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="htf-rsi-dot" class="dot"></div><span class="ind-name">HTF RSI (14)</span></div>
                 <div class="ind-right"><span class="ind-val" id="htf-rsi-val">—</span><span class="ind-badge b-gray" id="htf-rsi-badge">—</span></div>
-            </div>
+            </label>
             <div class="update-row">
                 <span class="update-lbl">Son Güncelleme</span>
                 <span class="update-val" id="last-update">—</span>
@@ -1053,26 +1057,26 @@
 
         <div class="sec-title" style="margin-top: 16px;">Mum Formasyonu Analizi</div>
         <div class="tech-card">
-            <div class="ind-row">
-                <div class="ind-left"><div id="pattern-hammer-dot" class="dot"></div><span class="ind-name">Hammer (Çekiç - Dip Dönüşü)</span></div>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-pattern-hammer" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="pattern-hammer-dot" class="dot"></div><span class="ind-name">Hammer (Çekiç - Dip Dönüşü)</span></div>
                 <div class="ind-right"><span class="ind-badge b-gray" id="pattern-hammer-badge">YOK</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="pattern-shooting-dot" class="dot"></div><span class="ind-name">Shooting Star (Kayan Yıldız - Tepe Dönüşü)</span></div>
+            </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-pattern-shooting" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="pattern-shooting-dot" class="dot"></div><span class="ind-name">Shooting Star (Kayan Yıldız - Tepe Dönüşü)</span></div>
                 <div class="ind-right"><span class="ind-badge b-gray" id="pattern-shooting-badge">YOK</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="pattern-doji-dot" class="dot"></div><span class="ind-name">Doji (Kararsızlık)</span></div>
+            </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-pattern-doji" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="pattern-doji-dot" class="dot"></div><span class="ind-name">Doji (Kararsızlık)</span></div>
                 <div class="ind-right"><span class="ind-badge b-gray" id="pattern-doji-badge">YOK</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="pattern-engulfing-dot" class="dot"></div><span class="ind-name">Engulfing (Yutan Mum - Güçlü Dönüş)</span></div>
+            </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-pattern-engulfing" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="pattern-engulfing-dot" class="dot"></div><span class="ind-name">Engulfing (Yutan Mum - Güçlü Dönüş)</span></div>
                 <div class="ind-right"><span class="ind-badge b-gray" id="pattern-engulfing-badge">YOK</span></div>
-            </div>
-            <div class="ind-row">
-                <div class="ind-left"><div id="pattern-marubozu-dot" class="dot"></div><span class="ind-name">Marubozu (Güçlü Yön)</span></div>
+            </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-pattern-marubozu" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="pattern-marubozu-dot" class="dot"></div><span class="ind-name">Marubozu (Güçlü Yön)</span></div>
                 <div class="ind-right"><span class="ind-badge b-gray" id="pattern-marubozu-badge">YOK</span></div>
-            </div>
+            </label>
         </div>
     </div>
 
@@ -1120,6 +1124,18 @@
         </div>
         <div class="settings-section">
             <div class="settings-title">Tercihler</div>
+            <div class="setting-row">
+                <div><div class="setting-name">Uyum Eşiği</div><div class="setting-sub">Sinyal tetiklenme yüzdesi</div></div>
+                <select id="threshold-select" class="setting-control" onchange="updateThreshold()">
+                    <option value="50">50%</option>
+                    <option value="60">60%</option>
+                    <option value="70">70%</option>
+                    <option value="75">75%</option>
+                    <option value="80">80%</option>
+                    <option value="90">90%</option>
+                    <option value="100">100%</option>
+                </select>
+            </div>
             <div class="setting-row">
                 <div><div class="setting-name">Ses Uyarısı</div><div class="setting-sub">Sinyal gelince ses çal</div></div>
                 <label class="toggle">
@@ -1294,6 +1310,7 @@ async function unsubscribePush() {
 
 
 let currentCoin="BTCUSDT", altTF="5m", ortaTF="15m", ustTF="1h", lastMode=null;
+let matchThreshold=75;
 let chartTF="5m";
 let rsiValue=50, stochRsiValue=50, bbStatus="Mid";
 let ema9Val=0, ema21Val=0, ema50Val=0;
@@ -1493,10 +1510,16 @@ function updateSettings(){
     chartTF=altTF;
     const found=Object.values(profiles).find(p=>p.alt===altTF&&p.orta===ortaTF&&p.ust===ustTF);
     document.getElementById('profile-select').value=found?Object.keys(profiles).find(key=>profiles[key]===found):"custom";
-    document.getElementById('strategy-name').textContent=found?found.name:"⚙️ ÖZEL MOD";
+    document.getElementById('strategy-name').textContent=found?found.name:"⚡ ÖZEL MOD";
     saveToMemory();
     syncParentTfUI();
     fetchTechnical();
+}
+
+function updateThreshold() {
+    matchThreshold = parseInt(document.getElementById('threshold-select').value) || 75;
+    saveToMemory();
+    runAgent();
 }
 
 function updateCoin(){
@@ -2406,27 +2429,45 @@ function runAgent(){
         : (candlePatterns.hammer || candlePatterns.engulfing === 'BOĞA');
 
     // Balanced Weighted Score out of 100%
-    let score=0;
-    if(htfEmaOk) score+=15;
-    if(vwapSapmaOk && vwapOk) score+=15;
-    if(regrChanOk && regrSlopeOk) score+=15;
-    if(bbOk && squeezeOk) score+=10;
-    if(rsiOk) score+=8;
-    if(stochOk) score+=8;
-    if(obiOk) score+=8;
-    if(htfRsiOk) score+=5;
-    if(momOk && mom5Ok) score+=5;
-    if(obvOk && atrOk) score+=5;
-    if(patternOk) score+=3;
-    if(mfiOk && liqOk) score+=3;
+    const isIndEnabled = (id) => {
+        const el = document.getElementById(id);
+        return el ? el.checked : true;
+    };
 
-    document.getElementById('agent-score').textContent=score+"%";
-    document.getElementById('agent-score-fill').style.width=score+"%";
-    document.getElementById('timer-display').textContent=score+"%";
+    let score = 0;
+    let maxScore = 0;
+    
+    const addScore = (condition, points, enabled) => {
+        if (enabled) {
+            maxScore += points;
+            if (condition) score += points;
+        }
+    };
+
+    addScore(htfEmaOk, 15, isIndEnabled('toggle-htf-ema'));
+    addScore(vwapSapmaOk && vwapOk, 15, isIndEnabled('toggle-vwap-sapma') && isIndEnabled('toggle-vwap'));
+    addScore(regrChanOk && regrSlopeOk, 15, isIndEnabled('toggle-regr-chan') && isIndEnabled('toggle-regr-slope'));
+    addScore(bbOk && squeezeOk, 10, isIndEnabled('toggle-bb') && isIndEnabled('toggle-squeeze'));
+    addScore(rsiOk, 8, isIndEnabled('toggle-rsi'));
+    addScore(stochOk, 8, isIndEnabled('toggle-stoch'));
+    addScore(obiOk, 8, isIndEnabled('toggle-obi'));
+    addScore(htfRsiOk, 5, isIndEnabled('toggle-htf-rsi'));
+    addScore(momOk && mom5Ok, 5, isIndEnabled('toggle-mom') && isIndEnabled('toggle-mom5'));
+    addScore(obvOk && atrOk, 5, isIndEnabled('toggle-obv') && isIndEnabled('toggle-atr'));
+    addScore(patternOk, 3, isIndEnabled('toggle-pattern-hammer') || isIndEnabled('toggle-pattern-shooting') || isIndEnabled('toggle-pattern-doji') || isIndEnabled('toggle-pattern-engulfing') || isIndEnabled('toggle-pattern-marubozu'));
+    addScore(mfiOk && liqOk, 3, isIndEnabled('toggle-mfi') && isIndEnabled('toggle-liq'));
+
+    let finalScore = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
+
+    document.getElementById('agent-score').textContent = finalScore + "%";
+    document.getElementById('agent-score-fill').style.width = finalScore + "%";
+    document.getElementById('timer-display').textContent = finalScore + "%";
     
     const circleEl=document.getElementById('progress-circle');
-    circleEl.style.strokeDashoffset=270*(1-score/100);
-    if(score>=75){
+    circleEl.style.strokeDashoffset=270*(1-finalScore/100);
+    
+    score = finalScore;
+    if(score>=matchThreshold){
         circleEl.style.stroke='var(--green)';
         circleEl.style.filter='drop-shadow(0 0 5px var(--green))';
     }else if(score>=45){
@@ -2438,7 +2479,7 @@ function runAgent(){
     }
 
     const stateEl=document.getElementById('agent-state');
-    if(score>=75){
+    if(score>=matchThreshold){
         stateEl.textContent=lastMode==='SHORT'?'🔴 Sat Sinyali':'🟢 Al Sinyali';
         stateEl.style.color=lastMode==='SHORT'?'var(--red)':'var(--green)';
     }else{
@@ -2516,7 +2557,7 @@ function runAgent(){
     updateDot('htf-rsi-dot', htfRsiOk);
 
     const banner=document.getElementById('signal-banner');
-    if(score>=75){
+    if(score>=matchThreshold){
         const cls=lastMode==='SHORT'?'signal-short':'signal-long';
         const txt=lastMode==='SHORT'?'🔥 ŞİMDİ SATIŞ YAP':'🚀 ŞİMDİ ALIM YAP';
         banner.innerHTML=`${txt}<div class="signal-sub">${currentCoin} · Güven: ${score}%</div>`;
@@ -2547,6 +2588,7 @@ function saveToMemory(){
     localStorage.setItem('cm_ust_tf',ustTF);
     localStorage.setItem('cm_sound',isSoundEnabled);
     localStorage.setItem('cm_notify',isNotificationEnabled);
+    localStorage.setItem('cm_threshold',matchThreshold);
     
     // Arka planla senkronize et
     const url = `${BACKEND_URL}?action=sync&symbol=${currentCoin}&upper=${ustTF}&mid=${ortaTF}&lower=${altTF}`;
@@ -2583,6 +2625,12 @@ function loadFromMemory(){
     document.getElementById('alt-tf-select').value=altTF;
     document.getElementById('orta-tf-select').value=ortaTF;
     document.getElementById('ust-tf-select').value=ustTF;
+    
+    const th = localStorage.getItem('cm_threshold');
+    if(th) matchThreshold = parseInt(th);
+    const thSelect = document.getElementById('threshold-select');
+    if(thSelect) thSelect.value = matchThreshold;
+
     document.getElementById('display-symbol').textContent=currentCoin;
     const found=Object.values(profiles).find(p=>p.alt===altTF&&p.orta===ortaTF&&p.ust===ustTF);
     document.getElementById('profile-select').value=found?Object.keys(profiles).find(key=>profiles[key]===found):"custom";
@@ -2595,6 +2643,24 @@ function loadFromMemory(){
     if (cbBBVal !== null) document.getElementById('cb-bb').checked = (cbBBVal === 'true');
     if (cbRegrVal !== null) document.getElementById('cb-regression').checked = (cbRegrVal === 'true');
     if (cbStochVal !== null) document.getElementById('cb-stoch-rsi').checked = (cbStochVal === 'true');
+    
+    // Load tech tab toggles
+    const techToggles = [
+        'toggle-stoch', 'toggle-bb', 'toggle-rsi', 'toggle-ema', 'toggle-vwap', 
+        'toggle-obv', 'toggle-mfi', 'toggle-mom', 'toggle-regr-chan', 'toggle-liq', 
+        'toggle-atr', 'toggle-vwap-sapma', 'toggle-regr-slope', 'toggle-mom5', 
+        'toggle-squeeze', 'toggle-obi', 'toggle-htf-ema', 'toggle-htf-rsi',
+        'toggle-pattern-hammer', 'toggle-pattern-shooting', 'toggle-pattern-doji',
+        'toggle-pattern-engulfing', 'toggle-pattern-marubozu'
+    ];
+    techToggles.forEach(id => {
+        const val = localStorage.getItem('cm_' + id);
+        if (val !== null) {
+            const el = document.getElementById(id);
+            if (el) el.checked = (val === 'true');
+        }
+    });
+
     syncParentTfUI();
 }
 
@@ -3663,6 +3729,14 @@ function toggleIndicator(type) {
     updateTVWidget(true);
 }
 
+function toggleTechInd(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        localStorage.setItem('cm_' + id, el.checked);
+    }
+    runAgent();
+}
+
 function updateTVWidget(force = false) {
     const container = document.getElementById('chart-container-id');
     if (!container) return;
@@ -3778,3 +3852,6 @@ updateCycle(); fetchData();
 </script>
 </body>
 </html>
+
+
+
