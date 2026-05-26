@@ -953,7 +953,7 @@
                 <div class="cond-row"><div class="cond-icon no" id="cond-stoch">·</div><span class="cond-text" id="cond-stoch-text">Stoch RSI bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-bb">·</div><span class="cond-text" id="cond-bb-text">Bollinger bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-rsi">·</div><span class="cond-text" id="cond-rsi-text">RSI bekleniyor</span></div>
-                <div class="cond-row"><div class="cond-icon no" id="cond-ema">·</div><span class="cond-text" id="cond-ema-text">EMA 9/21/50 bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-ema">·</div><span class="cond-text" id="cond-ema-text">EMA 5/13/21 bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-vwap">·</div><span class="cond-text" id="cond-vwap-text">VWAP bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-obv">·</div><span class="cond-text" id="cond-obv-text">OBV bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-mfi">·</div><span class="cond-text" id="cond-mfi-text">MFI bekleniyor</span></div>
@@ -966,7 +966,8 @@
                 <div class="cond-row"><div class="cond-icon no" id="cond-mom5">·</div><span class="cond-text" id="cond-mom5-text">Momentum (5) bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-squeeze">·</div><span class="cond-text" id="cond-squeeze-text">Bollinger Sıkışması bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-obi">·</div><span class="cond-text" id="cond-obi-text">Emir Defteri Baskısı (OBI) bekleniyor</span></div>
-                <div class="cond-row"><div class="cond-icon no" id="cond-htf-ema">·</div><span class="cond-text" id="cond-htf-ema-text">HTF Trend (EMA 9/21) bekleniyor</span></div>
+                                <div class="cond-row"><div class="cond-icon no" id="cond-fvg">·</div><span class="cond-text" id="cond-fvg-text">SMC FVG bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-htf-ema">·</div><span class="cond-text" id="cond-htf-ema-text">HTF Trend (EMA 5/13) bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-htf-rsi">·</div><span class="cond-text" id="cond-htf-rsi-text">HTF RSI bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-pattern">·</div><span class="cond-text" id="cond-pattern-text">Canlı Mum Formasyonları bekleniyor</span></div>
             </div>
@@ -990,7 +991,7 @@
                 <div class="ind-right"><span class="ind-val" id="rsi-val">—</span><span class="ind-badge b-gray" id="rsi-badge">—</span></div>
             </label>
             <label class="ind-row" style="cursor: pointer;">
-                <div class="ind-left"><input type="checkbox" id="toggle-ema" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="ema-dot" class="dot"></div><span class="ind-name">EMA (9/21/50)</span></div>
+                <div class="ind-left"><input type="checkbox" id="toggle-ema" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="ema-dot" class="dot"></div><span class="ind-name">EMA (5/13/21)</span></div>
                 <div class="ind-right"><span class="ind-val" id="ema-val">—</span><span class="ind-badge b-gray" id="ema-badge">—</span></div>
             </label>
             <label class="ind-row" style="cursor: pointer;">
@@ -1041,8 +1042,12 @@
                 <div class="ind-left"><input type="checkbox" id="toggle-obi" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="obi-dot" class="dot"></div><span class="ind-name">Emir Dengesizliği (OBI)</span></div>
                 <div class="ind-right"><span class="ind-val" id="obi-val">—</span><span class="ind-badge b-gray" id="obi-badge">—</span></div>
             </label>
+                        <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-fvg" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="fvg-dot" class="dot"></div><span class="ind-name">SMC FVG (Imbalance)</span></div>
+                <div class="ind-right"><span class="ind-val" id="fvg-val">—</span><span class="ind-badge b-gray" id="fvg-badge">—</span></div>
+            </label>
             <label class="ind-row" style="cursor: pointer;">
-                <div class="ind-left"><input type="checkbox" id="toggle-htf-ema" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="htf-ema-dot" class="dot"></div><span class="ind-name">HTF EMA (9/21)</span></div>
+                <div class="ind-left"><input type="checkbox" id="toggle-htf-ema" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="htf-ema-dot" class="dot"></div><span class="ind-name">HTF EMA (5/13)</span></div>
                 <div class="ind-right"><span class="ind-val" id="htf-ema-val">—</span><span class="ind-badge b-gray" id="htf-ema-badge">—</span></div>
             </label>
             <label class="ind-row" style="cursor: pointer;">
@@ -1092,6 +1097,14 @@
                     <option value="trader" selected>🎯 Day Trader</option>
                     <option value="swing">🛡️ Swing</option>
                     <option value="custom">⚙️ Özel</option>
+                </select>
+            </div>
+                        <div class="setting-row">
+                <div><div class="setting-name">Analiz Modu</div><div class="setting-sub">Zaman dilimi uyumu (Lag ayarı)</div></div>
+                <select id="tf-mode-select" class="setting-control" onchange="updateTFMode()">
+                    <option value="3" selected>3 Zamanlı (Güvenli)</option>
+                    <option value="2">2 Zamanlı (Dengeli)</option>
+                    <option value="1">Tek Zamanlı (Hızlı)</option>
                 </select>
             </div>
             <div class="setting-row">
@@ -1313,7 +1326,7 @@ let currentCoin="BTCUSDT", altTF="5m", ortaTF="15m", ustTF="1h", lastMode=null;
 let matchThreshold=75;
 let chartTF="5m";
 let rsiValue=50, stochRsiValue=50, bbStatus="Mid";
-let ema9Val=0, ema21Val=0, ema50Val=0;
+let ema5Val=0, ema13Val=0, ema21Val=0;
 let vwapVal=0;
 let obvVal=0, obvMAVal=0;
 let mfiVal=50;
@@ -1323,9 +1336,10 @@ let atrVal=0, atrMAVal=0;
 let vwapSapmaVal=0;
 let regrSlopeVal=0;
 let mom5Val=0;
+let fvgVal={type:"YOK"};
 let squeezeVal=false, bandwidthVal=0;
 let obiVal=0;
-let htfEma9Val=0, htfEma21Val=0;
+let htfEma5Val=0, htfEma13Val=0;
 let htfRsiVal=50;
 let candlePatterns={ hammer: false, shooting: false, doji: false, engulfing: "YOK", marubozu: false };
 let lastPrice=0;
@@ -1503,10 +1517,36 @@ function applyProfile(){
     fetchTechnical();
 }
 
+
+function updateTFMode() {
+    const mode = document.getElementById('tf-mode-select').value;
+    const ustRow = document.getElementById('ust-tf-select').closest('.setting-row');
+    const ortaRow = document.getElementById('orta-tf-select').closest('.setting-row');
+    if(mode === '3') {
+        ustRow.style.display = 'flex';
+        ortaRow.style.display = 'flex';
+    } else if (mode === '2') {
+        ustRow.style.display = 'none';
+        ortaRow.style.display = 'flex';
+    } else if (mode === '1') {
+        ustRow.style.display = 'none';
+        ortaRow.style.display = 'none';
+    }
+    updateSettings();
+}
+
 function updateSettings(){
     altTF=document.getElementById('alt-tf-select').value;
     ortaTF=document.getElementById('orta-tf-select').value;
     ustTF=document.getElementById('ust-tf-select').value;
+    
+    const mode = document.getElementById('tf-mode-select').value;
+    if (mode === '2') {
+        ustTF = ortaTF;
+    } else if (mode === '1') {
+        ustTF = altTF;
+        ortaTF = altTF;
+    }
     chartTF=altTF;
     const found=Object.values(profiles).find(p=>p.alt===altTF&&p.orta===ortaTF&&p.ust===ustTF);
     document.getElementById('profile-select').value=found?Object.keys(profiles).find(key=>profiles[key]===found):"custom";
@@ -1592,7 +1632,7 @@ function resetMarketDataToZero() {
     resetDot('stoch-dot'); resetDot('bb-dot'); resetDot('rsi-dot'); resetDot('ema-dot'); resetDot('vwap-dot');
     resetDot('obv-dot'); resetDot('mfi-dot'); resetDot('mom-dot'); resetDot('regr-chan-dot'); resetDot('liq-dot');
     resetDot('atr-dot'); resetDot('vwap-sapma-dot'); resetDot('regr-slope-dot'); resetDot('mom5-dot');
-    resetDot('squeeze-dot'); resetDot('obi-dot'); resetDot('htf-ema-dot'); resetDot('htf-rsi-dot');
+    resetDot('squeeze-dot'); resetDot('obi-dot'); resetDot('fvg-dot'); resetDot('htf-ema-dot'); resetDot('htf-rsi-dot');
     
     // Reset signals and agent card
     updateText('agent-score', "0%");
@@ -1744,20 +1784,23 @@ async function fetchTechnical(isExplicit = false){
             symbolLabelEl.textContent = sym;
         }
         
-        // --- ÜST TF INDICATORS (EMA 9/21/50) ---
-        const ema9Series = calcEMA(cUst, 9);
+        // --- ÜST TF INDICATORS (EMA 5/13/21) ---
+        const ema5Series = calcEMA(cUst, 5);
+        const ema13Series = calcEMA(cUst, 13);
         const ema21Series = calcEMA(cUst, 21);
-        const ema50Series = calcEMA(cUst, 50);
-        ema9Val = ema9Series[ema9Series.length-1];
+        ema5Val = ema5Series[ema5Series.length-1];
+        ema13Val = ema13Series[ema13Series.length-1];
         ema21Val = ema21Series[ema21Series.length-1];
-        ema50Val = ema50Series[ema50Series.length-1];
         const fmtPrice = (v)=>v.toLocaleString('tr-TR',{minimumFractionDigits:1,maximumFractionDigits:1});
-        document.getElementById('ema-val').textContent = `9: ${fmtPrice(ema9Val)} | 21: ${fmtPrice(ema21Val)} | 50: ${fmtPrice(ema50Val)}`;
+        document.getElementById('ema-val').textContent = `5: ${fmtPrice(ema5Val)} | 13: ${fmtPrice(ema13Val)} | 21: ${fmtPrice(ema21Val)}`;
         
+        const ustRegr = calcRegressionChannel(cUst, 50);
+        const ustRegrSlope = ustRegr.slope || 0;
+
         let ustTFTrend = "YATAY";
-        if(ema9Val > ema21Val && ema21Val > ema50Val) {
+        if((ema5Val > ema13Val && ema13Val > ema21Val) || (ema5Val > ema13Val && ustRegrSlope > 0)) {
             ustTFTrend = "BOĞA";
-        } else if(ema9Val < ema21Val && ema21Val < ema50Val) {
+        } else if((ema5Val < ema13Val && ema13Val < ema21Val) || (ema5Val < ema13Val && ustRegrSlope < 0)) {
             ustTFTrend = "AYI";
         }
         
@@ -1882,6 +1925,20 @@ async function fetchTechnical(isExplicit = false){
         // 4. Momentum (5)
         const mom5Series = calcMOM(cAlt, 5);
         mom5Val = mom5Series[mom5Series.length - 1];
+
+        fvgVal = calcFVG(hAlt, lAlt);
+        const fvgBadge = document.getElementById('fvg-badge');
+        if(fvgVal.type === 'BOĞA') {
+            document.getElementById('fvg-val').textContent = fmtPrice(fvgVal.bottom) + "-" + fmtPrice(fvgVal.top);
+            if(fvgBadge){ fvgBadge.textContent="BOĞA FVG"; fvgBadge.className="ind-badge b-green"; }
+        } else if (fvgVal.type === 'AYI') {
+            document.getElementById('fvg-val').textContent = fmtPrice(fvgVal.top) + "-" + fmtPrice(fvgVal.bottom);
+            if(fvgBadge){ fvgBadge.textContent="AYI FVG"; fvgBadge.className="ind-badge b-red"; }
+        } else {
+            document.getElementById('fvg-val').textContent = "Yok";
+            if(fvgBadge){ fvgBadge.textContent="NÖTR"; fvgBadge.className="ind-badge b-gray"; }
+        }
+
         document.getElementById('mom5-val').textContent = mom5Val.toFixed(2);
         
         // 5. BB Sıkışması (Squeeze)
@@ -1894,10 +1951,10 @@ async function fetchTechnical(isExplicit = false){
         obiVal = await fetchOKXOrderBook(currentCoin);
         document.getElementById('obi-val').textContent = (obiVal >= 0 ? "+" : "") + obiVal.toFixed(3);
         
-        // 7. HTF EMA (EMA 9/21 kesişimi)
-        htfEma9Val = ema9Val;
-        htfEma21Val = ema21Val;
-        document.getElementById('htf-ema-val').textContent = `9: ${fmtPrice(htfEma9Val)} | 21: ${fmtPrice(htfEma21Val)}`;
+        // 7. HTF EMA (EMA 5/13 kesişimi)
+        htfEma5Val = ema5Val;
+        htfEma13Val = ema13Val;
+        document.getElementById('htf-ema-val').textContent = `5: ${fmtPrice(htfEma5Val)} | 13: ${fmtPrice(htfEma13Val)}`;
         
         // 8. HTF RSI (RSI 14 based on Üst TF)
         const htfRsiSeries = calcRSI(cUst, 14);
@@ -1996,8 +2053,8 @@ function updateBadges(lp){
     else{bb.textContent="ORTA";bb.className="ind-badge b-gray";}
 
     const emaB=document.getElementById('ema-badge');
-    if(ema9Val>ema21Val&&ema21Val>ema50Val){emaB.textContent="BOĞA";emaB.className="ind-badge b-green";}
-    else if(ema9Val<ema21Val&&ema21Val<ema50Val){emaB.textContent="AYI";emaB.className="ind-badge b-red";}
+    if(ema5Val>ema13Val&&ema13Val>ema21Val){emaB.textContent="BOĞA";emaB.className="ind-badge b-green";}
+    else if(ema5Val<ema13Val&&ema13Val<ema21Val){emaB.textContent="AYI";emaB.className="ind-badge b-red";}
     else{emaB.textContent="KARIŞIK";emaB.className="ind-badge b-gray";}
 
     const vwapB=document.getElementById('vwap-badge');
@@ -2059,10 +2116,10 @@ function updateBadges(lp){
     else if(obiVal<-0.05){obiB.textContent="SATICI BSK";obiB.className="ind-badge b-red";}
     else{obiB.textContent="DENGELİ";obiB.className="ind-badge b-gray";}
     
-    // 7. HTF EMA (EMA 9/21)
+    // 7. HTF EMA (EMA 5/13)
     const htfEmaB=document.getElementById('htf-ema-badge');
-    if(htfEma9Val>htfEma21Val){htfEmaB.textContent="BOĞA";htfEmaB.className="ind-badge b-green";}
-    else if(htfEma9Val<htfEma21Val){htfEmaB.textContent="AYI";htfEmaB.className="ind-badge b-red";}
+    if(htfEma5Val>htfEma13Val){htfEmaB.textContent="BOĞA";htfEmaB.className="ind-badge b-green";}
+    else if(htfEma5Val<htfEma13Val){htfEmaB.textContent="AYI";htfEmaB.className="ind-badge b-red";}
     else{htfEmaB.textContent="KARIŞIK";htfEmaB.className="ind-badge b-gray";}
     
     // 8. HTF RSI
@@ -2102,6 +2159,20 @@ function calcRegressionChannel(prices, period = 50) {
         lower: fitVal - 2 * stdDev,
         slope: slope
     };
+}
+
+
+function calcFVG(h, l) {
+    if (h.length < 5) return { type: 'YOK' };
+    const end = h.length - 1; // Check including active candle
+    for(let i=0; i<4; i++) {
+        let c3 = end - i;
+        let c1 = c3 - 2;
+        if(c1 < 0) continue;
+        if (l[c3] > h[c1]) return { type: 'BOĞA', top: l[c3], bottom: h[c1] };
+        if (h[c3] < l[c1]) return { type: 'AYI', top: h[c1], bottom: l[c3] };
+    }
+    return { type: 'YOK' };
 }
 
 function calcCMF(highs, lows, closes, volumes, period = 21) {
@@ -2375,7 +2446,7 @@ function runAgent(){
         setC('cond-stoch','cond-stoch-text',false,`Stoch RSI ${stochRsiValue.toFixed(1)} — şart yok`);
         setC('cond-bb','cond-bb-text',false,'Bollinger şartı yok');
         setC('cond-rsi','cond-rsi-text',false,`RSI (14) ${rsiValue.toFixed(1)} — şart yok`);
-        setC('cond-ema','cond-ema-text',false,'EMA 9/21/50 dizilim şartı yok');
+        setC('cond-ema','cond-ema-text',false,'EMA 5/13/21 dizilim şartı yok');
         setC('cond-vwap','cond-vwap-text',false,'VWAP şartı yok');
         setC('cond-obv','cond-obv-text',false,'OBV hacim şartı yok');
         setC('cond-mfi','cond-mfi-text',false,`MFI (14) ${mfiVal.toFixed(1)} — şart yok`);
@@ -2389,7 +2460,7 @@ function runAgent(){
         setC('cond-mom5','cond-mom5-text',false,`Momentum (5) ${mom5Val.toFixed(2)} — şart yok`);
         setC('cond-squeeze','cond-squeeze-text',false,`Bollinger Sıkışması — şart yok`);
         setC('cond-obi','cond-obi-text',false,`Emir Dengesizliği (OBI) ${obiVal.toFixed(3)} — şart yok`);
-        setC('cond-htf-ema','cond-htf-ema-text',false,`HTF Trend (EMA 9/21) — şart yok`);
+        setC('cond-htf-ema','cond-htf-ema-text',false,`HTF Trend (EMA 5/13) — şart yok`);
         setC('cond-htf-rsi','cond-htf-rsi-text',false,`HTF RSI ${htfRsiVal.toFixed(1)} — şart yok`);
         setC('cond-pattern','cond-pattern-text',false,`Canlı Mum Formasyonları — şart yok`);
         
@@ -2400,14 +2471,14 @@ function runAgent(){
         resetDot('stoch-dot'); resetDot('bb-dot'); resetDot('rsi-dot'); resetDot('ema-dot'); resetDot('vwap-dot');
         resetDot('obv-dot'); resetDot('mfi-dot'); resetDot('mom-dot'); resetDot('regr-chan-dot'); resetDot('liq-dot');
         resetDot('atr-dot'); resetDot('vwap-sapma-dot'); resetDot('regr-slope-dot'); resetDot('mom5-dot');
-        resetDot('squeeze-dot'); resetDot('obi-dot'); resetDot('htf-ema-dot'); resetDot('htf-rsi-dot');
+        resetDot('squeeze-dot'); resetDot('obi-dot'); resetDot('fvg-dot'); resetDot('htf-ema-dot'); resetDot('htf-rsi-dot');
         return;
     }
 
     const stochOk=lastMode==='SHORT'?stochRsiValue>80:stochRsiValue<20;
     const bbOk=lastMode==='SHORT'?bbStatus==="Top":bbStatus==="Bottom";
     const rsiOk=lastMode==='SHORT'?rsiValue<50:rsiValue>50;
-    const emaOk=lastMode==='SHORT'?(ema9Val<ema21Val&&ema21Val<ema50Val):(ema9Val>ema21Val&&ema21Val>ema50Val);
+    const emaOk=lastMode==='SHORT'?(ema5Val<ema13Val&&ema13Val<ema21Val):(ema5Val>ema13Val&&ema13Val>ema21Val);
     const vwapOk=lastMode==='SHORT'?lastPrice<vwapVal:lastPrice>vwapVal;
     const obvOk=lastMode==='SHORT'?obvVal<obvMAVal:obvVal>obvMAVal;
     const mfiOk=lastMode==='SHORT'?mfiVal<40:mfiVal>60;
@@ -2422,7 +2493,9 @@ function runAgent(){
     const mom5Ok = lastMode==='SHORT' ? mom5Val < 0 : mom5Val > 0;
     const squeezeOk = squeezeVal;
     const obiOk = lastMode==='SHORT' ? obiVal < -0.05 : obiVal > 0.05;
-    const htfEmaOk = lastMode==='SHORT' ? htfEma9Val < htfEma21Val : htfEma9Val > htfEma21Val;
+    const fvgOk = lastMode==='SHORT' ? fvgVal.type === 'AYI' : fvgVal.type === 'BOĞA';
+
+    const htfEmaOk = lastMode==='SHORT' ? htfEma5Val < htfEma13Val : htfEma5Val > htfEma13Val;
     const htfRsiOk = lastMode==='SHORT' ? htfRsiVal < 50 : htfRsiVal > 50;
     const patternOk = lastMode==='SHORT' 
         ? (candlePatterns.shooting || candlePatterns.engulfing === 'AYI')
@@ -2451,6 +2524,8 @@ function runAgent(){
     addScore(rsiOk, 8, isIndEnabled('toggle-rsi'));
     addScore(stochOk, 8, isIndEnabled('toggle-stoch'));
     addScore(obiOk, 8, isIndEnabled('toggle-obi'));
+    addScore(fvgOk, 10, isIndEnabled('toggle-fvg'));
+
     addScore(htfRsiOk, 5, isIndEnabled('toggle-htf-rsi'));
     addScore(momOk && mom5Ok, 5, isIndEnabled('toggle-mom') && isIndEnabled('toggle-mom5'));
     addScore(obvOk && atrOk, 5, isIndEnabled('toggle-obv') && isIndEnabled('toggle-atr'));
@@ -2488,10 +2563,12 @@ function runAgent(){
     }
 
     const reasons=[];
-    if(htfEmaOk) reasons.push(`Üst TF Trend EMA (9/21) Yön Teyidi`);
+    if(htfEmaOk) reasons.push(`Üst TF Trend EMA (5/13) Yön Teyidi`);
     if(vwapSapmaOk) reasons.push(`VWAP Sapma & Yön Hizalanması`);
     if(regrSlopeOk) reasons.push(`Lineer Regresyon Açı & Eğim Onayı`);
     if(squeezeOk) reasons.push(`Bollinger Sıkışması (Kırılım Yakın)`);
+    if(fvgOk) reasons.push(`SMC Fair Value Gap (FVG) Onayı`);
+
     if(obiOk) reasons.push(`Emir Defteri Derinlik Baskısı (OBI)`);
     if(htfRsiOk) reasons.push(`Üst TF RSI Momentum Onayı`);
     if(mom5Ok) reasons.push(`Kısa Vadeli Momentum (Mom5) Teyidi`);
@@ -2515,7 +2592,7 @@ function runAgent(){
     setC('cond-stoch','cond-stoch-text',stochOk,stochOk?`Alt TF Stoch RSI Onayı ✓`:`Alt TF Stoch RSI şartı yok`);
     setC('cond-bb','cond-bb-text',bbOk,bbOk?`Alt TF Bollinger Band Teması ✓`:'Alt TF Bollinger şartı yok');
     setC('cond-rsi','cond-rsi-text',rsiOk,rsiOk?`Orta TF RSI Trend Uyumu ✓`:'Orta TF RSI şartı yok');
-    setC('cond-ema','cond-ema-text',emaOk,emaOk?`Üst TF EMA 9/21/50 ${lastMode==='SHORT'?'ayı':'boğa'} dizilimi ✓`:'Üst TF EMA dizilim şartı yok');
+    setC('cond-ema','cond-ema-text',emaOk,emaOk?`Üst TF EMA 5/13/21 ${lastMode==='SHORT'?'ayı':'boğa'} dizilimi ✓`:'Üst TF EMA dizilim şartı yok');
     setC('cond-vwap','cond-vwap-text',vwapOk,vwapOk?`Orta TF VWAP Fiyat Onayı ✓`:'Orta TF VWAP şartı yok');
     setC('cond-obv','cond-obv-text',obvOk,obvOk?`Alt TF OBV Hacim Onayı ✓`:'Alt TF OBV şartı yok');
     setC('cond-mfi','cond-mfi-text',mfiOk,mfiOk?`Alt TF MFI Para Akışı Onayı ✓`:'Alt TF MFI şartı yok');
@@ -2529,7 +2606,7 @@ function runAgent(){
     setC('cond-mom5','cond-mom5-text',mom5Ok,mom5Ok?`Mom5 Kısa Vadeli İvme Onayı ✓`:`Momentum (5) şartı yok`);
     setC('cond-squeeze','cond-squeeze-text',squeezeOk,squeezeOk?`Bollinger Sıkışması (Kırılım Yakın) ✓`:`Bollinger Sıkışma şartı yok`);
     setC('cond-obi','cond-obi-text',obiOk,obiOk?`Emir Defteri Baskı (OBI) Teyidi ✓`:`Emir Baskı (OBI) şartı yok`);
-    setC('cond-htf-ema','cond-htf-ema-text',htfEmaOk,htfEmaOk?`Üst TF Trend EMA (9/21) Onayı ✓`:`Üst TF Trend EMA şartı yok`);
+    setC('cond-htf-ema','cond-htf-ema-text',htfEmaOk,htfEmaOk?`Üst TF Trend EMA (5/13) Onayı ✓`:`Üst TF Trend EMA şartı yok`);
     setC('cond-htf-rsi','cond-htf-rsi-text',htfRsiOk,htfRsiOk?`Üst TF RSI Trend Onayı ✓`:`Üst TF RSI şartı yok`);
     setC('cond-pattern','cond-pattern-text',patternOk,patternOk?`Canlı Mum Formasyonu Kırılım Sinyali ✓`:`Mum Formasyonu şartı yok`);
 
@@ -2553,6 +2630,7 @@ function runAgent(){
     updateDot('mom5-dot', mom5Ok);
     updateDot('squeeze-dot', squeezeOk);
     updateDot('obi-dot', obiOk);
+    updateDot('fvg-dot', fvgOk);
     updateDot('htf-ema-dot', htfEmaOk);
     updateDot('htf-rsi-dot', htfRsiOk);
 
@@ -2583,6 +2661,7 @@ function runAgent(){
 
 function saveToMemory(){
     localStorage.setItem('cm_coin',currentCoin);
+    localStorage.setItem('cm_tf_mode', document.getElementById('tf-mode-select').value);
     localStorage.setItem('cm_alt_tf',altTF);
     localStorage.setItem('cm_orta_tf',ortaTF);
     localStorage.setItem('cm_ust_tf',ustTF);
@@ -2597,6 +2676,23 @@ function saveToMemory(){
 
 function loadFromMemory(){
     const c=localStorage.getItem('cm_coin');
+    const mode=localStorage.getItem('cm_tf_mode');
+    if(mode) {
+        document.getElementById('tf-mode-select').value = mode;
+        const ustRow = document.getElementById('ust-tf-select').closest('.setting-row');
+        const ortaRow = document.getElementById('orta-tf-select').closest('.setting-row');
+        if(mode === '3') {
+            ustRow.style.display = 'flex';
+            ortaRow.style.display = 'flex';
+        } else if (mode === '2') {
+            ustRow.style.display = 'none';
+            ortaRow.style.display = 'flex';
+        } else if (mode === '1') {
+            ustRow.style.display = 'none';
+            ortaRow.style.display = 'none';
+        }
+    }
+
     const alt=localStorage.getItem('cm_alt_tf'), orta=localStorage.getItem('cm_orta_tf'), ust=localStorage.getItem('cm_ust_tf');
     const chTf=localStorage.getItem('cm_chart_tf');
     const s=localStorage.getItem('cm_sound'), n=localStorage.getItem('cm_notify');
