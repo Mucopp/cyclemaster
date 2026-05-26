@@ -194,7 +194,7 @@
         /* MARKET HERO */
         .market-hero {
             background:var(--surface); border:1px solid var(--border);
-            border-radius:14px; padding:10px 14px; position:relative; overflow:hidden;
+            border-radius:14px; padding:6px 12px; position:relative; overflow:hidden;
         }
         .market-hero::before {
             content:''; position:absolute; top:0; left:0; right:0; height:3px;
@@ -270,16 +270,16 @@
             display: flex;
             gap: 10px;
             align-items: stretch;
-            margin-top: 14px;
+            margin-top: 8px;
         }
         .hero-container .signal-banner, .hero-container .cycle-card {
             flex: 1;
             margin: 0;
-            padding: 8px 10px;
+            padding: 4px 8px;
             box-sizing: border-box;
             width: 50%;
             min-width: 0;
-            min-height: 94px;
+            min-height: 76px;
         }
         .signal-banner {
             border-radius:14px;
@@ -532,13 +532,13 @@
         }
 
         /* TIMEFRAME MATRIX CARD */
-        .tf-card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:10px 12px; margin-top:10px; }
+        .tf-card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:5px 10px; margin-top:6px; }
         .tf-card-title { font-size:0.54rem; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:2px; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
         .tf-card-title::before { content:''; width:3px; height:3px; border-radius:50%; background:var(--accent); }
         .tf-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
-        .tf-box { background:rgba(255,255,255,0.01); border:1px solid var(--border); border-radius:14px; padding:8px 6px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:5px; }
-        .tf-name { font-size:0.58rem; color:var(--text3); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
-        .tf-name span { color:var(--accent); font-family:'Space Mono',monospace; }
+        .tf-box { background:rgba(255,255,255,0.01); border:1px solid var(--border); border-radius:14px; padding:4px 6px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:5px; }
+        .tf-name { font-size:0.75rem; color:var(--text3); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+        .tf-name span { color:var(--accent); font-family:'Space Mono',monospace; font-size: 0.8rem; }
         .tf-badge { font-size:0.52rem; font-weight:700; padding:4px 10px; border-radius:100px; text-transform:uppercase; font-family:'Space Mono',monospace; letter-spacing:0.5px; min-width:60px; text-align:center; }
         .tf-badge.bull { background:rgba(16,185,129,0.12); color:var(--green); border:1px solid rgba(16,185,129,0.2); }
         .tf-badge.bear { background:rgba(244,63,94,0.12); color:var(--red); border:1px solid rgba(244,63,94,0.2); }
@@ -551,7 +551,7 @@
             border-radius: 20px;
             padding: 0;
             overflow: hidden;
-            margin-top: 16px;
+            margin-top: 8px;
             display: flex;
             flex-direction: column;
         }
@@ -885,10 +885,12 @@
             <div class="market-top">
                 <div class="market-brand">
                     <span class="market-symbol" id="display-symbol">BTCUSDT</span>
-                    <div class="market-price" id="display-price">—</div>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+                        <div class="market-price" id="display-price">—</div>
+                        <span id="price-change" class="price-pill">%0.00</span>
+                    </div>
                 </div>
                 <div class="market-stats">
-                    <span id="price-change" class="price-pill">%0.00</span>
                     <div class="hl-compact">
                         <span class="hl-h">H: <span id="h24">—</span></span>
                         <span class="hl-l">L: <span id="l24">—</span></span>
@@ -942,7 +944,7 @@
         </div>
 
         <!-- GRAPH CARD -->
-        <div class="chart-card" style="flex: 1; min-height: 250px; padding: 0; position: relative;">
+        <div class="chart-card" style="flex: 1; min-height: 360px; padding: 0; position: relative;">
             <div class="chart-indicators-header" style="justify-content: flex-start; gap: 12px;">
                 <span id="chart-symbol-display" style="color: var(--gold); font-weight: 700; font-size: 1rem; font-family: 'Space Mono', monospace; letter-spacing: 0.5px;">BTCUSDT</span>
                 <select id="parent-tf-select" class="parent-tf-select" onchange="setParentTimeframe(this.value)">
@@ -1032,6 +1034,8 @@
                 <div class="cond-row"><div class="cond-icon no" id="cond-pattern-doji">·</div><span class="cond-text" id="cond-pattern-doji-text">Doji bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-pattern-engulfing">·</div><span class="cond-text" id="cond-pattern-engulfing-text">Engulfing (Yutan Mum) bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-pattern-marubozu">·</div><span class="cond-text" id="cond-pattern-marubozu-text">Marubozu bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-pattern-trap">·</div><span class="cond-text" id="cond-pattern-trap-text">Boğa/Ayı Tuzağı bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-pattern-awc">·</div><span class="cond-text" id="cond-pattern-awc-text">Antigravity Wave Core (AWC) bekleniyor</span></div>
             </div>
         </div>
     </div>
@@ -1116,6 +1120,10 @@
                 <div class="ind-left"><input type="checkbox" id="toggle-htf-rsi" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="htf-rsi-dot" class="dot"></div><span class="ind-name">HTF RSI (14)</span></div>
                 <div class="ind-right"><span class="ind-val" id="htf-rsi-val">—</span><span class="ind-badge b-gray" id="htf-rsi-badge">—</span></div>
             </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-pattern-awc" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="pattern-awc-dot" class="dot"></div><span class="ind-name">Antigravity Wave Core (AWC) 🌌</span></div>
+                <div class="ind-right"><span class="ind-badge b-gray" id="pattern-awc-badge">YOK</span></div>
+            </label>
             <div class="update-row">
                 <span class="update-lbl">Son Güncelleme</span>
                 <span class="update-val" id="last-update">—</span>
@@ -1144,6 +1152,10 @@
                 <div class="ind-left"><input type="checkbox" id="toggle-pattern-marubozu" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="pattern-marubozu-dot" class="dot"></div><span class="ind-name">Marubozu (Güçlü Yön)</span></div>
                 <div class="ind-right"><span class="ind-badge b-gray" id="pattern-marubozu-badge">YOK</span></div>
             </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-pattern-trap" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="pattern-trap-dot" class="dot"></div><span class="ind-name">Boğa/Ayı Tuzağı Algılayıcı ⚠️</span></div>
+                <div class="ind-right"><span class="ind-badge b-gray" id="pattern-trap-badge">YOK</span></div>
+            </label>
         </div>
     </div>
 
@@ -1168,6 +1180,14 @@
                     <option value="3" selected>3 Zamanlı (Güvenli)</option>
                     <option value="2">2 Zamanlı (Dengeli)</option>
                     <option value="1">Tek Zamanlı (Hızlı)</option>
+                </select>
+            </div>
+            <div class="setting-row">
+                <div><div class="setting-name">Çalışma Stratejisi</div><div class="setting-sub">Sinyal üretim algoritması</div></div>
+                <select id="strategy-mode-select" class="setting-control" onchange="updateStrategyMode()">
+                    <option value="trend">📈 Trend Takipçisi (Güvenli)</option>
+                    <option value="reversal">🔄 Çift Yönlü Kanal (Hassas)</option>
+                    <option value="hybrid" selected>⚡ Hibrit Mod (Önerilen)</option>
                 </select>
             </div>
             <div class="setting-row">
@@ -1385,9 +1405,10 @@ async function unsubscribePush() {
 }
 
 
-let currentCoin="BTCUSDT", altTF="5m", ortaTF="15m", ustTF="1h", lastMode=null;
+let currentCoin="BTCUSDT", altTF="5m", ortaTF="15m", ustTF="1h", lastMode=null, activeStrategyMode="hybrid";
 let matchThreshold=65;
 let chartTF="5m";
+let detectedTrap = null, detectedAWC = null;
 let rsiValue=50, stochRsiValue=50, bbStatus="Mid";
 let ema5Val=0, ema13Val=0, ema21Val=0;
 let ema5OrtaVal=0, ema13OrtaVal=0, ema21OrtaVal=0;
@@ -1604,7 +1625,7 @@ function applyProfile(){
         'toggle-atr', 'toggle-vwap-sapma', 'toggle-regr-slope', 'toggle-mom5', 
         'toggle-squeeze', 'toggle-obi', 'toggle-fvg', 'toggle-htf-ema', 'toggle-htf-rsi',
         'toggle-pattern-hammer', 'toggle-pattern-shooting', 'toggle-pattern-doji',
-        'toggle-pattern-engulfing', 'toggle-pattern-marubozu'
+        'toggle-pattern-engulfing', 'toggle-pattern-marubozu', 'toggle-pattern-trap', 'toggle-pattern-awc'
     ];
 
     if (k === 'fast') {
@@ -1632,7 +1653,9 @@ function applyProfile(){
             'toggle-pattern-shooting': true,
             'toggle-pattern-doji': false,
             'toggle-pattern-engulfing': true,
-            'toggle-pattern-marubozu': true
+            'toggle-pattern-marubozu': true,
+            'toggle-pattern-trap': true,
+            'toggle-pattern-awc': true
         };
         for (const id of allIndicators) {
             const val = fastIndicators[id] !== undefined ? fastIndicators[id] : false;
@@ -1707,6 +1730,12 @@ function updateSettings(){
 
 function updateThreshold() {
     matchThreshold = parseInt(document.getElementById('threshold-select').value) || 75;
+    saveToMemory();
+    runAgent();
+}
+
+function updateStrategyMode() {
+    activeStrategyMode = document.getElementById('strategy-mode-select').value;
     saveToMemory();
     runAgent();
 }
@@ -1853,7 +1882,7 @@ function toOKXInterval(tf){
 async function fetchOKXKlines(symbol, interval, limit){
     const okxSymbol=symbol.replace("USDT","-USDT");
     const okxInterval=toOKXInterval(interval);
-    const r=await fetch(`https://www.okx.com/api/v5/market/candles?instId=${okxSymbol}&bar=${okxInterval}&limit=${limit||150}`);
+    const r=await fetch(`https://www.okx.com/api/v5/market/candles?instId=${okxSymbol}&bar=${okxInterval}&limit=${limit||190}`);
     const d=await r.json();
     if(d.code!=="0"||!d.data||d.data.length===0) return null;
     return d.data.reverse(); // eskiden yeniye
@@ -1862,13 +1891,13 @@ async function fetchOKXKlines(symbol, interval, limit){
 async function fetchTechnical(isExplicit = false){
     try{
         let fetchPromises = [
-            fetchOKXKlines(currentCoin, altTF, 150),
-            fetchOKXKlines(currentCoin, ortaTF, 150),
-            fetchOKXKlines(currentCoin, ustTF, 150)
+            fetchOKXKlines(currentCoin, altTF, 190),
+            fetchOKXKlines(currentCoin, ortaTF, 190),
+            fetchOKXKlines(currentCoin, ustTF, 190)
         ];
         
         if (chartTF !== altTF) {
-            fetchPromises.push(fetchOKXKlines(currentCoin, chartTF, 150));
+            fetchPromises.push(fetchOKXKlines(currentCoin, chartTF, 190));
         }
         
         const results = await Promise.all(fetchPromises);
@@ -2217,6 +2246,42 @@ async function fetchTechnical(isExplicit = false){
         }
         
         setPatternBadge('pattern-marubozu-badge', candlePatterns.marubozu, "MARUBOZU", "b-green");
+        
+        // 9.5 Boğa/Ayı Tuzağı Analizi
+        detectedTrap = detectTraps(
+            parse(kAltRaw, 1),
+            hAlt,
+            lAlt,
+            cAlt,
+            regrChanVal,
+            {upper, lower}
+        );
+        if (detectedTrap === "BEAR_TRAP") {
+            setPatternBadge('pattern-trap-badge', true, "AYI TUZAĞI", "b-green");
+        } else if (detectedTrap === "BULL_TRAP") {
+            setPatternBadge('pattern-trap-badge', true, "BOĞA TUZAĞI", "b-red");
+        } else {
+            setPatternBadge('pattern-trap-badge', false);
+        }
+        
+        // 9.6 Antigravity Wave Core (AWC) Analizi
+        detectedAWC = calcAntigravityWaveCore(
+            parse(kAltRaw, 1),
+            hAlt,
+            lAlt,
+            cAlt,
+            vAlt,
+            atrVal,
+            atrMAVal,
+            obiVal
+        );
+        if (detectedAWC === "AŞIRI_SATIM") {
+            setPatternBadge('pattern-awc-badge', true, "AWC AŞIRI SATIM 🌌", "b-green");
+        } else if (detectedAWC === "AŞIRI_ALIM") {
+            setPatternBadge('pattern-awc-badge', true, "AWC AŞIRI ALIM 🌌", "b-red");
+        } else {
+            setPatternBadge('pattern-awc-badge', false);
+        }
 
         let altTFTrend = "NÖTR";
         if(stochRsiValue < 20 || bbStatus === "Bottom") {
@@ -2596,6 +2661,93 @@ function detectCandlePatterns(opens, highs, lows, closes) {
     };
 }
 
+function detectTraps(opens, highs, lows, closes, regrChan, bb) {
+    if (closes.length < 3 || !regrChan || !bb) return null;
+    
+    const idx = closes.length - 2;
+    const prevL = lows[idx];
+    const prevH = highs[idx];
+    const prevC = closes[idx];
+    const prevO = opens[idx];
+    
+    const bbLower = bb.lower || 0;
+    const bbUpper = bb.upper || 0;
+    const rcLower = regrChan.lower || 0;
+    const rcUpper = regrChan.upper || 0;
+
+    // Bear Trap (Ayı Tuzağı): breaches lower support boundary but closes back inside bullishly
+    const isBearTrap = ((prevL < rcLower && prevC > rcLower * 1.001) || (prevL < bbLower && prevC > bbLower * 1.001)) && (prevC > prevO);
+    
+    // Bull Trap (Boğa Tuzağı): breaches upper resistance boundary but closes back inside bearishly
+    const isBullTrap = ((prevH > rcUpper && prevC < rcUpper * 0.999) || (prevH > bbUpper && prevC < bbUpper * 0.999)) && (prevC < prevO);
+
+    if (isBearTrap) return "BEAR_TRAP";
+    if (isBullTrap) return "BULL_TRAP";
+    return null;
+}
+
+function calcAntigravityWaveCore(opens, highs, lows, closes, volumes, atr, atrMA, obi) {
+    if (closes.length < 30) return "NÖTR";
+    
+    // 1. Dynamic Volatility-Adjusted Stochastic Period
+    const atrRatio = atrMA > 0 ? (atr / atrMA) : 1;
+    let period = Math.round(14 * atrRatio);
+    period = Math.min(24, Math.max(8, period)); // bounds between 8 and 24
+    
+    // Helper to compute Fisher transform at a specific candle index
+    const getFisherAt = (targetIdx) => {
+        let lowest = Infinity;
+        let highest = -Infinity;
+        for (let i = targetIdx - period + 1; i <= targetIdx; i++) {
+            if (i < 0) continue;
+            if (lows[i] < lowest) lowest = lows[i];
+            if (highs[i] > highest) highest = highs[i];
+        }
+        
+        const close = closes[targetIdx];
+        const range = highest - lowest;
+        let value = 0;
+        if (range > 0) {
+            value = 0.1 * (100 * (close - lowest) / range) - 5;
+        }
+        
+        // Dampening & Smoothing Ehlers factor
+        let rawVal = 0.15 * value + 0.85 * 0;
+        rawVal = Math.min(0.999, Math.max(-0.999, rawVal));
+        
+        const fisher = 0.5 * Math.log((1 + rawVal) / (1 - rawVal));
+        return fisher;
+    };
+    
+    const idx = closes.length - 2; // last completed candle
+    const currFisher = getFisherAt(idx);
+    const prevFisher = getFisherAt(idx - 1);
+    
+    // 3. Volume Force validation (filters out low-volume moves)
+    const currentVol = volumes[idx] || 1;
+    let sumVol = 0;
+    const historyLen = Math.min(idx, 20);
+    for (let i = idx - historyLen; i <= idx; i++) {
+        if (i >= 0) sumVol += volumes[i];
+    }
+    const avgVol = sumVol / (historyLen + 1);
+    const isHighVolume = currentVol >= avgVol * 0.75;
+    
+    const isOversold = currFisher < -1.5;
+    const isOverbought = currFisher > 1.5;
+    
+    const turnsUp = currFisher > prevFisher && prevFisher < -1.3;
+    const turnsDown = currFisher < prevFisher && prevFisher > 1.3;
+    
+    if (turnsUp && isOversold && isHighVolume && (obi > -0.15)) {
+        return "AŞIRI_SATIM";
+    }
+    if (turnsDown && isOverbought && isHighVolume && (obi < 0.15)) {
+        return "AŞIRI_ALIM";
+    }
+    return "NÖTR";
+}
+
 async function fetchOKXOrderBook(symbol) {
     try {
         const okxSymbol = symbol.replace("USDT", "-USDT");
@@ -2627,7 +2779,7 @@ function runAgent(){
         return el ? el.checked : true;
     };
 
-    if(lastMode==='YATAY'){
+    if(lastMode==='YATAY' && activeStrategyMode === 'trend'){
         document.getElementById('agent-score').textContent="0%";
         document.getElementById('agent-score-fill').style.width="0%";
         document.getElementById('progress-circle').style.strokeDashoffset=270;
@@ -2695,108 +2847,204 @@ function runAgent(){
         resetDot('obv-dot'); resetDot('mfi-dot'); resetDot('mom-dot'); resetDot('regr-chan-dot'); resetDot('liq-dot');
         resetDot('atr-dot'); resetDot('vwap-sapma-dot'); resetDot('regr-slope-dot'); resetDot('mom5-dot');
         resetDot('squeeze-dot'); resetDot('obi-dot'); resetDot('fvg-dot'); resetDot('htf-ema-dot'); resetDot('htf-rsi-dot');
+        resetDot('pattern-trap-dot'); resetDot('pattern-awc-dot');
         return;
     }
 
-    const stochOk=lastMode==='SHORT'?stochRsiValue>80:stochRsiValue<20;
-    const bbOk=lastMode==='SHORT'?bbStatus==="Top":bbStatus==="Bottom";
-    const rsiOk=lastMode==='SHORT'?rsiValue<50:rsiValue>50;
-    const emaOk=lastMode==='SHORT'?(ema5Val<ema13Val&&ema13Val<ema21Val):(ema5Val>ema13Val&&ema13Val>ema21Val);
-    const vwapOk=lastMode==='SHORT'?lastPrice<vwapVal:lastPrice>vwapVal;
-    const obvOk=lastMode==='SHORT'?obvVal<obvMAVal:obvVal>obvMAVal;
-    const mfiOk=lastMode==='SHORT'?mfiVal<40:mfiVal>60;
-    const momOk=lastMode==='SHORT'?momVal<0:momVal>0;
-    const regrChanOk=lastMode==='SHORT'?lastPrice>=regrChanVal.upper*0.995:lastPrice<=regrChanVal.lower*1.005;
-    const liqOk=lastMode==='SHORT'?liqVal<0:liqVal>0;
+    // --- DUAL-DIRECTION EVALUATIONS ---
+    // LONG (ALIM) KOŞULLARI
+    const long_stochOk = stochRsiValue < 20;
+    const long_bbOk = bbStatus === "Bottom";
+    const long_rsiOk = rsiValue > 50;
+    const long_emaOk = ema5Val > ema13Val && ema13Val > ema21Val;
+    const long_vwapOk = lastPrice > vwapVal;
+    const long_obvOk = obvVal > obvMAVal;
+    const long_mfiOk = mfiVal > 60;
+    const long_momOk = momVal > 0;
+    const long_regrChanOk = lastPrice <= regrChanVal.lower * 1.005;
+    const long_liqOk = liqVal > 0;
     
-    // 7 NEW INDICATOR EVALUATIONS
-    const atrOk = atrVal > atrMAVal;
-    const vwapSapmaOk = lastMode==='SHORT' ? vwapSapmaVal < 0 : vwapSapmaVal > 0;
-    const regrSlopeOk = lastMode==='SHORT' ? regrSlopeVal < 0 : regrSlopeVal > 0;
-    const mom5Ok = lastMode==='SHORT' ? mom5Val < 0 : mom5Val > 0;
-    const squeezeOk = squeezeVal;
-    const obiOk = lastMode==='SHORT' ? obiVal < -0.05 : obiVal > 0.05;
-    const fvgOk = lastMode==='SHORT' ? fvgVal.type === 'AYI' : fvgVal.type === 'BOĞA';
+    const long_atrOk = atrVal > atrMAVal;
+    const long_vwapSapmaOk = vwapSapmaVal > 0;
+    const long_regrSlopeOk = regrSlopeVal > 0;
+    const long_mom5Ok = mom5Val > 0;
+    const long_squeezeOk = squeezeVal;
+    const long_obiOk = obiVal > 0.05;
+    const long_fvgOk = fvgVal.type === 'BOĞA';
 
-    const htfEmaOk = lastMode==='SHORT' ? htfEma5Val < htfEma13Val : htfEma5Val > htfEma13Val;
-    const ortaEmaOk = lastMode==='SHORT' ? ema5OrtaVal < ema13OrtaVal : ema5OrtaVal > ema13OrtaVal;
-    const htfRsiOk = lastMode==='SHORT' ? htfRsiVal < 50 : htfRsiVal > 50;
-    const patternOk = lastMode==='SHORT' 
-        ? (candlePatterns.shooting || candlePatterns.engulfing === 'AYI')
-        : (candlePatterns.hammer || candlePatterns.engulfing === 'BOĞA');
+    const long_htfEmaOk = htfEma5Val > htfEma13Val;
+    const long_ortaEmaOk = ema5OrtaVal > ema13OrtaVal;
+    const long_htfRsiOk = htfRsiVal > 50;
+    const long_patternOk = (candlePatterns.hammer || candlePatterns.engulfing === 'BOĞA');
+    const long_trapOk = (detectedTrap === "BEAR_TRAP");
+    const long_awcOk = (detectedAWC === "AŞIRI_SATIM");
 
-    const hammerOk = lastMode === 'LONG' && candlePatterns.hammer;
-    const shootingOk = lastMode === 'SHORT' && candlePatterns.shooting;
+    // SHORT (SATIM) KOŞULLARI
+    const short_stochOk = stochRsiValue > 80;
+    const short_bbOk = bbStatus === "Top";
+    const short_rsiOk = rsiValue < 50;
+    const short_emaOk = ema5Val < ema13Val && ema13Val < ema21Val;
+    const short_vwapOk = lastPrice < vwapVal;
+    const short_obvOk = obvVal < obvMAVal;
+    const short_mfiOk = mfiVal < 40;
+    const short_momOk = momVal < 0;
+    const short_regrChanOk = lastPrice >= regrChanVal.upper * 0.995;
+    const short_liqOk = liqVal < 0;
+    
+    const short_atrOk = atrVal > atrMAVal;
+    const short_vwapSapmaOk = vwapSapmaVal < 0;
+    const short_regrSlopeOk = regrSlopeVal < 0;
+    const short_mom5Ok = mom5Val < 0;
+    const short_squeezeOk = squeezeVal;
+    const short_obiOk = obiVal < -0.05;
+    const short_fvgOk = fvgVal.type === 'AYI';
+
+    const short_htfEmaOk = htfEma5Val < htfEma13Val;
+    const short_ortaEmaOk = ema5OrtaVal < ema13OrtaVal;
+    const short_htfRsiOk = htfRsiVal < 50;
+    const short_patternOk = (candlePatterns.shooting || candlePatterns.engulfing === 'AYI');
+    const short_trapOk = (detectedTrap === "BULL_TRAP");
+    const short_awcOk = (detectedAWC === "AŞIRI_ALIM");
+
+    const hammerOk = activeStrategyMode === 'trend' ? (lastMode === 'LONG' && candlePatterns.hammer) : candlePatterns.hammer;
+    const shootingOk = activeStrategyMode === 'trend' ? (lastMode === 'SHORT' && candlePatterns.shooting) : candlePatterns.shooting;
     const dojiOk = candlePatterns.doji;
-    const engulfingOk = lastMode === 'SHORT' ? candlePatterns.engulfing === 'AYI' : candlePatterns.engulfing === 'BOĞA';
+    const engulfingOk = activeStrategyMode === 'trend'
+        ? (lastMode === 'SHORT' ? candlePatterns.engulfing === 'AYI' : candlePatterns.engulfing === 'BOĞA')
+        : (candlePatterns.engulfing === 'AYI' || candlePatterns.engulfing === 'BOĞA');
     const marubozuOk = candlePatterns.marubozu;
 
-    // ============================================================
-    // YENİ SİSTEM: 3 KATMANLI KONFLUANS MODELİ
-    // ============================================================
-
-    // isIndEnabled has been declared at the top of runAgent() to be shared across blocks
-
-    // --- KATMAN 1: ZORUNLU TREND FİLTRESİ (GATE) ---
-    // Her ikisi de sağlanmazsa sinyal üretilmez.
+    // --- KATMAN 1: TREND FİLTRESİ (GATE) ---
     const isScalping = ["1m", "3m", "5m"].includes(chartTF);
-    const trendGatePass = isScalping
-        ? ((htfEmaOk || ortaEmaOk) && regrSlopeOk)
-        : (htfEmaOk && regrSlopeOk);
+    const long_trendGatePass = isScalping
+        ? ((long_htfEmaOk || long_ortaEmaOk) && long_regrSlopeOk)
+        : (long_htfEmaOk && long_regrSlopeOk);
 
-    // --- KATMAN 2: KATEGORİ SKORLARI (0-1 arası) ---
+    const short_trendGatePass = isScalping
+        ? ((short_htfEmaOk || short_ortaEmaOk) && short_regrSlopeOk)
+        : (short_htfEmaOk && short_regrSlopeOk);
+
+    // Trend gate is enforced in trend mode; bypassed (set to true) in reversal and hybrid modes
+    const long_gate = activeStrategyMode === 'trend' ? long_trendGatePass : true;
+    const short_gate = activeStrategyMode === 'trend' ? short_trendGatePass : true;
+
+    // Kategori Puanı Hesaplama
     const catScore = (items) => items.length > 0 ? items.reduce((a,b)=>a+b,0) / items.length : 0;
 
-    // Kategori A: Momentum (%25 ağırlık)
-    const catA_items = [];
-    if (isIndEnabled('toggle-stoch'))  catA_items.push(stochOk  ? 1 : 0);
-    if (isIndEnabled('toggle-rsi'))    catA_items.push(rsiOk    ? 1 : 0);
-    if (isIndEnabled('toggle-mom5'))   catA_items.push(mom5Ok   ? 1 : 0);
-    if (isIndEnabled('toggle-mfi'))    catA_items.push(mfiOk    ? 1 : 0);
-    const catA = catScore(catA_items);
+    const calculateDirectionScore = (gatePass, stoch, bb, rsi, ema, vwap, obv, mfi, mom, regrChan, liq, atr, vwapSapma, regrSlope, mom5, squeeze, obi, fvg, htfRsi, pattern, trap, awc, isTrendAligned) => {
+        // Kategori A: Momentum (%25 ağırlık)
+        const catA_items = [];
+        if (isIndEnabled('toggle-stoch'))  catA_items.push(stoch ? 1 : 0);
+        if (isIndEnabled('toggle-rsi'))    catA_items.push(rsi   ? 1 : 0);
+        if (isIndEnabled('toggle-mom5'))   catA_items.push(mom5  ? 1 : 0);
+        if (isIndEnabled('toggle-mfi'))    catA_items.push(mfi   ? 1 : 0);
+        const catA = catScore(catA_items);
 
-    // Kategori B: Hacim & Akış (%20 ağırlık)
-    const catB_items = [];
-    if (isIndEnabled('toggle-obv'))  catB_items.push(obvOk  ? 1 : 0);
-    if (isIndEnabled('toggle-liq'))  catB_items.push(liqOk  ? 1 : 0);
-    if (isIndEnabled('toggle-obi'))  catB_items.push(obiOk  ? 1 : 0);
-    const catB = catScore(catB_items);
+        // Kategori B: Hacim & Akış (%20 ağırlık)
+        const catB_items = [];
+        if (isIndEnabled('toggle-obv'))  catB_items.push(obv ? 1 : 0);
+        if (isIndEnabled('toggle-liq'))  catB_items.push(liq ? 1 : 0);
+        if (isIndEnabled('toggle-obi'))  catB_items.push(obi ? 1 : 0);
+        const catB = catScore(catB_items);
 
-    // Kategori C: Fiyat Yapısı (%30 ağırlık)
-    const catC_items = [];
-    if (isIndEnabled('toggle-bb'))          catC_items.push(bbOk         ? 1 : 0);
-    if (isIndEnabled('toggle-regr-chan'))    catC_items.push(regrChanOk   ? 1 : 0);
-    if (isIndEnabled('toggle-vwap-sapma'))  catC_items.push(vwapSapmaOk  ? 1 : 0);
-    if (isIndEnabled('toggle-fvg'))         catC_items.push(fvgOk        ? 1 : 0);
-    if (isIndEnabled('toggle-vwap'))        catC_items.push(vwapOk       ? 1 : 0);
-    const catC = catScore(catC_items);
+        // Kategori C: Fiyat Yapısı (%30 ağırlık)
+        const catC_items = [];
+        if (isIndEnabled('toggle-bb'))          catC_items.push(bb        ? 1 : 0);
+        if (isIndEnabled('toggle-regr-chan'))    catC_items.push(regrChan  ? 1 : 0);
+        if (isIndEnabled('toggle-vwap-sapma'))  catC_items.push(vwapSapma ? 1 : 0);
+        if (isIndEnabled('toggle-fvg'))         catC_items.push(fvg       ? 1 : 0);
+        if (isIndEnabled('toggle-vwap'))        catC_items.push(vwap      ? 1 : 0);
+        const catC = catScore(catC_items);
 
-    // Kategori D: Mum & Bağlam (%25 ağırlık)
-    const catD_items = [];
-    const patternEnabled = isIndEnabled('toggle-pattern-hammer') || isIndEnabled('toggle-pattern-shooting') || isIndEnabled('toggle-pattern-engulfing');
-    if (patternEnabled)                catD_items.push(patternOk  ? 1 : 0);
-    if (isIndEnabled('toggle-htf-rsi')) catD_items.push(htfRsiOk  ? 1 : 0);
-    if (isIndEnabled('toggle-mom'))     catD_items.push(momOk     ? 1 : 0);
-    if (isIndEnabled('toggle-atr'))     catD_items.push(atrOk     ? 1 : 0);
-    const catD = catScore(catD_items);
+        // Kategori D: Mum & Bağlam (%25 ağırlık)
+        const catD_items = [];
+        const patternEnabled = isIndEnabled('toggle-pattern-hammer') || isIndEnabled('toggle-pattern-shooting') || isIndEnabled('toggle-pattern-engulfing');
+        if (patternEnabled)                catD_items.push(pattern  ? 1 : 0);
+        if (isIndEnabled('toggle-htf-rsi')) catD_items.push(htfRsi  ? 1 : 0);
+        if (isIndEnabled('toggle-mom'))     catD_items.push(mom     ? 1 : 0);
+        if (isIndEnabled('toggle-atr'))     catD_items.push(atr     ? 1 : 0);
+        if (isIndEnabled('toggle-pattern-trap')) catD_items.push(trap ? 1 : 0);
+        if (isIndEnabled('toggle-pattern-awc'))  catD_items.push(awc ? 1 : 0);
+        const catD = catScore(catD_items);
 
-    // Ağırlıklı Katman 2 Skoru
-    const layer2Score = (catA * 0.25) + (catB * 0.20) + (catC * 0.30) + (catD * 0.25);
+        const layer2Score = (catA * 0.25) + (catB * 0.20) + (catC * 0.30) + (catD * 0.25);
 
-    // --- KATMAN 3: KONFLUANS BONUSU ---
-    // Bir kategorinin "onaylandı" sayılması için >= %50 olması gerekir.
-    const confirmedCats = [catA, catB, catC, catD].filter(c => c >= 0.5).length;
-    const confluenceBonus = confirmedCats / 4; // 0, 0.25, 0.50, 0.75 veya 1.0
+        // Katman 3: Konfluans Bonusu
+        const confirmedCats = [catA, catB, catC, catD].filter(c => c >= 0.5).length;
+        const confluenceBonus = confirmedCats / 4;
 
-    // --- SON SKOR ---
-    let finalScore = 0;
-    if (trendGatePass) {
-        finalScore = Math.round(((layer2Score * 0.70) + (confluenceBonus * 0.30)) * 100);
-        finalScore = Math.min(100, Math.max(0, finalScore));
-    }
+        let score = 0;
+        if (gatePass) {
+            score = Math.round(((layer2Score * 0.70) + (confluenceBonus * 0.30)) * 100);
+            
+            // Hibrit Mod Trend Hizalama Bonusu (+%10)
+            if (activeStrategyMode === 'hybrid' && isTrendAligned) {
+                score += 10;
+            }
+            
+            // Boğa / Ayı Tuzağı Tetiklenme Bonusu (+%15)
+            if (isIndEnabled('toggle-pattern-trap') && trap) {
+                score += 15;
+            }
+            
+            // Antigravity Wave Core (AWC) Tetiklenme Bonusu (+%20)
+            if (isIndEnabled('toggle-pattern-awc') && awc) {
+                score += 20;
+            }
+            
+            score = Math.min(100, Math.max(0, score));
+        }
 
-    // Kategori skorlarını UI'a aktar (sonradan kullanılabilir)
-    const catScores = { A: catA, B: catB, C: catC, D: catD, confirmed: confirmedCats };
+        return {
+            score,
+            catA, catB, catC, catD, confirmedCats
+        };
+    };
+
+    const longRes = calculateDirectionScore(
+        long_gate, long_stochOk, long_bbOk, long_rsiOk, long_emaOk, long_vwapOk, long_obvOk, long_mfiOk, long_momOk, long_regrChanOk, long_liqOk,
+        long_atrOk, long_vwapSapmaOk, long_regrSlopeOk, long_mom5Ok, long_squeezeOk, long_obiOk, long_fvgOk, long_htfRsiOk, long_patternOk, long_trapOk, long_awcOk,
+        lastMode === 'LONG'
+    );
+
+    const shortRes = calculateDirectionScore(
+        short_gate, short_stochOk, short_bbOk, short_rsiOk, short_emaOk, short_vwapOk, short_obvOk, short_mfiOk, short_momOk, short_regrChanOk, short_liqOk,
+        short_atrOk, short_vwapSapmaOk, short_regrSlopeOk, short_mom5Ok, short_squeezeOk, short_obiOk, short_fvgOk, short_htfRsiOk, short_patternOk, short_trapOk, short_awcOk,
+        lastMode === 'SHORT'
+    );
+
+    // En Yüksek Puan Alan Yönü Seç
+    const activeDir = longRes.score >= shortRes.score ? 'LONG' : 'SHORT';
+    const finalScore = activeDir === 'LONG' ? longRes.score : shortRes.score;
+    const activeRes = activeDir === 'LONG' ? longRes : shortRes;
+
+    // UI'a aktarılacak indikatör onay değişkenlerini seçilen yöne göre senkronize et
+    const stochOk = activeDir === 'LONG' ? long_stochOk : short_stochOk;
+    const bbOk = activeDir === 'LONG' ? long_bbOk : short_bbOk;
+    const rsiOk = activeDir === 'LONG' ? long_rsiOk : short_rsiOk;
+    const emaOk = activeDir === 'LONG' ? long_emaOk : short_emaOk;
+    const vwapOk = activeDir === 'LONG' ? long_vwapOk : short_vwapOk;
+    const trapOk = activeDir === 'LONG' ? long_trapOk : short_trapOk;
+    const awcOk = activeDir === 'LONG' ? long_awcOk : short_awcOk;
+    const obvOk = activeDir === 'LONG' ? long_obvOk : short_obvOk;
+    const mfiOk = activeDir === 'LONG' ? long_mfiOk : short_mfiOk;
+    const momOk = activeDir === 'LONG' ? long_momOk : short_momOk;
+    const regrChanOk = activeDir === 'LONG' ? long_regrChanOk : short_regrChanOk;
+    const liqOk = activeDir === 'LONG' ? long_liqOk : short_liqOk;
+
+    const atrOk = activeDir === 'LONG' ? long_atrOk : short_atrOk;
+    const vwapSapmaOk = activeDir === 'LONG' ? long_vwapSapmaOk : short_vwapSapmaOk;
+    const regrSlopeOk = activeDir === 'LONG' ? long_regrSlopeOk : short_regrSlopeOk;
+    const mom5Ok = activeDir === 'LONG' ? long_mom5Ok : short_mom5Ok;
+    const squeezeOk = activeDir === 'LONG' ? long_squeezeOk : short_squeezeOk;
+    const obiOk = activeDir === 'LONG' ? long_obiOk : short_obiOk;
+    const fvgOk = activeDir === 'LONG' ? long_fvgOk : short_fvgOk;
+    const htfEmaOk = activeDir === 'LONG' ? long_htfEmaOk : short_htfEmaOk;
+    const htfRsiOk = activeDir === 'LONG' ? long_htfRsiOk : short_htfRsiOk;
+    const patternOk = activeDir === 'LONG' ? long_patternOk : short_patternOk;
+    const trendGatePass = activeDir === 'LONG' ? long_gate : short_gate;
+
+    const catScores = { A: activeRes.catA, B: activeRes.catB, C: activeRes.catC, D: activeRes.catD, confirmed: activeRes.confirmedCats };
 
 
 
@@ -2821,8 +3069,8 @@ function runAgent(){
 
     const stateEl=document.getElementById('agent-state');
     if(score>=matchThreshold){
-        stateEl.textContent=lastMode==='SHORT'?'🔴 Sat Sinyali':'🟢 Al Sinyali';
-        stateEl.style.color=lastMode==='SHORT'?'var(--red)':'var(--green)';
+        stateEl.textContent=activeDir==='SHORT'?'🔴 Sat Sinyali':'🟢 Al Sinyali';
+        stateEl.style.color=activeDir==='SHORT'?'var(--red)':'var(--green)';
     }else{
         stateEl.textContent='⏳ Bekleniyor';
         stateEl.style.color='var(--gold)';
@@ -2840,13 +3088,25 @@ function runAgent(){
     if(bbOk) reasons.push(`✓ Bollinger Band teması`);
     if(vwapSapmaOk) reasons.push(`✓ VWAP sapma & yön hizalanması`);
     if(patternOk) reasons.push(`✓ Canlı mum formasyonu sinyali`);
+    if(isIndEnabled('toggle-pattern-trap') && trapOk) {
+        reasons.push(activeDir === 'LONG' ? `⚠️ ✓ Güçlü AYI TUZAĞI (Bear Trap) Dönüş Onayı (+15% Bonus)` : `⚠️ ✓ Güçlü BOĞA TUZAĞI (Bull Trap) Dönüş Onayı (+15% Bonus)`);
+    }
+    if(isIndEnabled('toggle-pattern-awc') && awcOk) {
+        reasons.push(`🌌 ✓ Güçlü AWC Osilatör Dönüş Onayı (+20% Bonus)`);
+    }
 
     const rBox=document.getElementById('agent-reasoning');
-    rBox.innerHTML = trendGatePass
+    const strategyNames = { trend: "Trend Takipçisi 📈", reversal: "Çift Yönlü Kanal 🔄", hybrid: "Hibrit Mod ⚡" };
+    const strategyName = strategyNames[activeStrategyMode] || "Hibrit Mod ⚡";
+    const dirText = activeDir === 'LONG' ? '<span style="color:var(--green)">ALIM (LONG)</span>' : '<span style="color:var(--red)">SATIM (SHORT)</span>';
+    const trendText = lastMode === 'LONG' ? '<span style="color:var(--green)">BOĞA 🟢</span>' : lastMode === 'SHORT' ? '<span style="color:var(--red)">AYI 🔴</span>' : 'YATAY ⚪';
+    const headerHtml = `<strong>STRATEJİ:</strong> ${strategyName} | <strong>HEDEF:</strong> ${dirText}<br><strong>MAKRO TREND:</strong> ${trendText}<br><hr style="border-color:rgba(255,255,255,0.08); margin:8px 0;">`;
+
+    rBox.innerHTML = headerHtml + (trendGatePass
         ? (score >= matchThreshold
-            ? `<strong style="color:${lastMode==='SHORT'?'var(--red)':'var(--green)'}">GİRİŞ UYGUN ✓</strong><br>${reasons.join('<br>')}`
+            ? `<strong style="color:${activeDir==='SHORT'?'var(--red)':'var(--green)'}">GİRİŞ UYGUN ✓</strong><br>${reasons.join('<br>')}`
             : `<strong>BEKLE.</strong><br>${reasons.join('<br>')}`)
-        : `<strong style="color:var(--red)">TREND FİLTRESİ GEÇİLEMEDİ ✗</strong><br>EMA 5/13 ve Regresyon eğimi aynı yönü gösterene kadar sinyal üretilmez.<br>${reasons.filter(r=>r.includes('✓') || r.includes('📊') || r.includes('🔗')).join('<br>')}`;
+        : `<strong style="color:var(--red)">TREND FİLTRESİ GEÇİLEMEDİ ✗</strong><br>EMA 5/13 ve Regresyon eğimi aynı yönü gösterene kadar sinyal üretilmez.<br>${reasons.filter(r=>r.includes('✓') || r.includes('📊') || r.includes('🔗')).join('<br>')}`);
 
     const setC=(id,textId,ok,text)=>{
         const el=document.getElementById(id);
@@ -2890,6 +3150,8 @@ function runAgent(){
     setC('cond-pattern-doji','cond-pattern-doji-text',dojiOk,dojiOk?'Doji Kararsızlık Teyidi ✓':'Doji şartı yok');
     setC('cond-pattern-engulfing','cond-pattern-engulfing-text',engulfingOk,engulfingOk?'Engulfing (Yutan Mum) Onayı ✓':'Engulfing şartı yok');
     setC('cond-pattern-marubozu','cond-pattern-marubozu-text',marubozuOk,marubozuOk?'Marubozu Hacimli Gövde Onayı ✓':'Marubozu şartı yok');
+    setC('cond-pattern-trap','cond-pattern-trap-text',trapOk,trapOk?(activeDir==='LONG'?'Ayı Tuzağı (Bear Trap) Yakalandı! ⚠️ ✓':'Boğa Tuzağı (Bull Trap) Yakalandı! ⚠️ ✓'):'Tuzak şartı yok');
+    setC('cond-pattern-awc','cond-pattern-awc-text',awcOk,awcOk?'AWC Dönüş Çekirdeği Onaylandı! 🌌 ✓':'AWC Dönüşü bekleniyor');
 
     const updateDot = (id, ok) => {
         const el = document.getElementById(id);
@@ -2914,12 +3176,14 @@ function runAgent(){
     updateDot('fvg-dot', fvgOk);
     updateDot('htf-ema-dot', htfEmaOk);
     updateDot('htf-rsi-dot', htfRsiOk);
+    updateDot('pattern-trap-dot', trapOk);
+    updateDot('pattern-awc-dot', awcOk);
 
     const banner=document.getElementById('signal-banner');
     if(score>=matchThreshold){
-        const cls=lastMode==='SHORT'?'signal-short':'signal-long';
-        const smTxt=lastMode==='SHORT'?'🔥 ŞİMDİ':'🚀 ŞİMDİ';
-        const lgTxt=lastMode==='SHORT'?'SATIŞ YAP':'ALIM YAP';
+        const cls=activeDir==='SHORT'?'signal-short':'signal-long';
+        const smTxt=activeDir==='SHORT'?'🔥 ŞİMDİ':'🚀 ŞİMDİ';
+        const lgTxt=activeDir==='SHORT'?'SATIŞ YAP':'ALIM YAP';
         banner.innerHTML=`<div class="signal-title-sm">${smTxt}</div><div class="signal-title-lg">${lgTxt}</div><div class="signal-sub">${currentCoin} · Güven: ${score}%</div>`;
         banner.className='signal-banner '+cls;
         if(isSoundEnabled&&!alertPlayedInThisWindow){
@@ -2927,14 +3191,14 @@ function runAgent(){
         }
         if(isNotificationEnabled&&!alertPlayedInThisWindow){
             sendSystemNotification(
-                lastMode==='SHORT'?'🔴 Satış Sinyali!':'🟢 Alım Sinyali!',
+                activeDir==='SHORT'?'🔴 Satış Sinyali!':'🟢 Alım Sinyali!',
                 `${currentCoin} · Güven: ${score}% · ${reasons.length} onay alındı.`
             );
         }
         if(!alertPlayedInThisWindow){
             alertPlayedInThisWindow=true;
         }
-        showToast(lastMode==='SHORT'?'🔥 Satış Sinyali':'🚀 Alım Sinyali',`${currentCoin} · Güven: ${score}%`);
+        showToast(activeDir==='SHORT'?'🔥 Satış Sinyali':'🚀 Alım Sinyali',`${currentCoin} · Güven: ${score}%`);
     }else{
         banner.innerHTML=`<div class="signal-title-sm">⏳ ŞARTLAR</div><div class="signal-title-lg">BEKLENİYOR</div><div class="signal-sub">Güven skoru: ${score}%</div>`;
         banner.className='signal-banner signal-wait';
@@ -2951,6 +3215,7 @@ function saveToMemory(){
     localStorage.setItem('cm_notify',isNotificationEnabled);
     localStorage.setItem('cm_threshold',matchThreshold);
     localStorage.setItem('cm_profile', document.getElementById('profile-select').value);
+    localStorage.setItem('cm_strategy_mode', document.getElementById('strategy-mode-select').value);
     
     // Arka planla senkronize et
     const url = `${BACKEND_URL}?action=sync&symbol=${currentCoin}&upper=${ustTF}&mid=${ortaTF}&lower=${altTF}`;
@@ -3010,6 +3275,11 @@ function loadFromMemory(){
     const thSelect = document.getElementById('threshold-select');
     if(thSelect) thSelect.value = matchThreshold;
 
+    const sm = localStorage.getItem('cm_strategy_mode') || 'hybrid';
+    const smSelect = document.getElementById('strategy-mode-select');
+    if(smSelect) smSelect.value = sm;
+    activeStrategyMode = sm;
+
     document.getElementById('display-symbol').textContent=currentCoin;
     const savedProfile = localStorage.getItem('cm_profile');
     if (savedProfile === 'fast') {
@@ -3036,7 +3306,7 @@ function loadFromMemory(){
         'toggle-atr', 'toggle-vwap-sapma', 'toggle-regr-slope', 'toggle-mom5', 
         'toggle-squeeze', 'toggle-obi', 'toggle-fvg', 'toggle-htf-ema', 'toggle-htf-rsi',
         'toggle-pattern-hammer', 'toggle-pattern-shooting', 'toggle-pattern-doji',
-        'toggle-pattern-engulfing', 'toggle-pattern-marubozu'
+        'toggle-pattern-engulfing', 'toggle-pattern-marubozu', 'toggle-pattern-trap', 'toggle-pattern-awc'
     ];
     techToggles.forEach(id => {
         const val = localStorage.getItem('cm_' + id);
@@ -3149,13 +3419,13 @@ function changeChartTimeframe(val) {
 
 function autoScaleTimeframes(baseTF) {
     const scale = {
-        "1m": { alt: "1m", orta: "3m", ust: "15m" },
+        "1m": { alt: "1m", orta: "3m", ust: "5m" },
         "3m": { alt: "3m", orta: "5m", ust: "15m" },
-        "5m": { alt: "5m", orta: "15m", ust: "1h" },
-        "15m": { alt: "15m", orta: "1h", ust: "4h" },
-        "30m": { alt: "30m", orta: "1h", ust: "4h" },
-        "1h": { alt: "1h", orta: "4h", ust: "1d" },
-        "2h": { alt: "2h", orta: "4h", ust: "1d" },
+        "5m": { alt: "5m", orta: "15m", ust: "30m" },
+        "15m": { alt: "15m", orta: "30m", ust: "1h" },
+        "30m": { alt: "30m", orta: "1h", ust: "2h" },
+        "1h": { alt: "1h", orta: "2h", ust: "4h" },
+        "2h": { alt: "2h", orta: "4h", ust: "12h" },
         "4h": { alt: "4h", orta: "12h", ust: "1d" },
         "12h": { alt: "12h", orta: "1d", ust: "1w" },
         "1d": { alt: "1d", orta: "1w", ust: "1M" },
