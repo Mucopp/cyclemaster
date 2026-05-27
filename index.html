@@ -133,6 +133,9 @@
             -webkit-overflow-scrolling: touch;
             padding: 8px 8px calc(var(--bottom-h) + var(--safe-bottom) + 16px);
         }
+        .content.no-scroll {
+            overflow-y: hidden;
+        }
         .page { display:none; flex-direction:column; gap:10px; flex: 1; min-height: 0; }
         
         /* Slide-up & Fade-in page transition */
@@ -146,7 +149,7 @@
         }
 
         /* COIN BAR */
-        .coin-bar { display:flex; gap:8px; }
+        .coin-bar { display:flex; gap:8px; flex-shrink: 0; }
         .coin-input {
             flex:1; background:rgba(255, 255, 255, 0.02);
             border:1.5px solid var(--border);
@@ -189,6 +192,10 @@
         .market-hero:hover, .cycle-card:hover, .chart-card:hover, .agent-card:hover, .tech-card:hover, .tf-card:hover, .settings-section:hover {
             border-color: rgba(255,255,255,0.12);
             transform: translateY(-2px);
+        }
+        
+        .market-hero, .cycle-card, .agent-card, .tech-card, .tf-card, .settings-section {
+            flex-shrink: 0;
         }
 
         /* MARKET HERO */
@@ -271,6 +278,7 @@
             gap: 10px;
             align-items: stretch;
             margin-top: 8px;
+            flex-shrink: 0;
         }
         .hero-container .signal-banner, .hero-container .cycle-card {
             flex: 1;
@@ -400,7 +408,25 @@
         .setting-row:last-child { border-bottom:none; padding-bottom:0; }
         .setting-name { font-size:0.82rem; font-weight:600; }
         .setting-sub { font-size:0.6rem; color:var(--text3); margin-top:2px; }
-        .setting-control { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:9px 12px; color:var(--text); font-family:'Space Mono',monospace; font-size:0.72rem; outline:none; -webkit-appearance:none; appearance:none; min-width:110px; text-align-last:right; }
+        .setting-control {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 9px 28px 9px 12px;
+            color: var(--text);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.72rem;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='12' viewBox='0 0 24 24' width='12' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 14px;
+            min-width: 110px;
+            text-align: left;
+        }
         .setting-control option { background:#0d1524; }
 
         /* Toggle */
@@ -944,7 +970,7 @@
         </div>
 
         <!-- GRAPH CARD -->
-        <div class="chart-card" style="flex: 1; min-height: 360px; padding: 0; position: relative;">
+        <div class="chart-card" style="flex: 1; min-height: 150px; padding: 0; position: relative;">
             <div class="chart-indicators-header" style="justify-content: flex-start; gap: 12px;">
                 <span id="chart-symbol-display" style="color: var(--gold); font-weight: 700; font-size: 1rem; font-family: 'Space Mono', monospace; letter-spacing: 0.5px;">BTCUSDT</span>
                 <select id="parent-tf-select" class="parent-tf-select" onchange="setParentTimeframe(this.value)">
@@ -1163,7 +1189,6 @@
     <div class="page" id="page-settings">
         <div class="sec-title">Ayarlar</div>
         <div class="settings-section">
-            <div class="settings-title">Strateji Profili</div>
             <div class="setting-row">
                 <div><div class="setting-name">Profil</div><div class="setting-sub">Hazır strateji seçin</div></div>
                 <select id="profile-select" class="setting-control" onchange="applyProfile()">
@@ -1443,6 +1468,17 @@ function goTo(page){
     document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
     document.getElementById('page-'+page).classList.add('active');
     document.getElementById('nav-'+page).classList.add('active');
+    
+    // Toggle scrolling on .content based on the active page
+    const content = document.querySelector('.content');
+    if (content) {
+        if (page === 'market') {
+            content.classList.add('no-scroll');
+        } else {
+            content.classList.remove('no-scroll');
+        }
+    }
+    
     window.scrollTo(0,0);
 }
 
