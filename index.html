@@ -122,6 +122,26 @@
         .icon-btn:hover { border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.03); }
         .icon-btn.active { border-color:rgba(16,185,129,0.4); background:rgba(16,185,129,0.1); }
 
+        .btn-danger-outline {
+            background: rgba(239, 68, 68, 0.08);
+            color: var(--red);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            padding: 4px 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-weight: 600;
+            font-size: 0.7rem;
+        }
+        .btn-danger-outline:hover {
+            background: rgba(239, 68, 68, 0.16);
+            border-color: rgba(239, 68, 68, 0.45);
+            transform: translateY(-1px);
+        }
+        .btn-danger-outline:active {
+            transform: translateY(0);
+        }
+
         /* PAGES */
         .content {
             position:relative;
@@ -1312,6 +1332,15 @@
                     <div class="toggle-thumb"></div>
                 </label>
             </div>
+            <div class="setting-row" style="border-bottom: none;">
+                <div>
+                    <div class="setting-name" style="color: var(--red);">Sistem & Grafik Belleği</div>
+                    <div class="setting-sub">TradingView önbelleğini ve tüm yerel uygulama verilerini sıfırlar.</div>
+                </div>
+                <button class="btn-danger-outline" onclick="resetGraphicsAndLocalStorage()">
+                    Sıfırla
+                </button>
+            </div>
         </div>
     </div>
 
@@ -1520,6 +1549,21 @@ function goTo(page){
     }
     
     window.scrollTo(0,0);
+}
+
+function resetGraphicsAndLocalStorage() {
+    if (confirm("Grafik önbelleği ve tüm ayarlar sıfırlanarak uygulama ilk haline döndürülecektir. Emin misiniz?")) {
+        // Clear all localStorage
+        localStorage.clear();
+        
+        // Show success toast
+        showToast("🧹 Bellek Sıfırlandı", "Uygulama yeniden başlatılıyor...");
+        
+        // Reload page after a tiny delay
+        setTimeout(() => {
+            location.reload();
+        }, 1200);
+    }
 }
 
 function toggleSound(){ 
