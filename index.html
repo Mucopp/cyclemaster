@@ -136,7 +136,11 @@
         .content.no-scroll {
             overflow-y: hidden;
         }
-        .page { display:none; flex-direction:column; gap:10px; flex: 1; min-height: 0; }
+        .page { display:none; flex-direction:column; gap:10px; }
+        #page-market {
+            flex: 1;
+            min-height: 0;
+        }
         
         /* Slide-up & Fade-in page transition */
         @keyframes pageIn {
@@ -198,10 +202,10 @@
             flex-shrink: 0;
         }
 
-        /* MARKET HERO */
         .market-hero {
             background:var(--surface); border:1px solid var(--border);
             border-radius:14px; padding:6px 12px; position:relative; overflow:hidden;
+            min-height: 68px !important;
         }
         .market-hero::before {
             content:''; position:absolute; top:0; left:0; right:0; height:3px;
@@ -369,10 +373,10 @@
         .cond-text { font-size:0.67rem; color:var(--text2); }
 
         /* TECH CARD */
-        .tech-card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:18px; }
+        .tech-card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:12px 14px; }
         .ind-row { 
-            display:flex; align-items:center; justify-content:space-between; padding:13px 14px; 
-            background:rgba(255,255,255,0.01); border:1px solid var(--border); border-radius:13px; margin-bottom:8px; 
+            display:flex; align-items:center; justify-content:space-between; padding:8px 12px; 
+            background:rgba(255,255,255,0.01); border:1px solid var(--border); border-radius:13px; margin-bottom:6px; 
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .ind-row:last-child { margin-bottom:0; }
@@ -402,9 +406,9 @@
         .update-val { font-family:'Space Mono',monospace; font-size:0.6rem; color:var(--text2); }
 
         /* SETTINGS */
-        .settings-section { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:18px; }
+        .settings-section { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:12px 14px; }
         .settings-title { font-size:0.54rem; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:2px; margin-bottom:14px; }
-        .setting-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 0; border-bottom:1px solid var(--border); }
+        .setting-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:9px 0; border-bottom:1px solid var(--border); }
         .setting-row:last-child { border-bottom:none; padding-bottom:0; }
         .setting-name { font-size:0.82rem; font-weight:600; }
         .setting-sub { font-size:0.6rem; color:var(--text3); margin-top:2px; }
@@ -1244,12 +1248,12 @@
             </div>
         </div>
         <div class="settings-section">
-            <div class="settings-title">Tercihler</div>
             <div class="setting-row">
                 <div><div class="setting-name">Uyum Eşiği</div><div class="setting-sub">Sinyal tetiklenme yüzdesi</div></div>
                 <select id="threshold-select" class="setting-control" onchange="updateThreshold()">
                     <option value="50">50%</option>
                     <option value="60">60%</option>
+                    <option value="65" selected>65%</option>
                     <option value="70">70%</option>
                     <option value="75">75%</option>
                     <option value="80">80%</option>
