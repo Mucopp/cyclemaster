@@ -957,20 +957,55 @@
 
         <!-- TIMEFRAME TRENDS CARD -->
         <div class="tf-card">
-            <div class="tf-row">
-                <div class="tf-box">
-                    <div class="tf-name">ALT <span id="lbl-alt-tf">—</span></div>
-                    <div id="state-alt-tf" class="tf-badge neutral">—</div>
+            <div class="tf-row" style="grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+                <!-- ALT TF Box (Dynamic ALT Prediction) -->
+                <div class="tf-box" style="display: flex; flex-direction: row; align-items: center; justify-content: space-around; padding: 6px 10px; min-height: 48px;">
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                        <span id="lbl-alt-tf" style="font-size: 0.85rem; font-weight: 800; color: var(--text); font-family: 'Space Mono', monospace; letter-spacing: 0.5px;">—</span>
+                        <div id="state-alt-tf" class="tf-badge neutral" style="font-size: 0.52rem; padding: 2px 6px;">—</div>
+                    </div>
+                    <div style="width: 26px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.02); border-radius: 6px; overflow: hidden; flex-shrink: 0;">
+                        <canvas id="predicted-candle-canvas-alt" width="26" height="32" style="display: block; width: 26px; height: 32px;"></canvas>
+                    </div>
                 </div>
-                <div class="tf-box">
-                    <div class="tf-name">ORTA <span id="lbl-orta-tf">—</span></div>
-                    <div id="state-orta-tf" class="tf-badge neutral">—</div>
+                <!-- ORTA TF Box (Dynamic ORTA Prediction) -->
+                <div class="tf-box" style="display: flex; flex-direction: row; align-items: center; justify-content: space-around; padding: 6px 10px; min-height: 48px;">
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                        <span id="lbl-orta-tf" style="font-size: 0.85rem; font-weight: 800; color: var(--text); font-family: 'Space Mono', monospace; letter-spacing: 0.5px;">—</span>
+                        <div id="state-orta-tf" class="tf-badge neutral" style="font-size: 0.52rem; padding: 2px 6px;">—</div>
+                    </div>
+                    <div style="width: 26px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.02); border-radius: 6px; overflow: hidden; flex-shrink: 0;">
+                        <canvas id="predicted-candle-canvas-orta" width="26" height="32" style="display: block; width: 26px; height: 32px;"></canvas>
+                    </div>
                 </div>
-                <div class="tf-box">
-                    <div class="tf-name">ÜST <span id="lbl-ust-tf">—</span></div>
-                    <div id="state-ust-tf" class="tf-badge neutral">—</div>
+                <!-- ÜST TF Box (Dynamic ÜST Prediction) -->
+                <div class="tf-box" style="display: flex; flex-direction: row; align-items: center; justify-content: space-around; padding: 6px 10px; min-height: 48px;">
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                        <span id="lbl-ust-tf" style="font-size: 0.85rem; font-weight: 800; color: var(--text); font-family: 'Space Mono', monospace; letter-spacing: 0.5px;">—</span>
+                        <div id="state-ust-tf" class="tf-badge neutral" style="font-size: 0.52rem; padding: 2px 6px;">—</div>
+                    </div>
+                    <div style="width: 26px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.02); border-radius: 6px; overflow: hidden; flex-shrink: 0;">
+                        <canvas id="predicted-candle-canvas-ust" width="26" height="32" style="display: block; width: 26px; height: 32px;"></canvas>
+                    </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Hidden elements to prevent JS from crashing -->
+        <div style="display: none;">
+            <span id="predicted-candle-lbl-alt"></span>
+            <span id="predicted-candle-lbl-orta"></span>
+            <span id="predicted-candle-lbl-ust"></span>
+            
+            <canvas id="predicted-candle-canvas" width="10" height="10"></canvas>
+            <span id="predicted-candle-lbl"></span>
+            <span id="pred-direction-lbl"></span>
+            <span id="pred-probability-pill"></span>
+            <span id="pred-reasoning"></span>
+            <span id="pred-open"></span>
+            <span id="pred-close"></span>
+            <span id="pred-high"></span>
+            <span id="pred-low"></span>
         </div>
 
         <!-- GRAPH CARD -->
@@ -1851,6 +1886,61 @@ function resetMarketDataToZero() {
     resetDot('obv-dot'); resetDot('mfi-dot'); resetDot('mom-dot'); resetDot('regr-chan-dot'); resetDot('liq-dot');
     resetDot('atr-dot'); resetDot('vwap-sapma-dot'); resetDot('regr-slope-dot'); resetDot('mom5-dot');
     resetDot('squeeze-dot'); resetDot('obi-dot'); resetDot('fvg-dot'); resetDot('htf-ema-dot'); resetDot('htf-rsi-dot');
+    resetDot('pattern-trap-dot'); resetDot('pattern-awc-dot');
+    
+    const resetBadge = (id) => {
+        const item = document.getElementById(id);
+        if (item) {
+            item.textContent = "YOK";
+            item.className = "ind-badge b-gray";
+        }
+    };
+    resetBadge('pattern-hammer-badge');
+    resetBadge('pattern-shooting-badge');
+    resetBadge('pattern-doji-badge');
+    resetBadge('pattern-engulfing-badge');
+    resetBadge('pattern-marubozu-badge');
+    resetBadge('pattern-trap-badge');
+    resetBadge('pattern-awc-badge');
+    
+    // Reset AWC Neural Predictor Card
+    const dirLbl = document.getElementById('pred-direction-lbl');
+    if (dirLbl) dirLbl.textContent = "Yön: Bekleniyor...";
+    const probPill = document.getElementById('pred-probability-pill');
+    if (probPill) {
+        probPill.textContent = "%0";
+        probPill.className = "price-pill";
+    }
+    const reasoningEl = document.getElementById('pred-reasoning');
+    if (reasoningEl) reasoningEl.textContent = "Alt ve Orta TF momentum analizleri yapılıyor...";
+    
+    const candleLbl = document.getElementById('predicted-candle-lbl');
+    if (candleLbl) {
+        candleLbl.textContent = "T+1 MUM";
+        candleLbl.style.color = "var(--gold)";
+    }
+    
+    updateText('pred-open', "—");
+    updateText('pred-close', "—");
+    updateText('pred-high', "—");
+    updateText('pred-low', "—");
+    
+    const predCanvas = document.getElementById('predicted-candle-canvas');
+    if (predCanvas) {
+        const predCtx = predCanvas.getContext('2d');
+        predCtx.clearRect(0, 0, predCanvas.width, predCanvas.height);
+    }
+    
+    updateText('predicted-candle-lbl-alt', "");
+    updateText('predicted-candle-lbl-orta', "");
+    updateText('predicted-candle-lbl-ust', "");
+    ['predicted-candle-canvas-alt', 'predicted-candle-canvas-orta', 'predicted-candle-canvas-ust'].forEach(id => {
+        const canv = document.getElementById(id);
+        if (canv) {
+            const ctx = canv.getContext('2d');
+            ctx.clearRect(0, 0, canv.width, canv.height);
+        }
+    });
     
     // Reset signals and agent card
     updateText('agent-score', "0%");
@@ -1930,21 +2020,18 @@ async function fetchOKXKlines(symbol, interval, limit){
 
 async function fetchTechnical(isExplicit = false){
     try{
-        let fetchPromises = [
-            fetchOKXKlines(currentCoin, altTF, 190),
-            fetchOKXKlines(currentCoin, ortaTF, 190),
-            fetchOKXKlines(currentCoin, ustTF, 190)
-        ];
+        const requiredTFs = Array.from(new Set([altTF, ortaTF, ustTF, chartTF]));
+        const promises = requiredTFs.map(tf => fetchOKXKlines(currentCoin, tf, 190));
+        const results = await Promise.all(promises);
+        const tfDataMap = {};
+        requiredTFs.forEach((tf, idx) => {
+            tfDataMap[tf] = results[idx];
+        });
         
-        if (chartTF !== altTF) {
-            fetchPromises.push(fetchOKXKlines(currentCoin, chartTF, 190));
-        }
-        
-        const results = await Promise.all(fetchPromises);
-        const kAltRaw = results[0];
-        const kOrtaRaw = results[1];
-        const kUstRaw = results[2];
-        const kChartRaw = chartTF === altTF ? kAltRaw : results[3];
+        const kAltRaw = tfDataMap[altTF];
+        const kOrtaRaw = tfDataMap[ortaTF];
+        const kUstRaw = tfDataMap[ustTF];
+        const kChartRaw = tfDataMap[chartTF];
 
         if(!kAltRaw||!kOrtaRaw||!kUstRaw||!kChartRaw) {
             if (isExplicit) handleInvalidSymbol();
@@ -2336,6 +2423,9 @@ async function fetchTechnical(isExplicit = false){
         document.getElementById('last-update').textContent = new Date().toLocaleTimeString('tr-TR');
         runAgent();
         updateTVWidget();
+        predictCandleForTimeframe(altTF, parse(kAltRaw, 1), hAlt, lAlt, cAlt, vAlt, "predicted-candle-canvas-alt", "predicted-candle-lbl-alt");
+        predictCandleForTimeframe(ortaTF, parse(kOrtaRaw, 1), hOrta, lOrta, cOrta, vOrta, "predicted-candle-canvas-orta", "predicted-candle-lbl-orta");
+        predictCandleForTimeframe(ustTF, parse(kUstRaw, 1), hUst, lUst, cUst, vUst, "predicted-candle-canvas-ust", "predicted-candle-lbl-ust");
     }catch(e){ 
         console.error("fetchTechnical error:", e); 
         if (isExplicit) handleInvalidSymbol();
@@ -2480,7 +2570,7 @@ function calcFVG(h, l) {
         let c1 = c3 - 2;
         if(c1 < 0) continue;
         if (l[c3] > h[c1]) return { type: 'BOĞA', top: l[c3], bottom: h[c1] };
-        if (h[c3] < l[c1]) return { type: 'AYI', top: h[c1], bottom: l[c3] };
+        if (h[c3] < l[c1]) return { type: 'AYI', top: l[c1], bottom: h[c3] };
     }
     return { type: 'YOK' };
 }
@@ -2734,34 +2824,38 @@ function calcAntigravityWaveCore(opens, highs, lows, closes, volumes, atr, atrMA
     let period = Math.round(14 * atrRatio);
     period = Math.min(24, Math.max(8, period)); // bounds between 8 and 24
     
-    // Helper to compute Fisher transform at a specific candle index
-    const getFisherAt = (targetIdx) => {
+    // 2. Recursive Ehlers Fisher Transform calculation over the required lookback
+    const fisherSeries = new Array(closes.length).fill(0);
+    let prevVal = 0;
+    let lastFisherVal = 0;
+    
+    for (let idx = period; idx < closes.length; idx++) {
         let lowest = Infinity;
         let highest = -Infinity;
-        for (let i = targetIdx - period + 1; i <= targetIdx; i++) {
-            if (i < 0) continue;
+        for (let i = idx - period + 1; i <= idx; i++) {
             if (lows[i] < lowest) lowest = lows[i];
             if (highs[i] > highest) highest = highs[i];
         }
         
-        const close = closes[targetIdx];
+        const close = closes[idx];
         const range = highest - lowest;
         let value = 0;
         if (range > 0) {
-            value = 0.1 * (100 * (close - lowest) / range) - 5;
+            value = 0.33 * (2 * ((close - lowest) / range - 0.5)) + 0.67 * prevVal;
+        } else {
+            value = 0.67 * prevVal;
         }
+        value = Math.min(0.999, Math.max(-0.999, value));
+        prevVal = value;
         
-        // Dampening & Smoothing Ehlers factor
-        let rawVal = 0.15 * value + 0.85 * 0;
-        rawVal = Math.min(0.999, Math.max(-0.999, rawVal));
-        
-        const fisher = 0.5 * Math.log((1 + rawVal) / (1 - rawVal));
-        return fisher;
-    };
+        const fisher = 0.5 * Math.log((1 + value) / (1 - value)) + 0.5 * lastFisherVal;
+        fisherSeries[idx] = fisher;
+        lastFisherVal = fisher;
+    }
     
     const idx = closes.length - 2; // last completed candle
-    const currFisher = getFisherAt(idx);
-    const prevFisher = getFisherAt(idx - 1);
+    const currFisher = fisherSeries[idx];
+    const prevFisher = fisherSeries[idx - 1];
     
     // 3. Volume Force validation (filters out low-volume moves)
     const currentVol = volumes[idx] || 1;
@@ -2805,6 +2899,207 @@ async function fetchOKXOrderBook(symbol) {
         console.error("fetchOKXOrderBook error:", e);
     }
     return 0;
+}
+
+function predictNextCandle() {
+    // Shell function to prevent breaking references
+}
+
+function predictCandleForTimeframe(timeframeName, opens, highs, lows, closes, volumes, canvasId, lblId) {
+    if (!closes || closes.length < 35) return;
+    
+    const lp = closes[closes.length - 1];
+    
+    // 1. REGRESSION SLOPE (Weight: 25)
+    // Measures the directional trend of the regression line.
+    const regr = calcRegressionChannel(closes, 35);
+    const slope = regr.slope || 0;
+    let regressionScore = 0;
+    if (slope > 0) regressionScore = 25;
+    else if (slope < 0) regressionScore = -25;
+    
+    // 2. EMA ALIGNMENT TREND (Weight: 20)
+    // Measures if the EMA 5/8/13 are aligned in a bullish or bearish stack.
+    const ema5S = calcEMA(closes, 5);
+    const ema8S = calcEMA(closes, 8);
+    const ema13S = calcEMA(closes, 13);
+    const ema5 = ema5S[ema5S.length - 1];
+    const ema8 = ema8S[ema8S.length - 1];
+    const ema13 = ema13S[ema13S.length - 1];
+    let emaScore = 0;
+    if (ema5 > ema8 && ema8 > ema13) {
+        emaScore = 20; // Bullish alignment
+    } else if (ema5 < ema8 && ema8 < ema13) {
+        emaScore = -20; // Bearish alignment
+    }
+    
+    // 3. RSI & STOCHRSI REVERSIONS (Weight: 25)
+    // Identifies extreme oversold/overbought conditions.
+    const rsiSeries = calcRSI(closes, 14);
+    const rsi = rsiSeries[rsiSeries.length - 1];
+    const stochSeries = calcStochRSI(rsiSeries, 14);
+    const stoch = stochSeries[stochSeries.length - 1];
+    let oscillatorScore = 0;
+    
+    // RSI thresholds
+    if (rsi < 30) oscillatorScore += 15; // Oversold support
+    else if (rsi > 70) oscillatorScore -= 15; // Overbought resistance
+    else if (rsi > 50) oscillatorScore += 5;
+    else if (rsi < 50) oscillatorScore -= 5;
+    
+    // Stochastic RSI thresholds
+    if (stoch < 20) oscillatorScore += 10;
+    else if (stoch > 80) oscillatorScore -= 10;
+    
+    // 4. BOLLINGER BANDS POSITIONING (Weight: 20)
+    // Identifies if price is squeezing or bouncing from outer bands.
+    const bb = calcBB(closes, 20, 2);
+    let bbScore = 0;
+    const bbRange = bb.upper - bb.lower;
+    if (bbRange > 0) {
+        const pct = (lp - bb.lower) / bbRange;
+        if (pct < 0.15) {
+            bbScore = 20; // Bouncing from lower band (bullish reversal)
+        } else if (pct > 0.85) {
+            bbScore = -20; // Bouncing from upper band (bearish reversal)
+        }
+    }
+    
+    // 5. SMC FAIR VALUE GAP (Weight: 15)
+    const localFvg = calcFVG(highs, lows);
+    let fvgScore = 0;
+    if (localFvg && localFvg.type === 'BOĞA') fvgScore = 15;
+    else if (localFvg && localFvg.type === 'AYI') fvgScore = -15;
+    
+    // 6. CANDLESTICK PATTERNS (Weight: 20)
+    const patterns = detectCandlePatterns(opens, highs, lows, closes);
+    let patternScore = 0;
+    if (patterns.hammer) patternScore += 15;
+    if (patterns.shooting) patternScore -= 15;
+    if (patterns.engulfing === 'BOĞA') patternScore += 20;
+    else if (patterns.engulfing === 'AYI') patternScore -= 20;
+    
+    // 7. VOLUME AMPLIFICATION FORCE (Quant Multiplier)
+    // Strong volume confirms price action patterns and momentum signals.
+    const lastVol = volumes[volumes.length - 1] || 1;
+    let avgVol = 0;
+    const volLookback = Math.min(volumes.length, 15);
+    for (let i = volumes.length - volLookback; i < volumes.length; i++) {
+        avgVol += volumes[i];
+    }
+    avgVol = avgVol / volLookback;
+    
+    // Volume Confirmation Factor
+    const hasVolumeConfirmation = lastVol > avgVol * 1.3;
+    
+    // Compile total base score
+    let totalScore = regressionScore + emaScore + oscillatorScore + bbScore + fvgScore + patternScore;
+    
+    // Volume Validation multiplier (1.4x) on active direction's momentum
+    if (hasVolumeConfirmation) {
+        totalScore = totalScore * 1.4;
+    }
+    
+    // Determine final direction and mathematically sound probability
+    const finalDirection = totalScore >= 0 ? "BULLISH" : "BEARISH";
+    const rawProb = Math.abs(totalScore);
+    // Probability scaled between 50% and 95%
+    const finalProbability = Math.round(50 + (rawProb / 150) * 45);
+    const clampedProb = Math.min(95, Math.max(52, finalProbability));
+    
+    // ATR-based expected target move range
+    const predOpen = lp;
+    const atrSeries = calcATR(highs, lows, closes, 14);
+    const atr = atrSeries[atrSeries.length - 1] || (lp * 0.005);
+    
+    // Probability weighting * ATR volatility dictates expected price targets
+    const expectedMove = (clampedProb / 100) * atr * 0.5;
+    let predClose = predOpen;
+    if (finalDirection === "BULLISH") {
+        predClose = predOpen + expectedMove;
+    } else {
+        predClose = predOpen - expectedMove;
+    }
+    
+    // Create random but mathematically constrained shadows (wicks) based on ATR
+    const upperWick = atr * (0.10 + Math.random() * 0.15);
+    const lowerWick = atr * (0.10 + Math.random() * 0.15);
+    
+    const predHigh = Math.max(predOpen, predClose) + upperWick;
+    const predLow = Math.min(predOpen, predClose) - lowerWick;
+    
+    const candleLbl = document.getElementById(lblId);
+    if (candleLbl) {
+        candleLbl.innerHTML = `${timeframeName} <span style="font-family:'Space Mono',monospace; font-size: 0.78rem; color:${finalDirection === 'BULLISH' ? 'var(--green)' : 'var(--red)'}; font-weight:800;">(${clampedProb}%)</span>`;
+    }
+    
+    drawPredictedCandleOnCanvas(predOpen, predHigh, predLow, predClose, finalDirection, canvasId);
+}
+
+function drawPredictedCandleOnCanvas(o, h, l, c, dir, canvasId) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width;
+    const hCanvas = canvas.height;
+    
+    ctx.clearRect(0, 0, w, hCanvas);
+    
+    const padX = 8;
+    const padY = 4;
+    const chartW = w - 2 * padX;
+    const chartH = hCanvas - 2 * padY;
+    
+    const minP = l;
+    const maxP = h;
+    const range = maxP - minP;
+    
+    const getY = (price) => padY + chartH - ((price - minP) / (range === 0 ? 1 : range)) * chartH;
+    const x = w / 2;
+    
+    const yOpen = getY(o);
+    const yClose = getY(c);
+    const yHigh = getY(h);
+    const yLow = getY(l);
+    
+    const isBull = dir === "BULLISH";
+    const color = isBull ? '#10b981' : '#f43f5e';
+    const glow = isBull ? 'rgba(16, 185, 129, 0.4)' : 'rgba(244, 63, 94, 0.4)';
+    
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.25;
+    ctx.beginPath();
+    ctx.moveTo(x, yHigh);
+    ctx.lineTo(x, yLow);
+    ctx.stroke();
+    
+    ctx.fillStyle = color;
+    ctx.shadowBlur = 5;
+    ctx.shadowColor = glow;
+    
+    const bodyW = 8;
+    const bodyH = Math.max(3, Math.abs(yClose - yOpen));
+    const bodyY = Math.min(yOpen, yClose);
+    
+    ctx.roundRect = ctx.roundRect || function (x, y, w, h, r) {
+        if (w < 2 * r) r = w / 2;
+        if (h < 2 * r) r = h / 2;
+        this.beginPath();
+        this.moveTo(x+r, y);
+        this.arcTo(x+w, y, x+w, y+h, r);
+        this.arcTo(x+w, y+h, x, y+h, r);
+        this.arcTo(x, y+h, x, y, r);
+        this.arcTo(x, y, x+w, y, r);
+        this.closePath();
+        return this;
+    };
+    
+    ctx.beginPath();
+    ctx.roundRect(x - bodyW / 2, bodyY, bodyW, bodyH, 1.5);
+    ctx.fill();
+    
+    ctx.shadowBlur = 0;
 }
 
 function updateCycle(){
