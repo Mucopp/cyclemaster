@@ -10,6 +10,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2091/2091665.png">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
+    <script src="ml.js" defer></script>
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <style>
         :root {
@@ -1212,6 +1214,10 @@
                         <label class="ind-row" style="cursor: pointer;">
                 <div class="ind-left"><div id="trend-change-dot" class="dot"></div><span class="ind-name">Trend Değişimi Tespiti ⚡</span></div>
                 <div class="ind-right"><span class="ind-badge b-gray" id="trend-change-badge">BEKLİYOR</span></div>
+            </label>
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><div id="ml-dot" class="dot"></div><span class="ind-name">Derin Öğrenme (Neural Net) 🧠</span></div>
+                <div class="ind-right"><span id="ml-status" style="font-size:0.65rem;color:#64748b;margin-right:4px"></span><span class="ind-badge b-gray" id="ml-badge">HAZIR DEĞİL</span></div>
             </label>
 <div class="update-row">
                 <span class="update-lbl">Son Güncelleme</span>
@@ -2487,6 +2493,11 @@ async function fetchTechnical(isExplicit = false){
         document.getElementById('last-update').textContent = new Date().toLocaleTimeString('tr-TR');
         runAgent();
         updateTVWidget();
+        // DERIN OGRENME TAHMINI (async, UI bloklamaz)
+        if (typeof calcMLPrediction === "function") {
+            calcMLPrediction(hAlt, lAlt, cAlt, vAlt).catch(e => console.warn('ML:', e));
+        }
+
         predictCandleForTimeframe(altTF, parse(kAltRaw, 1), hAlt, lAlt, cAlt, vAlt, "predicted-candle-canvas-alt", "predicted-candle-lbl-alt");
         predictCandleForTimeframe(ortaTF, parse(kOrtaRaw, 1), hOrta, lOrta, cOrta, vOrta, "predicted-candle-canvas-orta", "predicted-candle-lbl-orta");
         predictCandleForTimeframe(ustTF, parse(kUstRaw, 1), hUst, lUst, cUst, vUst, "predicted-candle-canvas-ust", "predicted-candle-lbl-ust");
