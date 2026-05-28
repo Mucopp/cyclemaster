@@ -1209,7 +1209,11 @@
                 <div class="ind-left"><input type="checkbox" id="toggle-pattern-awc" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="pattern-awc-dot" class="dot"></div><span class="ind-name">Antigravity Wave Core (AWC) 🌌</span></div>
                 <div class="ind-right"><span class="ind-badge b-gray" id="pattern-awc-badge">YOK</span></div>
             </label>
-            <div class="update-row">
+                        <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><div id="trend-change-dot" class="dot"></div><span class="ind-name">Trend Değişimi Tespiti ⚡</span></div>
+                <div class="ind-right"><span class="ind-badge b-gray" id="trend-change-badge">BEKLİYOR</span></div>
+            </label>
+<div class="update-row">
                 <span class="update-lbl">Son Güncelleme</span>
                 <span class="update-val" id="last-update">—</span>
             </div>
@@ -1249,13 +1253,13 @@
         <div class="sec-title">Ayarlar</div>
         <div class="settings-section">
             <div class="setting-row">
-                <div><div class="setting-name">Profil</div><div class="setting-sub">Hazır strateji seçin</div></div>
-                <select id="profile-select" class="setting-control" onchange="applyProfile()">
-                    <option value="fast">⚡ Fast</option>
-                    <option value="scalper">⚡ Scalper</option>
-                    <option value="trader" selected>🎯 Day Trader</option>
-                    <option value="swing">🛡️ Swing</option>
-                    <option value="custom">⚙️ Özel</option>
+                <div><div class="setting-name">İndikatör Kombinasyonu</div><div class="setting-sub">Hazır indikatör seti yükleyin</div></div>
+                <select id="combo-select" class="setting-control" onchange="applyIndicatorCombo()">
+                    <option value="hybrid" selected>⚡ Dengeli Hibrit Mod</option>
+                    <option value="reversal">🔄 Kanal & Reversal Modu</option>
+                    <option value="trend">📈 Güçlü Trend Takipçisi</option>
+                    <option value="all">🌟 Tüm İndikatörleri Aç</option>
+                    <option value="custom">⚙️ Özel Kombinasyon</option>
                 </select>
             </div>
                         <div class="setting-row">
@@ -1526,11 +1530,7 @@ let lastPrice=0;
 let isSoundEnabled=false, alertPlayedInThisWindow=false, isNotificationEnabled=false;
 let toastTimer=null;
 
-const profiles={
-    scalper:{alt:"1m",orta:"5m",ust:"15m",name:"⚡ SCALPER MODE"},
-    trader:{alt:"5m",orta:"15m",ust:"1h",name:"🎯 DAY TRADER MODE"},
-    swing:{alt:"15m",orta:"1h",ust:"4h",name:"🛡️ SWING MODE"}
-};
+
 
 function goTo(page){
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -1708,37 +1708,10 @@ function showToast(title,sub){
     toastTimer=setTimeout(()=>t.classList.remove('show'),4000);
 }
 
-function applyProfile(){
-    const k=document.getElementById('profile-select').value;
-    if(k==='custom') return;
+function applyIndicatorCombo() {
+    const k = document.getElementById('combo-select').value;
+    if (k === 'custom') return;
     
-    if (k !== 'fast') {
-        const p=profiles[k];
-        altTF=p.alt; ortaTF=p.orta; ustTF=p.ust;
-        chartTF=p.alt;
-        document.getElementById('alt-tf-select').value=altTF;
-        document.getElementById('orta-tf-select').value=ortaTF;
-        document.getElementById('ust-tf-select').value=ustTF;
-        document.getElementById('strategy-name').textContent=p.name;
-    } else {
-        document.getElementById('strategy-name').textContent="⚡ FAST MODE";
-    }
-
-    // Profile-specific threshold adjustments
-    if (k === 'fast') {
-        matchThreshold = 60;
-    } else if (k === 'scalper') {
-        matchThreshold = 70;
-    } else if (k === 'trader') {
-        matchThreshold = 75;
-    } else if (k === 'swing') {
-        matchThreshold = 80;
-    }
-    const thSelect = document.getElementById('threshold-select');
-    if (thSelect) thSelect.value = matchThreshold.toString();
-    localStorage.setItem('cm_threshold', matchThreshold.toString());
-
-    // Profile-specific indicator configurations
     const allIndicators = [
         'toggle-stoch', 'toggle-bb', 'toggle-rsi', 'toggle-ema', 'toggle-vwap', 
         'toggle-obv', 'toggle-mfi', 'toggle-mom', 'toggle-regr-chan', 'toggle-liq', 
@@ -1747,61 +1720,67 @@ function applyProfile(){
         'toggle-pattern-hammer', 'toggle-pattern-shooting', 'toggle-pattern-doji',
         'toggle-pattern-engulfing', 'toggle-pattern-marubozu', 'toggle-pattern-trap', 'toggle-pattern-awc'
     ];
-
-    if (k === 'fast') {
-        const fastIndicators = {
+    
+    const comboConfigs = {
+        hybrid: {
             'toggle-stoch': true,
-            'toggle-bb': true,
-            'toggle-rsi': false,
-            'toggle-ema': true,
-            'toggle-vwap': true,
-            'toggle-obv': true,
-            'toggle-mfi': false,
-            'toggle-mom': false,
-            'toggle-regr-chan': false,
-            'toggle-liq': false,
-            'toggle-atr': false,
-            'toggle-vwap-sapma': true,
-            'toggle-regr-slope': false,
-            'toggle-mom5': true,
-            'toggle-squeeze': true,
+            'toggle-rsi': true,
+            'toggle-liq': true,
             'toggle-obi': true,
+            'toggle-ema': true,
+            'toggle-regr-chan': true,
+            'toggle-vwap': true,
+            'toggle-vwap-sapma': true,
             'toggle-fvg': true,
-            'toggle-htf-ema': false,
-            'toggle-htf-rsi': false,
+            'toggle-htf-rsi': true,
+            'toggle-pattern-awc': true,
+            'toggle-pattern-trap': true,
             'toggle-pattern-hammer': true,
             'toggle-pattern-shooting': true,
-            'toggle-pattern-doji': false,
-            'toggle-pattern-engulfing': true,
-            'toggle-pattern-marubozu': true,
+            'toggle-pattern-engulfing': true
+        },
+        reversal: {
+            'toggle-stoch': true,
+            'toggle-obi': true,
+            'toggle-bb': true,
+            'toggle-regr-chan': true,
+            'toggle-pattern-awc': true,
             'toggle-pattern-trap': true,
-            'toggle-pattern-awc': true
-        };
-        for (const id of allIndicators) {
-            const val = fastIndicators[id] !== undefined ? fastIndicators[id] : false;
-            const el = document.getElementById(id);
-            if (el) {
-                el.checked = val;
-                localStorage.setItem('cm_' + id, val.toString());
-                updateRowVisual(id, val);
-            }
+            'toggle-pattern-hammer': true,
+            'toggle-pattern-shooting': true,
+            'toggle-pattern-doji': true,
+            'toggle-pattern-engulfing': true
+        },
+        trend: {
+            'toggle-rsi': true,
+            'toggle-mfi': true,
+            'toggle-obv': true,
+            'toggle-ema': true,
+            'toggle-vwap': true,
+            'toggle-squeeze': true,
+            'toggle-htf-rsi': true,
+            'toggle-atr': true
         }
-    } else {
-        // Reset all to enabled by default for other profiles
-        for (const id of allIndicators) {
-            const el = document.getElementById(id);
-            if (el) {
-                el.checked = true;
-                localStorage.setItem('cm_' + id, 'true');
-                updateRowVisual(id, true);
-            }
+    };
+    
+    const currentCombo = comboConfigs[k] || {};
+    
+    for (const id of allIndicators) {
+        const val = (k === 'all') ? true : (currentCombo[id] === true);
+        const el = document.getElementById(id);
+        if (el) {
+            el.checked = val;
+            localStorage.setItem('cm_' + id, val.toString());
+            updateRowVisual(id, val);
         }
     }
-
+    
+    // Strateji İsmi Güncellemesi
+    const strategyNames = { hybrid: "⚡ HİBRİT MOD", reversal: "🔄 REVERSAL MOD", trend: "📈 TREND MODU", all: "🌟 TÜM GÖSTERGELER" };
+    document.getElementById('strategy-name').textContent = strategyNames[k] || "⚙️ ÖZEL MOD";
+    
     saveToMemory();
-    syncParentTfUI();
-    runAgent(); // Snappy, instantaneous local UI update!
-    fetchTechnical(); // Background network fetch
+    runAgent();
 }
 
 
@@ -1835,14 +1814,11 @@ function updateSettings(){
         ortaTF = altTF;
     }
     chartTF=altTF;
-    const currentProfile = document.getElementById('profile-select').value;
-    if (currentProfile !== 'fast') {
-        const found=Object.values(profiles).find(p=>p.alt===altTF&&p.orta===ortaTF&&p.ust===ustTF);
-        document.getElementById('profile-select').value=found?Object.keys(profiles).find(key=>profiles[key]===found):"custom";
-        document.getElementById('strategy-name').textContent=found?found.name:"⚡ ÖZEL MOD";
-    } else {
-        document.getElementById('strategy-name').textContent="⚡ FAST MODE";
-    }
+    
+    // Zoom ve pan sıfırlama
+    visibleCandlesCount = 60;
+    chartPanOffset = 0;
+    
     saveToMemory();
     syncParentTfUI();
     fetchTechnical();
@@ -1867,6 +1843,11 @@ function updateCoin(){
     currentCoin=v.includes("USDT")?v:v+"USDT";
     document.getElementById('coin-input').value=currentCoin;
     document.getElementById('display-symbol').textContent=currentCoin;
+    
+    // Zoom ve pan sıfırlama
+    visibleCandlesCount = 60;
+    chartPanOffset = 0;
+    
     saveToMemory(); fetchData();
 }
 
@@ -1947,6 +1928,7 @@ function resetMarketDataToZero() {
     resetBadge('pattern-marubozu-badge');
     resetBadge('pattern-trap-badge');
     resetBadge('pattern-awc-badge');
+    resetBadge('trend-change-badge');
     
     // Reset AWC Neural Predictor Card
     const dirLbl = document.getElementById('pred-direction-lbl');
@@ -2426,9 +2408,7 @@ async function fetchTechnical(isExplicit = false){
             parse(kAltRaw, 1),
             hAlt,
             lAlt,
-            cAlt,
-            regrChanVal,
-            {upper, lower}
+            cAlt
         );
         if (detectedTrap === "BEAR_TRAP") {
             setPatternBadge('pattern-trap-badge', true, "AYI TUZAĞI", "b-green");
@@ -2446,8 +2426,7 @@ async function fetchTechnical(isExplicit = false){
             cAlt,
             vAlt,
             atrVal,
-            atrMAVal,
-            obiVal
+            atrMAVal
         );
         if (detectedAWC === "AŞIRI_SATIM") {
             setPatternBadge('pattern-awc-badge', true, "AWC AŞIRI SATIM 🌌", "b-green");
@@ -2456,6 +2435,44 @@ async function fetchTechnical(isExplicit = false){
         } else {
             setPatternBadge('pattern-awc-badge', false);
         }
+
+
+        // ── TREND DEĞİŞİMİ TESPİT MOTORU ──────────────────────────────────────
+        const trendChangeResult = calcTrendChangeSignal(
+            parse(kAltRaw, 1), hAlt, lAlt, cAlt, vAlt
+        );
+        (function() {
+            const badge = document.getElementById('trend-change-badge');
+            const dot   = document.getElementById('trend-change-dot');
+            if (!badge || !dot) return;
+            const { signal, strength, reasons } = trendChangeResult;
+            if (signal === 'REVERSAL_UP') {
+                badge.textContent = '⬆️ DÖNÜŞ ' + strength + '%';
+                badge.className = 'ind-badge b-green';
+                dot.className = 'dot active';
+                badge.title = reasons.join(' | ');
+            } else if (signal === 'REVERSAL_DOWN') {
+                badge.textContent = '⬇️ DÖNÜŞ ' + strength + '%';
+                badge.className = 'ind-badge b-red';
+                dot.className = 'dot active';
+                badge.title = reasons.join(' | ');
+            } else if (signal === 'TREND_WEAKENING_UP') {
+                badge.textContent = '⚠️ YUKARİ ' + strength + '%';
+                badge.className = 'ind-badge b-gray';
+                dot.className = 'dot';
+                badge.title = reasons.join(' | ');
+            } else if (signal === 'TREND_WEAKENING_DOWN') {
+                badge.textContent = '⚠️ AŞAĞI ' + strength + '%';
+                badge.className = 'ind-badge b-gray';
+                dot.className = 'dot';
+                badge.title = reasons.join(' | ');
+            } else {
+                badge.textContent = 'TREND DEVAM';
+                badge.className = 'ind-badge b-gray';
+                dot.className = 'dot';
+                badge.title = '';
+            }
+        })();
 
         let altTFTrend = "NÖTR";
         if(stochRsiValue < 20 || bbStatus === "Bottom") {
@@ -2646,7 +2663,7 @@ function calcRSI(c,p=14){
     let g=[],l=[];
     for(let i=1;i<c.length;i++){const d=c[i]-c[i-1];g.push(Math.max(0,d));l.push(Math.max(0,-d));}
     let ag=g.slice(0,p).reduce((a,b)=>a+b)/p,al=l.slice(0,p).reduce((a,b)=>a+b)/p;
-    const r=new Array(p).fill(50);
+    const r=new Array(p + 1).fill(50);
     for(let i=p;i<g.length;i++){ag=((ag*(p-1))+g[i])/p;al=((al*(p-1))+l[i])/p;r.push(al===0?100:100-(100/(1+ag/al)));}
     return r;
 }
@@ -2838,14 +2855,19 @@ function detectCandlePatterns(opens, highs, lows, closes) {
     };
 }
 
-function detectTraps(opens, highs, lows, closes, regrChan, bb) {
-    if (closes.length < 3 || !regrChan || !bb) return null;
+function detectTraps(opens, highs, lows, closes) {
+    if (closes.length < 35) return null;
     
     const idx = closes.length - 2;
     const prevL = lows[idx];
     const prevH = highs[idx];
     const prevC = closes[idx];
     const prevO = opens[idx];
+    
+    // Geçmiş veriyi tamamlanan muma kadar kesip o indexteki Bollinger ve Regresyon sınırlarını hesapla
+    const sliceUpToIdx = closes.slice(0, idx + 1);
+    const bb = calcBB(sliceUpToIdx, 20, 2);
+    const regrChan = calcRegressionChannel(sliceUpToIdx, 30);
     
     const bbLower = bb.lower || 0;
     const bbUpper = bb.upper || 0;
@@ -2863,7 +2885,198 @@ function detectTraps(opens, highs, lows, closes, regrChan, bb) {
     return null;
 }
 
-function calcAntigravityWaveCore(opens, highs, lows, closes, volumes, atr, atrMA, obi) {
+
+// ═══════════════════════════════════════════════════════════════════════════
+// calcTrendChangeSignal — Erken Trend Değişimi Tespit Motoru
+// Döndürür: { signal, strength, reasons }
+//   signal  : "REVERSAL_UP" | "REVERSAL_DOWN" | "TREND_WEAKENING_UP" |
+//             "TREND_WEAKENING_DOWN" | "NONE"
+//   strength: 0-100 (kaç ipucu eşleşti)
+//   reasons : string[]
+// ═══════════════════════════════════════════════════════════════════════════
+function calcTrendChangeSignal(opens, highs, lows, closes, volumes) {
+    if (!closes || closes.length < 30) return { signal: "NONE", strength: 0, reasons: [] };
+    const n = closes.length;
+    const reasons = [];
+    let bullPoints = 0, bearPoints = 0;
+
+    // ── 1. MACD DIVERGENCE (Ağırlık: 25) ────────────────────────────────────
+    // Fiyat yeni dip yaparken MACD daha yüksek dip yapıyorsa → Bullish divergence (dönüş yukarı)
+    // Fiyat yeni zirve yaparken MACD daha düşük zirve yapıyorsa → Bearish divergence (dönüş aşağı)
+    const ema12s = calcEMA(closes, 12);
+    const ema26s = calcEMA(closes, 26);
+    const macdLine = ema12s.map((v, i) => v - (ema26s[i] || 0));
+    const sigLine  = calcEMA(macdLine.slice(Math.max(0, macdLine.length - 60)), 9);
+    const macdNow  = macdLine[n - 1];
+    const macdPrev = macdLine[n - 6] || macdNow; // 5 bar önce
+    const priceNow  = closes[n - 1];
+    const pricePrev = closes[n - 6] || priceNow;
+
+    // Bullish divergence: fiyat düştü ama MACD yükseldi
+    if (priceNow < pricePrev && macdNow > macdPrev && macdNow < 0) {
+        bullPoints += 25;
+        reasons.push("📈 MACD Bullish Divergence — fiyat düşüyor, MACD toparlanıyor");
+    }
+    // Bearish divergence: fiyat yükseldi ama MACD düştü
+    if (priceNow > pricePrev && macdNow < macdPrev && macdNow > 0) {
+        bearPoints += 25;
+        reasons.push("📉 MACD Bearish Divergence — fiyat yükseliyor, MACD zayıflıyor");
+    }
+
+    // ── 2. ADX — TREND GÜCÜ (Ağırlık: 20) ──────────────────────────────────
+    // ADX düşükse (<20) trend zayıflıyor, dönüş yakın olabilir
+    // Basit ADX: |+DI - -DI| / (+DI + -DI)
+    const atrSeries = calcATR(highs, lows, closes, 14);
+    const atr14 = atrSeries[n - 1] || 1;
+    // +DM ve -DM hesapla
+    let sumPDM = 0, sumNDM = 0, sumTR = 0;
+    const adxPeriod = Math.min(14, n - 2);
+    for (let i = n - adxPeriod; i < n; i++) {
+        const upMove   = highs[i] - highs[i - 1];
+        const downMove = lows[i - 1] - lows[i];
+        const tr = Math.max(highs[i] - lows[i], Math.abs(highs[i] - closes[i-1]), Math.abs(lows[i] - closes[i-1]));
+        sumPDM += (upMove > downMove && upMove > 0) ? upMove : 0;
+        sumNDM += (downMove > upMove && downMove > 0) ? downMove : 0;
+        sumTR  += tr;
+    }
+    const pDI = sumTR > 0 ? (sumPDM / sumTR) * 100 : 0;
+    const nDI = sumTR > 0 ? (sumNDM / sumTR) * 100 : 0;
+    const adx = (pDI + nDI) > 0 ? Math.abs(pDI - nDI) / (pDI + nDI) * 100 : 0;
+
+    if (adx < 20) {
+        // Trend zayıf → her iki yönde de zayıflama sinyali ver
+        const rsiSeries = calcRSI(closes, 14);
+        const rsi = rsiSeries[n - 1];
+        if (rsi > 55) {
+            bearPoints += 10;
+            reasons.push(`⚠️ ADX ${adx.toFixed(0)} — trend güçsüz, yukarı ivme kaybediyor`);
+        } else if (rsi < 45) {
+            bullPoints += 10;
+            reasons.push(`⚠️ ADX ${adx.toFixed(0)} — trend güçsüz, aşağı baskı azalıyor`);
+        }
+    } else if (adx > 25) {
+        // Güçlü trend — devam sinyali
+        if (pDI > nDI) {
+            bullPoints += 10;
+            reasons.push(`✅ ADX ${adx.toFixed(0)} — BOĞA trendi güçlü (+DI>${nDI.toFixed(0)})`);
+        } else {
+            bearPoints += 10;
+            reasons.push(`✅ ADX ${adx.toFixed(0)} — AYI trendi güçlü (-DI>${pDI.toFixed(0)})`);
+        }
+    }
+
+    // ── 3. PIVOT HIGH / LOW YAPISI (Ağırlık: 25) ────────────────────────────
+    // Son 20 barda Higher High + Higher Low → Bullish yapı
+    // Lower High + Lower Low → Bearish yapı
+    const lookback = Math.min(20, n - 1);
+    const recentHighs  = highs.slice(n - lookback);
+    const recentLows   = lows.slice(n - lookback);
+    const midpoint     = Math.floor(lookback / 2);
+
+    const firstHalfH   = Math.max(...recentHighs.slice(0, midpoint));
+    const secondHalfH  = Math.max(...recentHighs.slice(midpoint));
+    const firstHalfL   = Math.min(...recentLows.slice(0, midpoint));
+    const secondHalfL  = Math.min(...recentLows.slice(midpoint));
+
+    // Higher High + Higher Low
+    if (secondHalfH > firstHalfH && secondHalfL > firstHalfL) {
+        bullPoints += 15;
+        reasons.push("📊 Pivot Yapısı: HH + HL — Yükselen dip/tepe yapısı (BOĞA)");
+    }
+    // Lower High + Lower Low
+    else if (secondHalfH < firstHalfH && secondHalfL < firstHalfL) {
+        bearPoints += 15;
+        reasons.push("📊 Pivot Yapısı: LH + LL — Düşen dip/tepe yapısı (AYI)");
+    }
+    // Higher Low + Lower High → Sıkışma (daralan üçgen)
+    else if (secondHalfH < firstHalfH && secondHalfL > firstHalfL) {
+        // ADX ile beraber değerlendir
+        const bias = pDI > nDI ? "yukarı" : "aşağı";
+        reasons.push(`🔺 Daralan Üçgen — Sıkışma, kırılım bekleniyor (${bias} yönlü eğilim)`);
+    }
+
+    // ── 4. MOMENTUM HIZI DEĞİŞİMİ (Rate of Change) (Ağırlık: 15) ──────────
+    // 3-bar ROC vs 10-bar ROC — hız düşüyorsa trend yoruluyor
+    const roc3  = n > 3  ? ((closes[n-1] - closes[n-4])  / closes[n-4])  * 100 : 0;
+    const roc10 = n > 10 ? ((closes[n-1] - closes[n-11]) / closes[n-11]) * 100 : 0;
+
+    // Bullish ama hız düşüyor
+    if (roc10 > 0 && roc3 < roc10 * 0.3) {
+        bearPoints += 12;
+        reasons.push(`🐌 Momentum yavaşlıyor — 3-bar ROC (${roc3.toFixed(2)}%) << 10-bar ROC (${roc10.toFixed(2)}%)`);
+    }
+    // Bearish ama hız düşüyor (dip dönüşü)
+    if (roc10 < 0 && roc3 > roc10 * 0.3) {
+        bullPoints += 12;
+        reasons.push(`🚀 Düşüş hızı azalıyor — 3-bar ROC (${roc3.toFixed(2)}%) toparlanıyor`);
+    }
+
+    // ── 5. RSI DIVERGENCE (Ağırlık: 15) ────────────────────────────────────
+    const rsiSeries2 = calcRSI(closes, 14);
+    const rsiNow     = rsiSeries2[n - 1];
+    const rsiPrev5   = rsiSeries2[n - 6] || rsiNow;
+
+    // Bullish RSI divergence: fiyat düşüyor, RSI yükseliyor
+    if (closes[n-1] < closes[n-6] && rsiNow > rsiPrev5 && rsiNow < 50) {
+        bullPoints += 15;
+        reasons.push(`🔵 RSI Bullish Divergence — fiyat ${((closes[n-1]-closes[n-6])/closes[n-6]*100).toFixed(2)}% düştü, RSI toparlandı`);
+    }
+    // Bearish RSI divergence: fiyat yükseliyor, RSI düşüyor
+    if (closes[n-1] > closes[n-6] && rsiNow < rsiPrev5 && rsiNow > 50) {
+        bearPoints += 15;
+        reasons.push(`🔴 RSI Bearish Divergence — fiyat yükseldi, RSI ${rsiNow.toFixed(1)} geri çekildi`);
+    }
+
+    // ── 6. HACİM ONAYSIZ HAREKET (Ağırlık: 15) ──────────────────────────────
+    // Fiyat yükselirken hacim düşüyorsa → Bullish momentum sahte
+    const vol3avg = volumes.slice(n-4, n-1).reduce((a,b)=>a+b,0) / 3;
+    const vol10avg= volumes.slice(n-11, n-1).reduce((a,b)=>a+b,0) / 10;
+    const priceUp3  = closes[n-1] > closes[n-4];
+    const priceDown3= closes[n-1] < closes[n-4];
+
+    if (priceUp3 && vol3avg < vol10avg * 0.7) {
+        bearPoints += 12;
+        reasons.push(`📦 Hacim onaysız yükseliş — 3-bar ort. hacim, 10-bar ort. hacmin %${(vol3avg/vol10avg*100).toFixed(0)}'ı`);
+    }
+    if (priceDown3 && vol3avg < vol10avg * 0.7) {
+        bullPoints += 12;
+        reasons.push(`📦 Hacim onaysız düşüş — satış baskısı hafifliyor`);
+    }
+
+    // ── 7. BOLLINGER BAND GENİŞLEMESİ / SQUEEZE SONRASI KIRILIM (Ağırlık: 15)
+    const bbResult = checkBBSqueeze(closes, 20, Math.min(50, n));
+    const { isSqueeze, bandwidth } = bbResult;
+    const bb = calcBB(closes, 20, 2);
+    const bbRange = bb.upper - bb.lower;
+    const lastClose = closes[n-1];
+
+    if (!isSqueeze && bandwidth > 0) {
+        // Squeeze sonrası kırılım — yön belirle
+        if (lastClose > bb.upper * 0.999) {
+            bullPoints += 15;
+            reasons.push("💥 BB Kırılımı — Üst bant kırıldı, yukarı momentum hızlanıyor");
+        } else if (lastClose < bb.lower * 1.001) {
+            bearPoints += 15;
+            reasons.push("💥 BB Kırılımı — Alt bant kırıldı, aşağı momentum hızlanıyor");
+        }
+    }
+
+    // ── TOPLAM DEĞERLENDIRME ─────────────────────────────────────────────────
+    const totalPoints = bullPoints + bearPoints;
+    const maxPoints   = 115; // tüm ağırlıklar toplamı
+    const strength    = Math.round((Math.max(bullPoints, bearPoints) / maxPoints) * 100);
+
+    let signal = "NONE";
+    const diff = bullPoints - bearPoints;
+
+    if      (diff >= 30 && bullPoints >= 40)   signal = "REVERSAL_UP";
+    else if (diff <= -30 && bearPoints >= 40)   signal = "REVERSAL_DOWN";
+    else if (diff >= 15 && bullPoints >= 20)    signal = "TREND_WEAKENING_UP";
+    else if (diff <= -15 && bearPoints >= 20)   signal = "TREND_WEAKENING_DOWN";
+
+    return { signal, strength, bullPoints, bearPoints, reasons };
+}
+function calcAntigravityWaveCore(opens, highs, lows, closes, volumes, atr, atrMA) {
     if (closes.length < 30) return "NÖTR";
     
     // 1. Dynamic Volatility-Adjusted Stochastic Period
@@ -2920,10 +3133,10 @@ function calcAntigravityWaveCore(opens, highs, lows, closes, volumes, atr, atrMA
     const turnsUp = currFisher > prevFisher && prevFisher < -1.3;
     const turnsDown = currFisher < prevFisher && prevFisher > 1.3;
     
-    if (turnsUp && isOversold && isHighVolume && (obi > -0.15)) {
+    if (turnsUp && isOversold && isHighVolume) {
         return "AŞIRI_SATIM";
     }
-    if (turnsDown && isOverbought && isHighVolume && (obi < 0.15)) {
+    if (turnsDown && isOverbought && isHighVolume) {
         return "AŞIRI_ALIM";
     }
     return "NÖTR";
@@ -2954,132 +3167,209 @@ function predictNextCandle() {
 
 function predictCandleForTimeframe(timeframeName, opens, highs, lows, closes, volumes, canvasId, lblId) {
     if (!closes || closes.length < 35) return;
-    
     const lp = closes[closes.length - 1];
-    
-    // 1. REGRESSION SLOPE (Weight: 25)
-    // Measures the directional trend of the regression line.
-    const regr = calcRegressionChannel(closes, 35);
-    const slope = regr.slope || 0;
-    let regressionScore = 0;
-    if (slope > 0) regressionScore = 25;
-    else if (slope < 0) regressionScore = -25;
-    
-    // 2. EMA ALIGNMENT TREND (Weight: 20)
-    // Measures if the EMA 5/8/13 are aligned in a bullish or bearish stack.
-    const ema5S = calcEMA(closes, 5);
-    const ema8S = calcEMA(closes, 8);
-    const ema13S = calcEMA(closes, 13);
-    const ema5 = ema5S[ema5S.length - 1];
-    const ema8 = ema8S[ema8S.length - 1];
-    const ema13 = ema13S[ema13S.length - 1];
-    let emaScore = 0;
-    if (ema5 > ema8 && ema8 > ema13) {
-        emaScore = 20; // Bullish alignment
-    } else if (ema5 < ema8 && ema8 < ema13) {
-        emaScore = -20; // Bearish alignment
+    const n  = closes.length;
+
+    // Deterministic seed from price/volume fingerprint — no Math.random
+    function priceSeed(scale) {
+        const last5    = closes.slice(-5).reduce((a,b)=>a+b, 0);
+        const last5Vol = volumes.slice(-5).reduce((a,b)=>a+b, 0);
+        const raw = ((last5 + last5Vol * 0.0001) % 1 + 1) % 1;
+        return raw * scale;
     }
-    
-    // 3. RSI & STOCHRSI REVERSIONS (Weight: 25)
-    // Identifies extreme oversold/overbought conditions.
-    const rsiSeries = calcRSI(closes, 14);
-    const rsi = rsiSeries[rsiSeries.length - 1];
+
+    // 1. REGRESSION SLOPE (Weight: 22)
+    const regr     = calcRegressionChannel(closes, 35);
+    const slope    = regr.slope || 0;
+    const relSlope = slope / (lp || 1);
+    let regressionScore = 0;
+    if      (relSlope >  0.002)  regressionScore =  22;
+    else if (relSlope >  0.0005) regressionScore =  15;
+    else if (relSlope >  0)      regressionScore =   8;
+    else if (relSlope < -0.002)  regressionScore = -22;
+    else if (relSlope < -0.0005) regressionScore = -15;
+    else if (relSlope <  0)      regressionScore =  -8;
+
+    // 2. EMA TREND ALIGNMENT (Weight: 18)
+    const ema5S   = calcEMA(closes, 5);
+    const ema13S  = calcEMA(closes, 13);
+    const ema21S  = calcEMA(closes, 21);
+    const ema5    = ema5S[n - 1];
+    const ema13   = ema13S[n - 1];
+    const ema21   = ema21S[n - 1];
+    const ema5Prev  = ema5S[n - 2] || ema5;
+    const ema13Prev = ema13S[n - 2] || ema13;
+    let emaScore = 0;
+    if (ema5 > ema13 && ema13 > ema21) {
+        emaScore = (ema5 > ema5Prev && ema13 > ema13Prev) ? 18 : 12;
+    } else if (ema5 < ema13 && ema13 < ema21) {
+        emaScore = (ema5 < ema5Prev && ema13 < ema13Prev) ? -18 : -12;
+    } else if (ema5 > ema13) {
+        emaScore = 6;
+    } else if (ema5 < ema13) {
+        emaScore = -6;
+    }
+
+    // 3. MACD SIGNAL CROSS (Weight: 15)
+    const ema12S   = calcEMA(closes, 12);
+    const ema26S   = calcEMA(closes, 26);
+    const macdLine = ema12S.map((v, i) => v - (ema26S[i] || 0));
+    const sigRaw   = calcEMA(macdLine.slice(Math.max(0, macdLine.length - 60)), 9);
+    const macdCurr = macdLine[macdLine.length - 1];
+    const macdPrev = macdLine[macdLine.length - 2] || macdCurr;
+    const sigCurr  = sigRaw[sigRaw.length - 1];
+    const sigPrev  = sigRaw[sigRaw.length - 2] || sigCurr;
+    const histogram  = macdCurr - sigCurr;
+    const histPrev   = macdPrev - sigPrev;
+    let macdScore = 0;
+    if      (macdPrev < sigPrev && macdCurr >= sigCurr) macdScore =  15;
+    else if (macdPrev > sigPrev && macdCurr <= sigCurr) macdScore = -15;
+    else if (histogram > 0 && histogram > histPrev)     macdScore =   9;
+    else if (histogram < 0 && histogram < histPrev)     macdScore =  -9;
+    else if (histogram > 0)                             macdScore =   4;
+    else if (histogram < 0)                             macdScore =  -4;
+
+    // 4. RSI + STOCHRSI (Weight: 20)
+    const rsiSeries   = calcRSI(closes, 14);
+    const rsi         = rsiSeries[rsiSeries.length - 1];
+    const rsiPrev     = rsiSeries[rsiSeries.length - 2] || rsi;
     const stochSeries = calcStochRSI(rsiSeries, 14);
-    const stoch = stochSeries[stochSeries.length - 1];
+    const stoch       = stochSeries[stochSeries.length - 1];
+    const stochPrev   = stochSeries[stochSeries.length - 2] || stoch;
     let oscillatorScore = 0;
-    
-    // RSI thresholds
-    if (rsi < 30) oscillatorScore += 15; // Oversold support
-    else if (rsi > 70) oscillatorScore -= 15; // Overbought resistance
-    else if (rsi > 50) oscillatorScore += 5;
-    else if (rsi < 50) oscillatorScore -= 5;
-    
-    // Stochastic RSI thresholds
-    if (stoch < 20) oscillatorScore += 10;
-    else if (stoch > 80) oscillatorScore -= 10;
-    
-    // 4. BOLLINGER BANDS POSITIONING (Weight: 20)
-    // Identifies if price is squeezing or bouncing from outer bands.
-    const bb = calcBB(closes, 20, 2);
-    let bbScore = 0;
+    if      (rsi < 30) oscillatorScore += 12;
+    else if (rsi < 45) oscillatorScore += (rsi > rsiPrev ? 5 : -3);
+    else if (rsi > 70) oscillatorScore -= 12;
+    else if (rsi > 55) oscillatorScore += (rsi > rsiPrev ? 3 : -5);
+    if      (stoch < 20) oscillatorScore += 8;
+    else if (stoch > 80) oscillatorScore -= 8;
+    if      (stoch < 50 && stoch > stochPrev) oscillatorScore += 3;
+    else if (stoch > 50 && stoch < stochPrev) oscillatorScore -= 3;
+
+    // 5. BOLLINGER BAND POSITION + SQUEEZE (Weight: 15)
+    const bb      = calcBB(closes, 20, 2);
+    let bbScore   = 0;
     const bbRange = bb.upper - bb.lower;
     if (bbRange > 0) {
         const pct = (lp - bb.lower) / bbRange;
-        if (pct < 0.15) {
-            bbScore = 20; // Bouncing from lower band (bullish reversal)
-        } else if (pct > 0.85) {
-            bbScore = -20; // Bouncing from upper band (bearish reversal)
-        }
+        if      (pct < 0.10) bbScore =  15;
+        else if (pct < 0.25) bbScore =   9;
+        else if (pct > 0.90) bbScore = -15;
+        else if (pct > 0.75) bbScore =  -9;
     }
-    
-    // 5. SMC FAIR VALUE GAP (Weight: 15)
-    const localFvg = calcFVG(highs, lows);
-    let fvgScore = 0;
-    if (localFvg && localFvg.type === 'BOĞA') fvgScore = 15;
-    else if (localFvg && localFvg.type === 'AYI') fvgScore = -15;
-    
-    // 6. CANDLESTICK PATTERNS (Weight: 20)
+    const { isSqueeze } = checkBBSqueeze(closes, 20, Math.min(100, n));
+    if (isSqueeze) { bbScore += slope > 0 ? 5 : slope < 0 ? -5 : 0; }
+
+    // 6. VOLUME FLOW: CMF + OBV (Weight: 15)
+    const cmfSeries = calcCMF(highs, lows, closes, volumes, 21);
+    const cmf       = cmfSeries.length > 0 ? cmfSeries[cmfSeries.length - 1] : 0;
+    const cmfPrev   = cmfSeries.length > 1 ? cmfSeries[cmfSeries.length - 2] : 0;
+    const obvSeries = calcOBV(closes, volumes);
+    const obv       = obvSeries[obvSeries.length - 1];
+    const obvPrev   = obvSeries.length > 5 ? obvSeries[obvSeries.length - 6] : obv;
+    const obvTrend  = obv > obvPrev ? 1 : (obv < obvPrev ? -1 : 0);
+    let volumeFlowScore = 0;
+    if      (cmf >  0.15) volumeFlowScore += 9;
+    else if (cmf >  0.05) volumeFlowScore += 5;
+    else if (cmf < -0.15) volumeFlowScore -= 9;
+    else if (cmf < -0.05) volumeFlowScore -= 5;
+    if      (cmf > 0 && cmf > cmfPrev) volumeFlowScore += 3;
+    else if (cmf < 0 && cmf < cmfPrev) volumeFlowScore -= 3;
+    volumeFlowScore += obvTrend * 3;
+
+    // 7. CANDLESTICK PATTERNS (Weight: 18)
     const patterns = detectCandlePatterns(opens, highs, lows, closes);
     let patternScore = 0;
-    if (patterns.hammer) patternScore += 15;
-    if (patterns.shooting) patternScore -= 15;
-    if (patterns.engulfing === 'BOĞA') patternScore += 20;
-    else if (patterns.engulfing === 'AYI') patternScore -= 20;
-    
-    // 7. VOLUME AMPLIFICATION FORCE (Quant Multiplier)
-    // Strong volume confirms price action patterns and momentum signals.
-    const lastVol = volumes[volumes.length - 1] || 1;
+    if (patterns.hammer)                patternScore += 14;
+    if (patterns.shooting)              patternScore -= 14;
+    if (patterns.engulfing === '\u0042O\u011EA') patternScore += 18;
+    else if (patterns.engulfing === 'AYI') patternScore -= 18;
+    if (patterns.marubozu) {
+        patternScore += (closes[n-2] > opens[n-2]) ? 8 : -8;
+    }
+    if (patterns.doji) patternScore = Math.round(patternScore * 0.5);
+
+    // 8. SMC FAIR VALUE GAP (Weight: 12)
+    const localFvg = calcFVG(highs, lows);
+    let fvgScore = 0;
+    if      (localFvg && localFvg.type === '\u0042O\u011EA') fvgScore =  12;
+    else if (localFvg && localFvg.type === 'AYI')         fvgScore = -12;
+
+    // 9. MFI BONUS (+/-5)
+    const mfiSeries = calcMFI(highs, lows, closes, volumes, 14);
+    const mfi       = mfiSeries[mfiSeries.length - 1];
+    let mfiBonus = 0;
+    if      (mfi < 30) mfiBonus =  5;
+    else if (mfi > 70) mfiBonus = -5;
+
+    // 10. VOLUME SPIKE MULTIPLIER
+    const lastVol = volumes[n - 1] || 1;
     let avgVol = 0;
-    const volLookback = Math.min(volumes.length, 15);
-    for (let i = volumes.length - volLookback; i < volumes.length; i++) {
-        avgVol += volumes[i];
-    }
-    avgVol = avgVol / volLookback;
-    
-    // Volume Confirmation Factor
-    const hasVolumeConfirmation = lastVol > avgVol * 1.3;
-    
-    // Compile total base score
-    let totalScore = regressionScore + emaScore + oscillatorScore + bbScore + fvgScore + patternScore;
-    
-    // Volume Validation multiplier (1.4x) on active direction's momentum
-    if (hasVolumeConfirmation) {
-        totalScore = totalScore * 1.4;
-    }
-    
-    // Determine final direction and mathematically sound probability
-    const finalDirection = totalScore >= 0 ? "BULLISH" : "BEARISH";
-    const rawProb = Math.abs(totalScore);
-    // Probability scaled between 50% and 95%
-    const finalProbability = Math.round(50 + (rawProb / 150) * 45);
-    const clampedProb = Math.min(95, Math.max(52, finalProbability));
-    
-    // ATR-based expected target move range
-    const predOpen = lp;
+    const volLookback = Math.min(n, 20);
+    for (let i = n - volLookback; i < n; i++) avgVol += volumes[i];
+    avgVol /= volLookback;
+    const volRatio = lastVol / (avgVol || 1);
+    let volMultiplier = 1.0;
+    if      (volRatio > 2.0) volMultiplier = 1.50;
+    else if (volRatio > 1.5) volMultiplier = 1.30;
+    else if (volRatio > 1.2) volMultiplier = 1.15;
+    else if (volRatio < 0.5) volMultiplier = 0.80;
+
+    // COMPILE TOTAL SCORE
+    const baseScore = regressionScore + emaScore + macdScore + oscillatorScore +
+                      bbScore + volumeFlowScore + patternScore + fvgScore + mfiBonus;
+    let totalScore  = baseScore * volMultiplier;
+
+    // DIRECTION & PROBABILITY
+    const isNeutral = Math.abs(totalScore) < 15;
+    let finalDirection;
+    if      (isNeutral)      finalDirection = "NEUTRAL";
+    else if (totalScore > 0) finalDirection = "BULLISH";
+    else                     finalDirection = "BEARISH";
+
+    // Sigmoid (tanh) probability — score [-150,+150] maps to [51%,94%]
+    const absScore = Math.abs(totalScore);
+    const tanhVal  = Math.tanh(absScore / 60);
+    let finalProbability = Math.round(50 + 45 * tanhVal);
+    if (isNeutral) finalProbability = Math.round(45 + 10 * tanhVal);
+    finalProbability = isNeutral
+        ? Math.min(55, Math.max(40, finalProbability))
+        : Math.min(94, Math.max(51, finalProbability));
+
+    // PRICE TARGETS — ATR scales with conviction
+    const predOpen  = lp;
     const atrSeries = calcATR(highs, lows, closes, 14);
-    const atr = atrSeries[atrSeries.length - 1] || (lp * 0.005);
-    
-    // Probability weighting * ATR volatility dictates expected price targets
-    const expectedMove = (clampedProb / 100) * atr * 0.5;
+    const atr       = atrSeries[atrSeries.length - 1] || (lp * 0.005);
+    const convictionFactor = (Math.max(50, finalProbability) - 50) / 44; // 0..1
+    const expectedMove = atr * (0.30 + convictionFactor * 0.90);
     let predClose = predOpen;
-    if (finalDirection === "BULLISH") {
-        predClose = predOpen + expectedMove;
-    } else {
-        predClose = predOpen - expectedMove;
-    }
-    
-    // Create random but mathematically constrained shadows (wicks) based on ATR
-    const upperWick = atr * (0.10 + Math.random() * 0.15);
-    const lowerWick = atr * (0.10 + Math.random() * 0.15);
-    
-    const predHigh = Math.max(predOpen, predClose) + upperWick;
-    const predLow = Math.min(predOpen, predClose) - lowerWick;
-    
+    if      (finalDirection === "BULLISH") predClose = predOpen + expectedMove;
+    else if (finalDirection === "BEARISH") predClose = predOpen - expectedMove;
+    else predClose = predOpen + (slope > 0 ? atr * 0.05 : slope < 0 ? -atr * 0.05 : 0);
+
+    // DETERMINISTIC WICKS — derived from price fingerprint, not Math.random()
+    const wickSeed      = priceSeed(1); // stable 0..1
+    const upperWickMult = finalDirection === "BULLISH" ? 0.08 + wickSeed * 0.10
+                        : finalDirection === "BEARISH" ? 0.18 + wickSeed * 0.18
+                        : 0.10 + wickSeed * 0.12;
+    const lowerWickMult = finalDirection === "BULLISH" ? 0.16 + wickSeed * 0.18
+                        : finalDirection === "BEARISH" ? 0.07 + wickSeed * 0.10
+                        : 0.10 + wickSeed * 0.12;
+    const upperWick = atr * upperWickMult;
+    const lowerWick = atr * lowerWickMult;
+    const predHigh  = Math.max(predOpen, predClose) + upperWick;
+    const predLow   = Math.min(predOpen, predClose) - lowerWick;
+
+    // LABEL
     const candleLbl = document.getElementById(lblId);
     if (candleLbl) {
-        candleLbl.innerHTML = `${timeframeName} <span style="font-family:'Space Mono',monospace; font-size: 0.78rem; color:${finalDirection === 'BULLISH' ? 'var(--green)' : 'var(--red)'}; font-weight:800;">(${clampedProb}%)</span>`;
+        let color, probTxt;
+        if      (finalDirection === 'BULLISH') { color = 'var(--green)'; probTxt = finalProbability + '%'; }
+        else if (finalDirection === 'BEARISH') { color = 'var(--red)';   probTxt = finalProbability + '%'; }
+        else                                   { color = '#a1a1aa';      probTxt = 'KARARSIZ'; }
+        candleLbl.innerHTML = timeframeName + ' <span style="font-family:\'Space Mono\',monospace; font-size: 0.78rem; color:' + color + '; font-weight:800;">(' + probTxt + ')</span>';
     }
-    
+
     drawPredictedCandleOnCanvas(predOpen, predHigh, predLow, predClose, finalDirection, canvasId);
 }
 
@@ -3087,32 +3377,33 @@ function drawPredictedCandleOnCanvas(o, h, l, c, dir, canvasId) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
     
+    // Yüksek DPI (Retina) Ekranlar için Çözünürlük Ayarı (High-DPI Scaling)
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    
+    // Canvas dahili çözünürlüğünü DPR ile ölçeklendir
+    canvas.width = (rect.width || 26) * dpr;
+    canvas.height = (rect.height || 32) * dpr;
+    
     const ctx = canvas.getContext('2d');
-    const w = canvas.width;
-    const hCanvas = canvas.height;
+    ctx.save();
+    ctx.scale(dpr, dpr); // Çizimleri DPR oranında ölçeklendir
+    
+    const w = rect.width || 26;
+    const hCanvas = rect.height || 32;
     
     ctx.clearRect(0, 0, w, hCanvas);
-    
-    const padX = 8;
-    const padY = 4;
-    const chartW = w - 2 * padX;
+    const padX = 8, padY = 4;
     const chartH = hCanvas - 2 * padY;
-    
-    const minP = l;
-    const maxP = h;
+    const minP = l, maxP = h;
     const range = maxP - minP;
-    
     const getY = (price) => padY + chartH - ((price - minP) / (range === 0 ? 1 : range)) * chartH;
     const x = w / 2;
-    
-    const yOpen = getY(o);
-    const yClose = getY(c);
-    const yHigh = getY(h);
-    const yLow = getY(l);
-    
-    const isBull = dir === "BULLISH";
-    const color = isBull ? '#10b981' : '#f43f5e';
-    const glow = isBull ? 'rgba(16, 185, 129, 0.4)' : 'rgba(244, 63, 94, 0.4)';
+    const yOpen = getY(o), yClose = getY(c), yHigh = getY(h), yLow = getY(l);
+    const isBull    = dir === "BULLISH";
+    const isNeutral = dir === "NEUTRAL";
+    const color = isNeutral ? '#a1a1aa' : (isBull ? '#10b981' : '#f43f5e');
+    const glow  = isNeutral ? 'rgba(161,161,170,0.3)' : (isBull ? 'rgba(16,185,129,0.4)' : 'rgba(244,63,94,0.4)');
     
     ctx.strokeStyle = color;
     ctx.lineWidth = 1.25;
@@ -3122,32 +3413,26 @@ function drawPredictedCandleOnCanvas(o, h, l, c, dir, canvasId) {
     ctx.stroke();
     
     ctx.fillStyle = color;
-    ctx.shadowBlur = 5;
+    ctx.shadowBlur = isNeutral ? 3 : 5;
     ctx.shadowColor = glow;
-    
-    const bodyW = 8;
-    const bodyH = Math.max(3, Math.abs(yClose - yOpen));
+    const bodyW = isNeutral ? 6 : 8;
+    const bodyH = Math.max(isNeutral ? 2 : 3, Math.abs(yClose - yOpen));
     const bodyY = Math.min(yOpen, yClose);
     
-    ctx.roundRect = ctx.roundRect || function (x, y, w, h, r) {
-        if (w < 2 * r) r = w / 2;
-        if (h < 2 * r) r = h / 2;
+    ctx.roundRect = ctx.roundRect || function(rx, ry, rw, rh, rr) {
+        if (rw < 2*rr) rr = rw/2; if (rh < 2*rr) rr = rh/2;
         this.beginPath();
-        this.moveTo(x+r, y);
-        this.arcTo(x+w, y, x+w, y+h, r);
-        this.arcTo(x+w, y+h, x, y+h, r);
-        this.arcTo(x, y+h, x, y, r);
-        this.arcTo(x, y, x+w, y, r);
-        this.closePath();
-        return this;
+        this.moveTo(rx+rr,ry); this.arcTo(rx+rw,ry,rx+rw,ry+rh,rr);
+        this.arcTo(rx+rw,ry+rh,rx,ry+rh,rr); this.arcTo(rx,ry+rh,rx,ry,rr);
+        this.arcTo(rx,ry,rx+rw,ry,rr); this.closePath(); return this;
     };
-    
     ctx.beginPath();
     ctx.roundRect(x - bodyW / 2, bodyY, bodyW, bodyH, 1.5);
     ctx.fill();
-    
     ctx.shadowBlur = 0;
+    ctx.restore();
 }
+
 
 function updateCycle(){
     const now=new Date();
@@ -3173,6 +3458,19 @@ function runAgent(){
         
         const rBox=document.getElementById('agent-reasoning');
         rBox.innerHTML=`<strong>PİYASA YATAY.</strong><br>Üst TF (${ustTF}) üzerinde net bir trend dizilimi yok. Trend hizalanması gerçekleşene kadar bekleyin.`;
+        // Trend Değişimi uyarısını agent reasoning kutusuna ekle
+        (function() {
+            if (typeof trendChangeResult !== 'undefined' &&
+                (trendChangeResult.signal === 'REVERSAL_UP' || trendChangeResult.signal === 'REVERSAL_DOWN')) {
+                const rBox2 = document.getElementById('agent-reasoning');
+                if (rBox2 && trendChangeResult.reasons.length > 0) {
+                    const color = trendChangeResult.signal === 'REVERSAL_UP' ? 'var(--green)' : 'var(--red)';
+                    const arrow = trendChangeResult.signal === 'REVERSAL_UP' ? '⬆️' : '⬇️';
+                    rBox2.innerHTML += '<br><hr style="border-color:rgba(255,255,255,0.08);margin:6px 0"><span style="color:' + color + ';font-weight:700">' + arrow + ' TREND DEĞİŞİMİ (' + trendChangeResult.strength + '%):</span><br>' + trendChangeResult.reasons.slice(0, 3).join('<br>');
+                }
+            }
+        })();
+
         
         const banner=document.getElementById('signal-banner');
         banner.innerHTML=`<div class="signal-title-sm">⏳ YATAY PİYASA</div><div class="signal-title-lg">BEKLENİYOR</div><div class="signal-sub">Üst TF trend uyumu yok.</div>`;
@@ -3267,7 +3565,7 @@ function runAgent(){
     const long_htfRsiOk = htfRsiVal > 50;
     const long_patternOk = (candlePatterns.hammer || candlePatterns.engulfing === 'BOĞA');
     const long_trapOk = (detectedTrap === "BEAR_TRAP");
-    const long_awcOk = (detectedAWC === "AŞIRI_SATIM");
+    const long_awcOk = (detectedAWC === "AŞIRI_SATIM") && (obiVal > -0.15);
 
     // SHORT (SATIM) KOŞULLARI
     const short_stochOk = stochRsiValue > 80;
@@ -3302,7 +3600,7 @@ function runAgent(){
     const short_htfRsiOk = htfRsiVal < 50;
     const short_patternOk = (candlePatterns.shooting || candlePatterns.engulfing === 'AYI');
     const short_trapOk = (detectedTrap === "BULL_TRAP");
-    const short_awcOk = (detectedAWC === "AŞIRI_ALIM");
+    const short_awcOk = (detectedAWC === "AŞIRI_ALIM") && (obiVal < 0.15);
 
     const hammerOk = activeStrategyMode === 'trend' ? (lastMode === 'LONG' && candlePatterns.hammer) : candlePatterns.hammer;
     const shootingOk = activeStrategyMode === 'trend' ? (lastMode === 'SHORT' && candlePatterns.shooting) : candlePatterns.shooting;
@@ -3367,11 +3665,27 @@ function runAgent(){
         if (isIndEnabled('toggle-pattern-awc'))  catD_items.push(awc ? 1 : 0);
         const catD = catScore(catD_items);
 
-        const layer2Score = (catA * 0.25) + (catB * 0.20) + (catC * 0.30) + (catD * 0.25);
+        // --- DİNAMİK AĞIRLIK NORMALİZASYONU ---
+        const activeWeights = {
+            A: catA_items.length > 0 ? 0.25 : 0,
+            B: catB_items.length > 0 ? 0.20 : 0,
+            C: catC_items.length > 0 ? 0.30 : 0,
+            D: catD_items.length > 0 ? 0.25 : 0
+        };
+        const totalWeight = activeWeights.A + activeWeights.B + activeWeights.C + activeWeights.D;
+        
+        let layer2Score = 0;
+        if (totalWeight > 0) {
+            layer2Score = (catA * activeWeights.A + catB * activeWeights.B + catC * activeWeights.C + catD * activeWeights.D) / totalWeight;
+        }
 
-        // Katman 3: Konfluans Bonusu
-        const confirmedCats = [catA, catB, catC, catD].filter(c => c >= 0.5).length;
-        const confluenceBonus = confirmedCats / 4;
+        // Katman 3: Konfluans Bonusu (Sadece aktif olan kategoriler üzerinden dinamik olarak hesaplanır)
+        const activeCatsCount = [catA_items, catB_items, catC_items, catD_items].filter(items => items.length > 0).length;
+        const confirmedCats = [catA, catB, catC, catD].filter((c, idx) => {
+            const keys = ['A', 'B', 'C', 'D'];
+            return activeWeights[keys[idx]] > 0 && c >= 0.5;
+        }).length;
+        const confluenceBonus = activeCatsCount > 0 ? (confirmedCats / activeCatsCount) : 0;
 
         let score = 0;
         if (gatePass) {
@@ -3397,7 +3711,7 @@ function runAgent(){
 
         return {
             score,
-            catA, catB, catC, catD, confirmedCats
+            catA, catB, catC, catD, confirmedCats: confirmedCats
         };
     };
 
@@ -3617,7 +3931,7 @@ function saveToMemory(){
     localStorage.setItem('cm_sound',isSoundEnabled);
     localStorage.setItem('cm_notify',isNotificationEnabled);
     localStorage.setItem('cm_threshold',matchThreshold);
-    localStorage.setItem('cm_profile', document.getElementById('profile-select').value);
+    localStorage.setItem('cm_combo', document.getElementById('combo-select').value);
     localStorage.setItem('cm_strategy_mode', document.getElementById('strategy-mode-select').value);
     
     // Arka planla senkronize et
@@ -3684,15 +3998,13 @@ function loadFromMemory(){
     activeStrategyMode = sm;
 
     document.getElementById('display-symbol').textContent=currentCoin;
-    const savedProfile = localStorage.getItem('cm_profile');
-    if (savedProfile === 'fast') {
-        document.getElementById('profile-select').value = 'fast';
-        document.getElementById('strategy-name').textContent = '⚡ FAST MODE';
-    } else {
-        const found=Object.values(profiles).find(p=>p.alt===altTF&&p.orta===ortaTF&&p.ust===ustTF);
-        document.getElementById('profile-select').value=found?Object.keys(profiles).find(key=>profiles[key]===found):"custom";
-        document.getElementById('strategy-name').textContent=found?found.name:"⚙️ ÖZEL MOD";
+    const savedCombo = localStorage.getItem('cm_combo') || 'hybrid';
+    const comboSelect = document.getElementById('combo-select');
+    if (comboSelect) {
+        comboSelect.value = savedCombo;
     }
+    const strategyNames = { hybrid: "⚡ HİBRİT MOD", reversal: "🔄 REVERSAL MOD", trend: "📈 TREND MODU", all: "🌟 TÜM GÖSTERGELER", custom: "⚙️ ÖZEL MOD" };
+    document.getElementById('strategy-name').textContent = strategyNames[savedCombo] || "⚙️ ÖZEL MOD";
     
     // Load dynamic indicators states
     const cbBBVal = localStorage.getItem('cm_cb_bb');
@@ -3848,15 +4160,6 @@ function autoScaleTimeframes(baseTF) {
         if (altSelect) altSelect.value = altTF;
         if (ortaSelect) ortaSelect.value = ortaTF;
         if (ustSelect) ustSelect.value = ustTF;
-        
-        const currentProfile = document.getElementById('profile-select').value;
-        if (currentProfile !== 'fast') {
-            const found=Object.values(profiles).find(p=>p.alt===altTF&&p.orta===ortaTF&&p.ust===ustTF);
-            document.getElementById('profile-select').value=found?Object.keys(profiles).find(key=>profiles[key]===found):"custom";
-            document.getElementById('strategy-name').textContent=found?found.name:("⚙️ ÖZEL MOD");
-        } else {
-            document.getElementById('strategy-name').textContent="⚡ FAST MODE";
-        }
     }
 }
 
@@ -3864,6 +4167,10 @@ function setParentTimeframe(val) {
     chartTF = val;
     localStorage.setItem('cm_chart_tf', chartTF);
     syncParentTfUI();
+    
+    // Zoom ve pan sıfırlama
+    visibleCandlesCount = 60;
+    chartPanOffset = 0;
     
     // Auto scale analysis timeframes
     autoScaleTimeframes(chartTF);
@@ -4730,6 +5037,7 @@ function setupChartListeners() {
     }
     
     const onWheel = (e) => {
+        if (e.deltaY === 0) return; // Yatay kaydırmalarda zoom tetiklenmesin
         e.preventDefault();
         
         const zoomFactor = e.deltaY > 0 ? 1 : -1;
@@ -4803,6 +5111,12 @@ function toggleTechInd(id) {
     if (el) {
         localStorage.setItem('cm_' + id, el.checked);
         updateRowVisual(id, el.checked);
+    }
+    const comboSelect = document.getElementById('combo-select');
+    if (comboSelect) {
+        comboSelect.value = 'custom';
+        localStorage.setItem('cm_combo', 'custom');
+        document.getElementById('strategy-name').textContent = "⚙️ ÖZEL MOD";
     }
     runAgent();
 }
