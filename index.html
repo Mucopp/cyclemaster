@@ -179,31 +179,31 @@
         .coin-input {
             flex:1; background:rgba(255, 255, 255, 0.02);
             border:1.5px solid var(--border);
-            border-radius:12px; padding:0 14px;
+            border-radius:10px; padding:0 10px;
             color:var(--text); font-family:'Space Mono',monospace;
-            font-size:0.9rem; font-weight:700;
-            outline:none; height:44px;
+            font-size:0.84rem; font-weight:700;
+            outline:none; height:36px;
             text-transform:uppercase;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .coin-input:focus { 
             border-color:var(--blue); 
             background: rgba(59, 130, 246, 0.03);
-            box-shadow: 0 0 16px rgba(59, 130, 246, 0.15);
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.15);
         }
         .analyze-btn {
             background:linear-gradient(135deg,var(--blue),#1d4ed8);
-            border:none; border-radius:12px;
-            padding:0 20px; color:#fff;
+            border:none; border-radius:10px;
+            padding:0 14px; color:#fff;
             font-family:'Space Grotesk',sans-serif;
-            font-weight:700; font-size:0.8rem;
-            cursor:pointer; height:44px;
-            box-shadow:0 4px 18px rgba(59,130,246,0.3);
+            font-weight:700; font-size:0.78rem;
+            cursor:pointer; height:36px;
+            box-shadow:0 3px 14px rgba(59,130,246,0.3);
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             white-space:nowrap;
         }
         .analyze-btn:hover { 
-            box-shadow:0 4px 24px rgba(59,130,246,0.45);
+            box-shadow:0 4px 20px rgba(59,130,246,0.45);
             transform: translateY(-1px);
         }
         .analyze-btn:active { transform:translateY(1px); }
@@ -883,12 +883,12 @@
         .refresh-btn {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 0 16px; color: var(--text);
+            border-radius: 10px;
+            padding: 0 12px; color: var(--text);
             font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700; font-size: 0.8rem;
-            cursor: pointer; height: 44px;
-            display: flex; align-items: center; justify-content: center; gap: 6px;
+            font-weight: 700; font-size: 0.78rem;
+            cursor: pointer; height: 36px;
+            display: flex; align-items: center; justify-content: center; gap: 5px;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             white-space: nowrap;
         }
@@ -907,12 +907,174 @@
         }
         .refresh-icon {
             display: inline-block;
-            font-size: 1rem;
+            font-size: 0.85rem;
             line-height: 1;
             transition: transform 0.2s ease;
         }
         .refresh-icon.spinning {
             animation: spin 0.8s linear;
+        }
+
+        /* WATCHLIST STYLES */
+        .watchlist-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 8px 10px;
+            margin-top: 2px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.24);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+        }
+
+        .watchlist-card:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .watchlist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .watchlist-title {
+            font-size: 0.64rem;
+            font-weight: 700;
+            color: var(--text2);
+            letter-spacing: 1px;
+            font-family: 'Space Grotesk', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .watchlist-count {
+            font-size: 0.64rem;
+            color: var(--text3);
+            font-weight: 500;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .watchlist-items {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .watchlist-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 6px 10px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .watchlist-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.08);
+            transform: translateX(4px);
+        }
+
+        .watchlist-item.active {
+            background: rgba(59, 130, 246, 0.04);
+            border-color: rgba(59, 130, 246, 0.35);
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .watchlist-coin-name {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .watchlist-item-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .watchlist-badge {
+            font-size: 0.62rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            text-align: center;
+            min-width: 42px;
+            display: inline-block;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .watchlist-badge.badge-wait {
+            background: rgba(245, 158, 11, 0.12);
+            color: var(--gold);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+        }
+
+        .watchlist-badge.badge-buy {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--green);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        .watchlist-badge.badge-sell {
+            background: rgba(244, 63, 94, 0.12);
+            color: var(--red);
+            border: 1px solid rgba(244, 63, 94, 0.25);
+        }
+
+        .watchlist-delete {
+            font-size: 0.7rem;
+            color: var(--text3);
+            cursor: pointer;
+            transition: color 0.2s, transform 0.2s;
+            padding: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .watchlist-delete:hover {
+            color: var(--red);
+            transform: scale(1.15);
+        }
+
+        .watchlist-item-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .watchlist-market-data {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+        }
+
+        .watchlist-item-price {
+            color: var(--text2);
+            font-weight: 500;
+        }
+
+        .watchlist-item-change {
+            font-weight: 700;
+        }
+
+        .watchlist-item-change.up {
+            color: var(--green);
+        }
+
+        .watchlist-item-change.dn {
+            color: var(--red);
         }
     </style>
 </head>
@@ -927,13 +1089,20 @@
                 onkeydown="if(event.key==='Enter'){updateCoin();this.blur()}"
                 onfocus="if(this.value==='Sembol Bulunamadı'){this.value=''}"
                 autocomplete="off" autocorrect="off" spellcheck="false" placeholder="BTCUSDT">
-            <button class="analyze-btn" onclick="updateCoin()">▶ Takip</button>
+            <button class="analyze-btn" onclick="addToWatchlist()">+ Takip</button>
             <button class="refresh-btn" onclick="refreshDataWithAnimation(this)">
                 <span class="refresh-icon">↻</span>
             </button>
         </div>
 
-        <div class="market-hero">
+        <!-- TAKİP LİSTESİ -->
+        <div id="watchlist-card" class="watchlist-card">
+            <div id="watchlist-items" class="watchlist-items">
+                <!-- Watchlist items will be rendered dynamically -->
+            </div>
+        </div>
+
+        <div class="market-hero" style="display: none;">
             <div class="market-top">
                 <div class="market-brand">
                     <span class="market-symbol" id="display-symbol">BTCUSDT</span>
@@ -2035,6 +2204,11 @@ async function fetchPrice(isExplicit = false){
         el.className='price-pill '+(c>=0?'up':'dn');
         document.getElementById('h24').textContent=parseFloat(t.high24h).toLocaleString('tr-TR');
         document.getElementById('l24').textContent=parseFloat(t.low24h).toLocaleString('tr-TR');
+        
+        // CANLI GÜNCELLEME: Takip listesindeki fiyat ve % değişimi güncelle
+        if (typeof updateWatchlistPriceAndChange === 'function') {
+            updateWatchlistPriceAndChange(currentCoin, p, c);
+        }
     }catch(e){ 
         console.error("fetchPrice error:", e);
         if (isExplicit) handleInvalidSymbol();
@@ -4139,6 +4313,12 @@ function runAgent(){
         banner.innerHTML=`<div class="signal-title-sm">⏳ ŞARTLAR</div><div class="signal-title-lg">BEKLENİYOR</div><div class="signal-sub">Güven skoru: ${score}%</div>`;
         banner.className='signal-banner signal-wait';
     }
+
+    // Takip listesindeki canlı sembol sinyalini anlık güncelle
+    if (typeof updateWatchlistItemSignal === 'function') {
+        const liveSignal = (score >= matchThreshold) ? (activeDir === 'LONG' ? 'AL' : 'SAT') : 'BEKLE';
+        updateWatchlistItemSignal(currentCoin, liveSignal);
+    }
 }
 
 function saveToMemory(){
@@ -5441,7 +5621,233 @@ function openChartPopup() {
     }
 }
 
+// ==========================================
+// PREMIUM WATCHLIST (TAKİP LİSTESİ) SİSTEMİ
+// ==========================================
+let watchlist = [];
+
+function initWatchlist() {
+    const stored = localStorage.getItem('cm_watchlist');
+    if (stored) {
+        try {
+            watchlist = JSON.parse(stored);
+        } catch (e) {
+            watchlist = [];
+        }
+    } else {
+        // Varsayılan premium başlangıç sembolleri (Ekran görüntüsüyle tam uyumlu)
+        watchlist = [
+            { symbol: "WLDUSDT", signal: "BEKLE", price: 0, change: 0 },
+            { symbol: "PIUSDT", signal: "BEKLE", price: 0, change: 0 }
+        ];
+        saveWatchlist();
+    }
+    renderWatchlist();
+    
+    // Arka plan sinyal güncelleme döngüsünü başlat (OKX isteklerini yormamak için gecikmeli)
+    setTimeout(startWatchlistSignalUpdates, 8000);
+}
+
+function saveWatchlist() {
+    localStorage.setItem('cm_watchlist', JSON.stringify(watchlist));
+}
+
+function formatWatchlistSymbol(symbol) {
+    if (symbol.endsWith("USDT")) {
+        return symbol.substring(0, symbol.length - 4) + "-USDT";
+    }
+    return symbol;
+}
+
+function formatPrice(p) {
+    if (!p) return "—";
+    return p > 1 ? p.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 4 }) : p.toFixed(6);
+}
+
+function formatChange(c) {
+    if (c === undefined || c === null) return "";
+    return (c >= 0 ? "+" : "") + c.toFixed(2) + "%";
+}
+
+function renderWatchlist() {
+    const container = document.getElementById('watchlist-items');
+    const countEl = document.getElementById('watchlist-count');
+    if (!container) return;
+    
+    if (countEl) countEl.textContent = `${watchlist.length} coin`;
+    
+    container.innerHTML = '';
+    watchlist.forEach(item => {
+        const isActive = (item.symbol === currentCoin);
+        const formattedSymbol = formatWatchlistSymbol(item.symbol);
+        
+        let badgeClass = 'badge-wait';
+        if (item.signal === 'AL') badgeClass = 'badge-buy';
+        if (item.signal === 'SAT') badgeClass = 'badge-sell';
+        
+        const priceStr = formatPrice(item.price);
+        const changeStr = formatChange(item.change);
+        const changeClass = (item.change >= 0) ? 'up' : 'dn';
+        
+        const row = document.createElement('div');
+        row.className = `watchlist-item ${isActive ? 'active' : ''}`;
+        row.onclick = () => loadCoinFromWatchlist(item.symbol);
+        
+        row.innerHTML = `
+            <div class="watchlist-item-left">
+                <div class="watchlist-coin-name">${formattedSymbol}</div>
+                <div class="watchlist-market-data">
+                    <span class="watchlist-item-price">${priceStr}</span>
+                    <span class="watchlist-item-change ${changeClass}">${changeStr}</span>
+                </div>
+            </div>
+            <div class="watchlist-item-right">
+                <span class="watchlist-badge ${badgeClass}">${item.signal}</span>
+                <span class="watchlist-delete" onclick="removeFromWatchlist('${item.symbol}', event)">✕</span>
+            </div>
+        `;
+        container.appendChild(row);
+    });
+}
+
+function addToWatchlist() {
+    let inputEl = document.getElementById('coin-input');
+    if (!inputEl) return;
+    let symbol = inputEl.value.toUpperCase().trim();
+    symbol = symbol.replace("SEMBOL BULUNAMADI", "").replace("SEMBOL", "").replace("BULUNAMADI", "").trim();
+    if (!symbol) return;
+    
+    let cleanSymbol = symbol.includes("USDT") ? symbol : symbol + "USDT";
+    cleanSymbol = cleanSymbol.replace("-", "");
+    
+    const exists = watchlist.some(x => x.symbol === cleanSymbol);
+    if (!exists) {
+        watchlist.push({ symbol: cleanSymbol, signal: "BEKLE", price: 0, change: 0 });
+        saveWatchlist();
+        renderWatchlist();
+        showToast('Takip Listesi', `${formatWatchlistSymbol(cleanSymbol)} listeye eklendi.`);
+    } else {
+        showToast('Takip Listesi', `${formatWatchlistSymbol(cleanSymbol)} zaten takip ediliyor.`);
+    }
+    
+    // Coini yükle
+    inputEl.value = cleanSymbol;
+    updateCoin();
+}
+
+function removeFromWatchlist(symbol, event) {
+    if (event) event.stopPropagation(); // Satıra tıklayıp yüklemeyi önle
+    watchlist = watchlist.filter(x => x.symbol !== symbol);
+    saveWatchlist();
+    renderWatchlist();
+    showToast('Takip Listesi', `${formatWatchlistSymbol(symbol)} listeden çıkarıldı.`);
+}
+
+function loadCoinFromWatchlist(symbol) {
+    let inputEl = document.getElementById('coin-input');
+    if (inputEl) {
+        inputEl.value = symbol;
+        updateCoin();
+        renderWatchlist();
+    }
+}
+
+function updateWatchlistItemSignal(symbol, signal) {
+    const item = watchlist.find(x => x.symbol === symbol);
+    if (item && item.signal !== signal) {
+        item.signal = signal;
+        saveWatchlist();
+        renderWatchlist();
+    }
+}
+
+function updateWatchlistPriceAndChange(symbol, price, change) {
+    const item = watchlist.find(x => x.symbol === symbol);
+    if (item) {
+        if (item.price !== price || item.change !== change) {
+            item.price = price;
+            item.change = change;
+            saveWatchlist();
+            renderWatchlist();
+        }
+    }
+}
+
+function updateWatchlistAllData(symbol, price, change, signal) {
+    const item = watchlist.find(x => x.symbol === symbol);
+    if (item) {
+        if (item.price !== price || item.change !== change || item.signal !== signal) {
+            item.price = price;
+            item.change = change;
+            item.signal = signal;
+            saveWatchlist();
+            renderWatchlist();
+        }
+    }
+}
+
+let watchlistUpdateIdx = 0;
+async function startWatchlistSignalUpdates() {
+    setInterval(async () => {
+        if (watchlist.length === 0) return;
+        
+        // Sıradaki pasif coini seç (Aktif analiz edilen coini atla)
+        watchlistUpdateIdx = (watchlistUpdateIdx + 1) % watchlist.length;
+        const item = watchlist[watchlistUpdateIdx];
+        if (item.symbol === currentCoin) return;
+        
+        try {
+            // OKX üzerinden anlık fiyat ve 24h yüzde değişimi al
+            const okxSymbol = item.symbol.replace("USDT","-USDT");
+            const tickerRes = await fetch(`https://www.okx.com/api/v5/market/ticker?instId=${okxSymbol}`);
+            const tickerData = await tickerRes.json();
+            
+            let price = item.price || 0;
+            let change = item.change || 0;
+            
+            if (tickerData.code === "0" && tickerData.data && tickerData.data.length > 0) {
+                const t = tickerData.data[0];
+                price = parseFloat(t.last);
+                const open = parseFloat(t.open24h);
+                change = ((price - open) / open) * 100;
+            }
+            
+            // OKX üzerinden son 30 mumu çek (hızlı ve hafif analiz)
+            const klines = await fetchOKXKlines(item.symbol, altTF, 30);
+            let signal = item.signal || "BEKLE";
+            
+            if (klines && klines.length >= 14) {
+                const parse = (k, idx) => k.map(x => parseFloat(x[idx]));
+                const closes = parse(klines, 4);
+                
+                const rsiSeries = calcRSI(closes, 14);
+                const rsiVal = rsiSeries[rsiSeries.length - 1];
+                
+                const ema9Series = calcEMA(closes, 9);
+                const ema21Series = calcEMA(closes, 21);
+                
+                const ema9 = ema9Series[ema9Series.length - 1];
+                const ema21 = ema21Series[ema21Series.length - 1];
+                
+                if (rsiVal > 53 && ema9 > ema21) {
+                    signal = "AL";
+                } else if (rsiVal < 47 && ema9 < ema21) {
+                    signal = "SAT";
+                } else {
+                    signal = "BEKLE";
+                }
+            }
+            
+            updateWatchlistAllData(item.symbol, price, change, signal);
+            
+        } catch (e) {
+            console.warn("Watchlist background signal update error for " + item.symbol, e);
+        }
+    }, 15000); // 15 saniyede bir tek bir pasif coini analiz eder
+}
+
 loadFromMemory();
+initWatchlist();
 
 // Arama kutusu odaklanma, tıklama veya tuş basımı durumunda hata mesajını temizle
 const coinInput = document.getElementById('coin-input');
