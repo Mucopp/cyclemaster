@@ -1123,6 +1123,7 @@
                 <div class="cond-row"><div class="cond-icon no" id="cond-pattern-marubozu">·</div><span class="cond-text" id="cond-pattern-marubozu-text">Marubozu bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-pattern-trap">·</div><span class="cond-text" id="cond-pattern-trap-text">Boğa/Ayı Tuzağı bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-pattern-awc">·</div><span class="cond-text" id="cond-pattern-awc-text">Antigravity Wave Core (AWC) bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-pattern-sao">·</div><span class="cond-text" id="cond-pattern-sao-text">SAO Akış Sinyali bekleniyor</span></div>
             </div>
         </div>
     </div>
@@ -1211,7 +1212,11 @@
                 <div class="ind-left"><input type="checkbox" id="toggle-pattern-awc" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="pattern-awc-dot" class="dot"></div><span class="ind-name">Antigravity Wave Core (AWC) 🌌</span></div>
                 <div class="ind-right"><span class="ind-badge b-gray" id="pattern-awc-badge">YOK</span></div>
             </label>
-                        <label class="ind-row" style="cursor: pointer;">
+            <label class="ind-row" style="cursor: pointer;">
+                <div class="ind-left"><input type="checkbox" id="toggle-pattern-sao" checked onchange="toggleTechInd(this.id)" style="display: none;"><div id="pattern-sao-dot" class="dot"></div><span class="ind-name">Sentetik Akış Oranlaması (SAO) 🔵</span></div>
+                <div class="ind-right"><span class="ind-badge b-gray" id="pattern-sao-badge">YOK</span></div>
+            </label>
+            <label class="ind-row" style="cursor: pointer;">
                 <div class="ind-left"><div id="trend-change-dot" class="dot"></div><span class="ind-name">Trend Değişimi Tespiti ⚡</span></div>
                 <div class="ind-right"><span class="ind-badge b-gray" id="trend-change-badge">BEKLİYOR</span></div>
             </label>
@@ -1511,7 +1516,7 @@ async function unsubscribePush() {
 let currentCoin="BTCUSDT", altTF="5m", ortaTF="15m", ustTF="1h", lastMode=null, activeStrategyMode="hybrid";
 let matchThreshold=65;
 let chartTF="5m";
-let detectedTrap = null, detectedAWC = null;
+let detectedTrap = null, detectedAWC = null, detectedSAO = null;
 let rsiValue=50, stochRsiValue=50, bbStatus="Mid";
 let ema5Val=0, ema8Val=0, ema13Val=0;
 let ema5OrtaVal=0, ema8OrtaVal=0, ema13OrtaVal=0;
@@ -1724,7 +1729,7 @@ function applyIndicatorCombo() {
         'toggle-atr', 'toggle-vwap-sapma', 'toggle-regr-slope', 'toggle-mom5', 
         'toggle-squeeze', 'toggle-obi', 'toggle-fvg', 'toggle-htf-ema', 'toggle-htf-rsi',
         'toggle-pattern-hammer', 'toggle-pattern-shooting', 'toggle-pattern-doji',
-        'toggle-pattern-engulfing', 'toggle-pattern-marubozu', 'toggle-pattern-trap', 'toggle-pattern-awc'
+        'toggle-pattern-engulfing', 'toggle-pattern-marubozu', 'toggle-pattern-trap', 'toggle-pattern-awc', 'toggle-pattern-sao'
     ];
     
     const comboConfigs = {
@@ -1743,7 +1748,8 @@ function applyIndicatorCombo() {
             'toggle-pattern-trap': true,
             'toggle-pattern-hammer': true,
             'toggle-pattern-shooting': true,
-            'toggle-pattern-engulfing': true
+            'toggle-pattern-engulfing': true,
+            'toggle-pattern-sao': true
         },
         reversal: {
             'toggle-stoch': true,
@@ -1752,6 +1758,7 @@ function applyIndicatorCombo() {
             'toggle-regr-chan': true,
             'toggle-pattern-awc': true,
             'toggle-pattern-trap': true,
+            'toggle-pattern-sao': true,
             'toggle-pattern-hammer': true,
             'toggle-pattern-shooting': true,
             'toggle-pattern-doji': true,
@@ -1918,7 +1925,7 @@ function resetMarketDataToZero() {
     resetDot('obv-dot'); resetDot('mfi-dot'); resetDot('mom-dot'); resetDot('regr-chan-dot'); resetDot('liq-dot');
     resetDot('atr-dot'); resetDot('vwap-sapma-dot'); resetDot('regr-slope-dot'); resetDot('mom5-dot');
     resetDot('squeeze-dot'); resetDot('obi-dot'); resetDot('fvg-dot'); resetDot('htf-ema-dot'); resetDot('htf-rsi-dot');
-    resetDot('pattern-trap-dot'); resetDot('pattern-awc-dot');
+    resetDot('pattern-trap-dot'); resetDot('pattern-awc-dot'); resetDot('pattern-sao-dot');
     
     const resetBadge = (id) => {
         const item = document.getElementById(id);
@@ -1933,7 +1940,7 @@ function resetMarketDataToZero() {
     resetBadge('pattern-engulfing-badge');
     resetBadge('pattern-marubozu-badge');
     resetBadge('pattern-trap-badge');
-    resetBadge('pattern-awc-badge');
+    resetBadge('pattern-awc-badge'); resetBadge('pattern-sao-badge');
     resetBadge('trend-change-badge');
     
     // Reset AWC Neural Predictor Card
@@ -2440,6 +2447,25 @@ async function fetchTechnical(isExplicit = false){
             setPatternBadge('pattern-awc-badge', true, "AWC AŞIRI ALIM 🌌", "b-red");
         } else {
             setPatternBadge('pattern-awc-badge', false);
+        }
+
+        // 9.7 SAO — Sentetik Akış Oranlaması
+        detectedSAO = calcSAO(parse(kAltRaw, 1), hAlt, lAlt, cAlt, vAlt);
+        {
+            const s   = detectedSAO.signal;
+            const pct = detectedSAO.strength;
+            const isBuy  = s.includes("BİRİKİM");
+            const isSell = s.includes("DAĞITIM");
+            const strong = s.startsWith("GÜÇLÜ");
+            if (isBuy) {
+                setPatternBadge('pattern-sao-badge', true,
+                    (strong ? "⚡ GÜÇLÜ " : "") + `BİRİKİM ${pct}% 🔵`, "b-green");
+            } else if (isSell) {
+                setPatternBadge('pattern-sao-badge', true,
+                    (strong ? "⚡ GÜÇLÜ " : "") + `DAĞITIM ${pct}% 🔴`, "b-red");
+            } else {
+                setPatternBadge('pattern-sao-badge', false);
+            }
         }
 
 
@@ -3153,6 +3179,164 @@ function calcAntigravityWaveCore(opens, highs, lows, closes, volumes, atr, atrMA
     return "NÖTR";
 }
 
+// ════════════════════════════════════════════════════════════════════════════
+// SAO — SENTETİK AKIŞ ORANLAMASI (Synthetic Aggregate Order Flow)
+// ════════════════════════════════════════════════════════════════════════════
+// OHLCV verisinden her mumun alım/satım baskısını hesaplar, 20-bar kümülatif
+// delta serisi oluşturur, sonra 3 katmanlı analiz uygular:
+//
+//  Katman 1 — Delta Yaklaşımı (DY):
+//    Bir mumun kaçta kaçı alım, kaçta kaçı satım baskısıyla kapandığını
+//    high-low range içindeki kapanış pozisyonundan tahmin eder.
+//    Boğa mum: delta = +((close-low)/(high-low)) × hacim
+//    Ayı  mum: delta = -((high-close)/(high-low)) × hacim
+//
+//  Katman 2 — Fiyat-Delta Diverjansı (FDD):
+//    Fiyat yukarı gidip kümülatif delta aşağı iniyorsa → gizli dağıtım (SHORT)
+//    Fiyat aşağı gidip kümülatif delta yukarı çıkıyorsa → gizli birikim (LONG)
+//
+//  Katman 3 — Wick Emilim Modeli (WEM):
+//    Güçlü ters fitil + yüksek hacim + belirli kapanış pozisyonu
+//    piyasa yapımcılarının emirleri emdiğini gösterir.
+//
+//  Sonuç: "GİZLİ_BIRIKIM" | "GİZLİ_DAĞITIM" | "NÖTR"
+//  Bonus koşul: diverjans VE emilim aynı anda onaylanırsa "GÜÇLÜ" prefix
+// ════════════════════════════════════════════════════════════════════════════
+function calcSAO(opens, highs, lows, closes, volumes) {
+    const n = closes.length;
+    if (n < 35) return { signal: "NÖTR", strength: 0, details: {} };
+
+    // ── Katman 1: Her mum için delta tahmini ────────────────────────────────
+    const PERIOD  = 20;   // Kümülatif delta penceresi
+    const delta   = new Array(n).fill(0);
+
+    for (let i = 0; i < n; i++) {
+        const h = highs[i], l = lows[i], c = closes[i], v = volumes[i] || 0;
+        const range = h - l;
+        if (range < 1e-10) { delta[i] = 0; continue; }
+        // Mum içinde alım baskısı oranı: kapanışın alt fitilden uzaklığı / toplam fitil
+        const buyRatio  = (c - l) / range;   // 1.0 → tamamı alım, 0.0 → tamamı satım
+        delta[i] = (buyRatio - 0.5) * 2 * v; // [-v, +v] aralığına normalize et
+    }
+
+    // ── Kümülatif delta serisi (rolling 20 bar) ─────────────────────────────
+    const cumDelta = new Array(n).fill(0);
+    for (let i = PERIOD - 1; i < n; i++) {
+        let sum = 0;
+        for (let j = i - PERIOD + 1; j <= i; j++) sum += delta[j];
+        cumDelta[i] = sum;
+    }
+
+    // ── Katman 2: Fiyat-Delta Diverjansı ────────────────────────────────────
+    // Son PERIOD bar boyunca fiyat ve cumDelta lineer trendlerini karşılaştır
+    const DIVPERIOD = 14;
+    const i0 = n - 1;  // son bar
+
+    // Fiyat eğimi (son 14 bar)
+    let sumXY_p = 0, sumX = 0, sumX2 = 0, sumY_p = 0;
+    let sumXY_d = 0, sumY_d = 0;
+    for (let k = 0; k < DIVPERIOD; k++) {
+        const idx = i0 - (DIVPERIOD - 1 - k);
+        if (idx < 0) continue;
+        const x = k;
+        sumX   += x;
+        sumX2  += x * x;
+        sumXY_p += x * closes[idx];
+        sumY_p  += closes[idx];
+        sumXY_d += x * cumDelta[idx];
+        sumY_d  += cumDelta[idx];
+    }
+    const N      = DIVPERIOD;
+    const denom  = N * sumX2 - sumX * sumX;
+    const slopeP = denom !== 0 ? (N * sumXY_p - sumX * sumY_p) / denom : 0;
+    const slopeD = denom !== 0 ? (N * sumXY_d - sumX * sumY_d) / denom : 0;
+
+    // Normalize: aynı birim üzerinden yön karşılaştırması
+    const priceMean = sumY_p / N;
+    const deltaMean = sumY_d / N || 1;
+    const normSlopeP = priceMean  !== 0 ? slopeP / Math.abs(priceMean)  : 0;
+    const normSlopeD = deltaMean !== 0 ? slopeD / Math.abs(Math.abs(deltaMean) || 1) : 0;
+
+    // Diverjans tespiti: yönler zıt ve her ikisi de anlamlı
+    const pTrending = Math.abs(normSlopeP) > 0.0008;
+    const dTrending = Math.abs(normSlopeD) > 0.0008;
+    const diverging  = pTrending && dTrending && (normSlopeP * normSlopeD < 0);
+    // Gizli birikim: fiyat ↓, delta ↑
+    const hiddenAccum = diverging && normSlopeP < 0 && normSlopeD > 0;
+    // Gizli dağıtım: fiyat ↑, delta ↓
+    const hiddenDist  = diverging && normSlopeP > 0 && normSlopeD < 0;
+
+    // ── Katman 3: Wick Emilim Modeli ────────────────────────────────────────
+    // Son 3 kapanmış mumun ortalama hacmini baz al
+    const avgVol3 = (volumes[i0-1] + volumes[i0-2] + volumes[i0-3]) / 3 || 1;
+
+    // Boğa emilimi: uzun alt fitil + yüksek hacim + üst yarıda kapanış
+    function isBullAbsorption(i) {
+        const h = highs[i], l = lows[i], c = closes[i], o = opens[i], v = volumes[i];
+        const range = h - l;
+        if (range < 1e-10) return false;
+        const lowerWick = Math.min(o, c) - l;
+        const upperClose = (c - l) / range;       // kapanış, range içinde ne kadar yukarıda
+        return (lowerWick / range > 0.45)          // alt fitilin range'in %45'inden uzun
+            && (upperClose > 0.55)                 // üst yarıda kapanmış
+            && (v > avgVol3 * 1.2);                // ortalama hacmin %20 üstünde
+    }
+
+    // Ayı emilimi: uzun üst fitil + yüksek hacim + alt yarıda kapanış
+    function isBearAbsorption(i) {
+        const h = highs[i], l = lows[i], c = closes[i], o = opens[i], v = volumes[i];
+        const range = h - l;
+        if (range < 1e-10) return false;
+        const upperWick = h - Math.max(o, c);
+        const lowerClose = (h - c) / range;        // kapanış, range içinde ne kadar aşağıda
+        return (upperWick / range > 0.45)
+            && (lowerClose > 0.55)
+            && (v > avgVol3 * 1.2);
+    }
+
+    // Son 3 kapanmış mumda emilim ara
+    const bullAbsorb = isBullAbsorption(i0-1) || isBullAbsorption(i0-2) || isBullAbsorption(i0-3);
+    const bearAbsorb = isBearAbsorption(i0-1) || isBearAbsorption(i0-2) || isBearAbsorption(i0-3);
+
+    // ── Güç Skoru (0-100) ───────────────────────────────────────────────────
+    // Diverjansın gücü: normalize eğim farkı
+    const divStrength = diverging ? Math.min(100, Math.round(
+        Math.abs(normSlopeP - normSlopeD) * 15000
+    )) : 0;
+
+    // ── Nihai Karar ─────────────────────────────────────────────────────────
+    let signal   = "NÖTR";
+    let strength = 0;
+    let prefix   = "";
+
+    if (hiddenAccum || bullAbsorb) {
+        const bothConfirmed = hiddenAccum && bullAbsorb;
+        prefix   = bothConfirmed ? "GÜÇLÜ_" : "";
+        signal   = prefix + "GİZLİ_BİRİKİM";
+        strength = bothConfirmed ? Math.max(divStrength, 50) + 20 : Math.max(divStrength, 30);
+    } else if (hiddenDist || bearAbsorb) {
+        const bothConfirmed = hiddenDist && bearAbsorb;
+        prefix   = bothConfirmed ? "GÜÇLÜ_" : "";
+        signal   = prefix + "GİZLİ_DAĞITIM";
+        strength = bothConfirmed ? Math.max(divStrength, 50) + 20 : Math.max(divStrength, 30);
+    }
+
+    strength = Math.min(100, strength);
+
+    return {
+        signal,
+        strength,
+        details: {
+            slopePrice: normSlopeP.toFixed(5),
+            slopeDelta: normSlopeD.toFixed(5),
+            diverging,
+            bullAbsorb,
+            bearAbsorb,
+            cumDeltaLast: Math.round(cumDelta[i0])
+        }
+    };
+}
+
 async function fetchOKXOrderBook(symbol) {
     try {
         const okxSymbol = symbol.replace("USDT", "-USDT");
@@ -3538,7 +3722,7 @@ function runAgent(){
         resetDot('obv-dot'); resetDot('mfi-dot'); resetDot('mom-dot'); resetDot('regr-chan-dot'); resetDot('liq-dot');
         resetDot('atr-dot'); resetDot('vwap-sapma-dot'); resetDot('regr-slope-dot'); resetDot('mom5-dot');
         resetDot('squeeze-dot'); resetDot('obi-dot'); resetDot('fvg-dot'); resetDot('htf-ema-dot'); resetDot('htf-rsi-dot');
-        resetDot('pattern-trap-dot'); resetDot('pattern-awc-dot');
+        resetDot('pattern-trap-dot'); resetDot('pattern-awc-dot'); resetDot('pattern-sao-dot');
         return;
     }
 
@@ -3613,6 +3797,12 @@ function runAgent(){
     const short_trapOk = (detectedTrap === "BULL_TRAP");
     const short_awcOk = (detectedAWC === "AŞIRI_ALIM") && (obiVal < 0.15);
 
+    // SAO — Sentetik Akış Oranlaması koşulları
+    const saoSig     = detectedSAO ? detectedSAO.signal   : "NÖTR";
+    const saoStr     = detectedSAO ? detectedSAO.strength : 0;
+    const long_saoOk  = saoSig.includes("BİRİKİM") && saoStr >= 30;
+    const short_saoOk = saoSig.includes("DAĞITIM")  && saoStr >= 30;
+
     const hammerOk = activeStrategyMode === 'trend' ? (lastMode === 'LONG' && candlePatterns.hammer) : candlePatterns.hammer;
     const shootingOk = activeStrategyMode === 'trend' ? (lastMode === 'SHORT' && candlePatterns.shooting) : candlePatterns.shooting;
     const dojiOk = candlePatterns.doji;
@@ -3638,7 +3828,7 @@ function runAgent(){
     // Kategori Puanı Hesaplama
     const catScore = (items) => items.length > 0 ? items.reduce((a,b)=>a+b,0) / items.length : 0;
 
-    const calculateDirectionScore = (gatePass, stoch, bb, rsi, ema, vwap, obv, mfi, mom, regrChan, liq, atr, vwapSapma, regrSlope, mom5, squeeze, obi, fvg, htfRsi, pattern, trap, awc, isTrendAligned, mlAligned) => {
+    const calculateDirectionScore = (gatePass, stoch, bb, rsi, ema, vwap, obv, mfi, mom, regrChan, liq, atr, vwapSapma, regrSlope, mom5, squeeze, obi, fvg, htfRsi, pattern, trap, awc, isTrendAligned, mlAligned, sao) => {
         // Kategori A: Momentum (%25 ağırlık)
         const catA_items = [];
         if (isIndEnabled('toggle-stoch'))  catA_items.push(stoch ? 1 : 0);
@@ -3674,13 +3864,7 @@ function runAgent(){
         if (isIndEnabled('toggle-atr'))     catD_items.push(atr     ? 1 : 0);
         if (isIndEnabled('toggle-pattern-trap')) catD_items.push(trap ? 1 : 0);
         if (isIndEnabled('toggle-pattern-awc'))  catD_items.push(awc ? 1 : 0);
-        // ML sinyali: model hazırsa ve NÖTR değilse Kategori D'ye dahil et
-        const mlReady = typeof window._mlIsReady === 'function' && window._mlIsReady();
-        const mlConf  = typeof window._mlGetConfidence === 'function' ? window._mlGetConfidence() : 0;
-        const mlStrongEnough = mlReady && mlConf >= 30;   // En az %65+ veya %35- güven
-        if (mlStrongEnough) {
-            catD_items.push(mlAligned ? 1 : 0);
-        }
+        if (isIndEnabled('toggle-pattern-sao'))  catD_items.push(sao ? 1 : 0);
         const catD = catScore(catD_items);
 
         // --- DİNAMİK AĞIRLIK NORMALİZASYONU ---
@@ -3724,15 +3908,10 @@ function runAgent(){
                 score += 20;
             }
 
-            // Derin Öğrenme Bonus / Ceza (±12 puan)
-            // Sadece model hazır ve yeterli güven varsa uygula
-            if (mlStrongEnough) {
-                const mlBonus = Math.round((mlConf / 100) * 12);   // Güvene orantılı, max +12
-                if (mlAligned) {
-                    score += mlBonus;          // Sistem yönünü destekliyor → bonus
-                } else {
-                    score -= mlBonus;          // Sisteme karşı → ceza
-                }
+            // SAO Güçlü Sinyal Bonusu (+10 normal, +18 güçlü)
+            if (isIndEnabled('toggle-pattern-sao') && sao) {
+                const saoBonus = (detectedSAO && detectedSAO.signal.startsWith("GÜÇLÜ")) ? 18 : 10;
+                score += saoBonus;
             }
             
             score = Math.min(100, Math.max(0, score));
@@ -3744,21 +3923,16 @@ function runAgent(){
         };
     };
 
-    // ML yönünü al (model hazır değilse 'NÖTR' döner)
-    const mlDir = typeof window._mlGetDir === 'function' ? window._mlGetDir() : 'NÖTR';
-    const long_mlAligned  = mlDir === 'LONG';
-    const short_mlAligned = mlDir === 'SHORT';
-
     const longRes = calculateDirectionScore(
         long_gate, long_stochOk, long_bbOk, long_rsiOk, long_emaOk, long_vwapOk, long_obvOk, long_mfiOk, long_momOk, long_regrChanOk, long_liqOk,
         long_atrOk, long_vwapSapmaOk, long_regrSlopeOk, long_mom5Ok, long_squeezeOk, long_obiOk, long_fvgOk, long_htfRsiOk, long_patternOk, long_trapOk, long_awcOk,
-        lastMode === 'LONG', long_mlAligned
+        lastMode === 'LONG', (typeof window._mlGetDir === 'function' && window._mlGetDir() === 'LONG'), long_saoOk
     );
 
     const shortRes = calculateDirectionScore(
         short_gate, short_stochOk, short_bbOk, short_rsiOk, short_emaOk, short_vwapOk, short_obvOk, short_mfiOk, short_momOk, short_regrChanOk, short_liqOk,
         short_atrOk, short_vwapSapmaOk, short_regrSlopeOk, short_mom5Ok, short_squeezeOk, short_obiOk, short_fvgOk, short_htfRsiOk, short_patternOk, short_trapOk, short_awcOk,
-        lastMode === 'SHORT', short_mlAligned
+        lastMode === 'SHORT', (typeof window._mlGetDir === 'function' && window._mlGetDir() === 'SHORT'), short_saoOk
     );
 
     // En Yüksek Puan Alan Yönü Seç (Eşitlik/yakınlık durumunda makro trendi koru)
@@ -3777,6 +3951,7 @@ function runAgent(){
     const vwapOk = activeDir === 'LONG' ? long_vwapOk : short_vwapOk;
     const trapOk = activeDir === 'LONG' ? long_trapOk : short_trapOk;
     const awcOk = activeDir === 'LONG' ? long_awcOk : short_awcOk;
+    const saoOk = activeDir === 'LONG' ? long_saoOk : short_saoOk;
     const obvOk = activeDir === 'LONG' ? long_obvOk : short_obvOk;
     const mfiOk = activeDir === 'LONG' ? long_mfiOk : short_mfiOk;
     const momOk = activeDir === 'LONG' ? long_momOk : short_momOk;
@@ -3845,17 +4020,10 @@ function runAgent(){
     if(isIndEnabled('toggle-pattern-awc') && awcOk) {
         reasons.push(`🌌 ✓ Güçlü AWC Osilatör Dönüş Onayı (+20% Bonus)`);
     }
-    // ML durumu
-    const mlReadyNow = typeof window._mlIsReady === 'function' && window._mlIsReady();
-    const mlConfNow  = typeof window._mlGetConfidence === 'function' ? window._mlGetConfidence() : 0;
-    if (mlReadyNow && mlConfNow >= 30) {
-        const mlDirNow = typeof window._mlGetDir === 'function' ? window._mlGetDir() : 'NÖTR';
-        const mlAlignedNow = (activeDir === 'LONG' && mlDirNow === 'LONG') || (activeDir === 'SHORT' && mlDirNow === 'SHORT');
-        if (mlAlignedNow) {
-            reasons.push(`🧠 ✓ Derin Öğrenme sistem yönünü destekliyor (+${Math.round(mlConfNow/100*12)} puan)`);
-        } else if (mlDirNow !== 'NÖTR') {
-            reasons.push(`🧠 ✗ Derin Öğrenme KARŞI yön gösteriyor (−${Math.round(mlConfNow/100*12)} puan)`);
-        }
+    if(isIndEnabled('toggle-pattern-sao') && saoOk) {
+        const saoBonusAmt = (detectedSAO && detectedSAO.signal.startsWith("GÜÇLÜ")) ? 18 : 10;
+        const saoLabel    = (detectedSAO && detectedSAO.signal.startsWith("GÜÇLÜ")) ? "⚡ GÜÇLÜ " : "";
+        reasons.push(`🔵 ✓ ${saoLabel}SAO Gizli ${activeDir==='LONG'?'Birikim':'Dağıtım'} Tespiti (+${saoBonusAmt} Bonus)`);
     }
 
     const rBox=document.getElementById('agent-reasoning');
@@ -3915,6 +4083,10 @@ function runAgent(){
     setC('cond-pattern-marubozu','cond-pattern-marubozu-text',marubozuOk,marubozuOk?'Marubozu Hacimli Gövde Onayı ✓':'Marubozu şartı yok');
     setC('cond-pattern-trap','cond-pattern-trap-text',trapOk,trapOk?(activeDir==='LONG'?'Ayı Tuzağı (Bear Trap) Yakalandı! ⚠️ ✓':'Boğa Tuzağı (Bull Trap) Yakalandı! ⚠️ ✓'):'Tuzak şartı yok');
     setC('cond-pattern-awc','cond-pattern-awc-text',awcOk,awcOk?'AWC Dönüş Çekirdeği Onaylandı! 🌌 ✓':'AWC Dönüşü bekleniyor');
+    setC('cond-pattern-sao','cond-pattern-sao-text',saoOk,
+        saoOk
+            ? `SAO: ${detectedSAO&&detectedSAO.signal.startsWith('GÜÇLÜ')?'⚡ GÜÇLÜ ':''} ${activeDir==='LONG'?'Gizli Birikim':'Gizli Dağıtım'} Onayı 🔵 ✓`
+            : 'SAO Akış Sinyali yok');
 
     const updateDot = (id, ok) => {
         const el = document.getElementById(id);
@@ -3941,6 +4113,7 @@ function runAgent(){
     updateDot('htf-rsi-dot', htfRsiOk);
     updateDot('pattern-trap-dot', trapOk);
     updateDot('pattern-awc-dot', awcOk);
+    updateDot('pattern-sao-dot', saoOk);
 
     const banner=document.getElementById('signal-banner');
     if(score>=matchThreshold){
@@ -4067,7 +4240,7 @@ function loadFromMemory(){
         'toggle-atr', 'toggle-vwap-sapma', 'toggle-regr-slope', 'toggle-mom5', 
         'toggle-squeeze', 'toggle-obi', 'toggle-fvg', 'toggle-htf-ema', 'toggle-htf-rsi',
         'toggle-pattern-hammer', 'toggle-pattern-shooting', 'toggle-pattern-doji',
-        'toggle-pattern-engulfing', 'toggle-pattern-marubozu', 'toggle-pattern-trap', 'toggle-pattern-awc'
+        'toggle-pattern-engulfing', 'toggle-pattern-marubozu', 'toggle-pattern-trap', 'toggle-pattern-awc', 'toggle-pattern-sao'
     ];
     techToggles.forEach(id => {
         const val = localStorage.getItem('cm_' + id);
