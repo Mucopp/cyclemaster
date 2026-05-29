@@ -3638,7 +3638,7 @@ function runAgent(){
     // Kategori Puanı Hesaplama
     const catScore = (items) => items.length > 0 ? items.reduce((a,b)=>a+b,0) / items.length : 0;
 
-    const calculateDirectionScore = (gatePass, stoch, bb, rsi, ema, vwap, obv, mfi, mom, regrChan, liq, atr, vwapSapma, regrSlope, mom5, squeeze, obi, fvg, htfRsi, pattern, trap, awc, isTrendAligned) => {
+    const calculateDirectionScore = (gatePass, stoch, bb, rsi, ema, vwap, obv, mfi, mom, regrChan, liq, atr, vwapSapma, regrSlope, mom5, squeeze, obi, fvg, htfRsi, pattern, trap, awc, isTrendAligned, mlAligned) => {
         // Kategori A: Momentum (%25 ağırlık)
         const catA_items = [];
         if (isIndEnabled('toggle-stoch'))  catA_items.push(stoch ? 1 : 0);
@@ -3674,6 +3674,13 @@ function runAgent(){
         if (isIndEnabled('toggle-atr'))     catD_items.push(atr     ? 1 : 0);
         if (isIndEnabled('toggle-pattern-trap')) catD_items.push(trap ? 1 : 0);
         if (isIndEnabled('toggle-pattern-awc'))  catD_items.push(awc ? 1 : 0);
+        // ML sinyali: model hazırsa ve NÖTR değilse Kategori D'ye dahil et
+        const mlReady = typeof window._mlIsReady === 'function' && window._mlIsReady();
+        const mlConf  = typeof window._mlGetConfidence === 'function' ? window._mlGetConfidence() : 0;
+        const mlStrongEnough = mlReady && mlConf >= 30;   // En az %65+ veya %35- güven
+        if (mlStrongEnough) {
+            catD_items.push(mlAligned ? 1 : 0);
+        }
         const catD = catScore(catD_items);
 
         // --- DİNAMİK AĞIRLIK NORMALİZASYONU ---
@@ -3716,6 +3723,17 @@ function runAgent(){
             if (isIndEnabled('toggle-pattern-awc') && awc) {
                 score += 20;
             }
+
+            // Derin Öğrenme Bonus / Ceza (±12 puan)
+            // Sadece model hazır ve yeterli güven varsa uygula
+            if (mlStrongEnough) {
+                const mlBonus = Math.round((mlConf / 100) * 12);   // Güvene orantılı, max +12
+                if (mlAligned) {
+                    score += mlBonus;          // Sistem yönünü destekliyor → bonus
+                } else {
+                    score -= mlBonus;          // Sisteme karşı → ceza
+                }
+            }
             
             score = Math.min(100, Math.max(0, score));
         }
@@ -3726,16 +3744,21 @@ function runAgent(){
         };
     };
 
+    // ML yönünü al (model hazır değilse 'NÖTR' döner)
+    const mlDir = typeof window._mlGetDir === 'function' ? window._mlGetDir() : 'NÖTR';
+    const long_mlAligned  = mlDir === 'LONG';
+    const short_mlAligned = mlDir === 'SHORT';
+
     const longRes = calculateDirectionScore(
         long_gate, long_stochOk, long_bbOk, long_rsiOk, long_emaOk, long_vwapOk, long_obvOk, long_mfiOk, long_momOk, long_regrChanOk, long_liqOk,
         long_atrOk, long_vwapSapmaOk, long_regrSlopeOk, long_mom5Ok, long_squeezeOk, long_obiOk, long_fvgOk, long_htfRsiOk, long_patternOk, long_trapOk, long_awcOk,
-        lastMode === 'LONG'
+        lastMode === 'LONG', long_mlAligned
     );
 
     const shortRes = calculateDirectionScore(
         short_gate, short_stochOk, short_bbOk, short_rsiOk, short_emaOk, short_vwapOk, short_obvOk, short_mfiOk, short_momOk, short_regrChanOk, short_liqOk,
         short_atrOk, short_vwapSapmaOk, short_regrSlopeOk, short_mom5Ok, short_squeezeOk, short_obiOk, short_fvgOk, short_htfRsiOk, short_patternOk, short_trapOk, short_awcOk,
-        lastMode === 'SHORT'
+        lastMode === 'SHORT', short_mlAligned
     );
 
     // En Yüksek Puan Alan Yönü Seç (Eşitlik/yakınlık durumunda makro trendi koru)
@@ -3821,6 +3844,18 @@ function runAgent(){
     }
     if(isIndEnabled('toggle-pattern-awc') && awcOk) {
         reasons.push(`🌌 ✓ Güçlü AWC Osilatör Dönüş Onayı (+20% Bonus)`);
+    }
+    // ML durumu
+    const mlReadyNow = typeof window._mlIsReady === 'function' && window._mlIsReady();
+    const mlConfNow  = typeof window._mlGetConfidence === 'function' ? window._mlGetConfidence() : 0;
+    if (mlReadyNow && mlConfNow >= 30) {
+        const mlDirNow = typeof window._mlGetDir === 'function' ? window._mlGetDir() : 'NÖTR';
+        const mlAlignedNow = (activeDir === 'LONG' && mlDirNow === 'LONG') || (activeDir === 'SHORT' && mlDirNow === 'SHORT');
+        if (mlAlignedNow) {
+            reasons.push(`🧠 ✓ Derin Öğrenme sistem yönünü destekliyor (+${Math.round(mlConfNow/100*12)} puan)`);
+        } else if (mlDirNow !== 'NÖTR') {
+            reasons.push(`🧠 ✗ Derin Öğrenme KARŞI yön gösteriyor (−${Math.round(mlConfNow/100*12)} puan)`);
+        }
     }
 
     const rBox=document.getElementById('agent-reasoning');

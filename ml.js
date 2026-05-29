@@ -210,13 +210,54 @@ async function _runTraining(closes, highs, lows, volumes, isBackground) {
         const labels      = [];
         const startIdx    = Math.max(31, n - 150);  // Son 150 bar
 
-        for (let i = startIdx; i < n - 1; i++) {
+        let posCount = 0, negCount = 0;
+
+        for (let i = startIdx; i < n - 3; i++) {
             const feat = _mlFeatures(closes, highs, lows, volumes, i);
             if (!feat) continue;
-            // Etiket: bir sonraki bar kapanışı o anki kapanıştan yüksek mi? (1 = LONG, 0 = SHORT)
-            const nextUp = closes[i+1] > closes[i] ? 1 : 0;
-            featureRows.push(feat);
-            labels.push(nextUp);
+
+            // Etiket: 3 bar sonraki kümülatif getiri — eşik ile gürültüyü filtrele
+            const ret3 = (closes[i + 3] - closes[i]) / (closes[i] || 1);
+            // ATR bazlı dinamik eşik: küçük hareketleri "nötr" say, atla
+            const atrArr = calcATR(
+                highs.slice(0, i + 1), lows.slice(0, i + 1), closes.slice(0, i + 1), 14
+            );
+            const atr     = atrArr[atrArr.length - 1] || closes[i] * 0.005;
+            const thresh  = atr / (closes[i] || 1);   // ATR / fiyat → dinamik eşik
+
+            if (ret3 > thresh) {
+                featureRows.push(feat);
+                labels.push(1);    // LONG
+                posCount++;
+            } else if (ret3 < -thresh) {
+                featureRows.push(feat);
+                labels.push(0);    // SHORT
+                negCount++;
+            }
+            // Nötr örnekler atlanıyor — gürültüyü eğitim setinden çıkar
+        }
+
+        // Sınıf dengesizliği kontrolü: fazla olan sınıfı kırp
+        const minCount = Math.min(posCount, negCount);
+        if (minCount > 5) {
+            let pTrimmed = 0, nTrimmed = 0;
+            const balancedFeats  = [];
+            const balancedLabels = [];
+            for (let j = 0; j < featureRows.length; j++) {
+                if (labels[j] === 1 && pTrimmed < minCount) {
+                    balancedFeats.push(featureRows[j]);
+                    balancedLabels.push(1);
+                    pTrimmed++;
+                } else if (labels[j] === 0 && nTrimmed < minCount) {
+                    balancedFeats.push(featureRows[j]);
+                    balancedLabels.push(0);
+                    nTrimmed++;
+                }
+            }
+            featureRows.length = 0;
+            labels.length      = 0;
+            balancedFeats.forEach(f  => featureRows.push(f));
+            balancedLabels.forEach(l => labels.push(l));
         }
 
         if (featureRows.length < 30) {
@@ -228,12 +269,25 @@ async function _runTraining(closes, highs, lows, volumes, isBackground) {
         const xs = tf.tensor2d(featureRows);
         const ys = tf.tensor2d(labels, [labels.length, 1]);
 
-        // Sıfırdan yeni mimari oluştur (eski ağırlıkları sıfırlamak için)
-        const newModel = _buildModel();
-        let lastAcc = 0;
-        const EPOCHS = 45;
+        // Transfer learning: mevcut model varsa fine-tune et, yoksa sıfırdan başla
+        let trainModel;
+        const isFineTune = !!_mlModel && _mlReady;
+        if (isFineTune) {
+            trainModel = _mlModel;   // Mevcut ağırlıkları koru → fine-tune
+            // Fine-tune için daha düşük learning rate
+            trainModel.compile({
+                optimizer: tf.train.adam(0.0003),
+                loss: 'binaryCrossentropy',
+                metrics: ['accuracy']
+            });
+        } else {
+            trainModel = _buildModel();   // Sadece ilk açılışta sıfırdan
+        }
 
-        await newModel.fit(xs, ys, {
+        let lastAcc = 0;
+        const EPOCHS = isFineTune ? 20 : 45;   // Fine-tune'da daha az epoch yeterli
+
+        await trainModel.fit(xs, ys, {
             epochs: EPOCHS,
             batchSize: 16,
             shuffle: true,
@@ -242,7 +296,7 @@ async function _runTraining(closes, highs, lows, volumes, isBackground) {
             callbacks: {
                 onEpochEnd: (epoch, logs) => {
                     lastAcc = logs.acc || logs.accuracy || 0;
-                    if (!isBackground && epoch % 9 === 0) {
+                    if (!isBackground && epoch % 5 === 0) {
                         const pct = Math.round(((epoch + 1) / EPOCHS) * 100);
                         _mlSetBadge('EĞİTİM ' + pct + '%', 'b-gray', false);
                     }
@@ -253,11 +307,11 @@ async function _runTraining(closes, highs, lows, volumes, isBackground) {
         xs.dispose();
         ys.dispose();
 
-        // Eski modeli bellekten sil, yeni modeli ata
-        if (_mlModel) {
+        // Fine-tune'da eski modeli dispose etme — aynı referansı güncelliyoruz
+        if (!isFineTune && _mlModel) {
             try { _mlModel.dispose(); } catch(e) {}
         }
-        _mlModel = newModel;
+        _mlModel    = trainModel;
         _mlAccuracy = lastAcc;
         _mlReady = true;
         _mlTrainTs = Date.now();
@@ -294,19 +348,23 @@ async function _makePrediction(closes, highs, lows, volumes) {
 
     const mlPct  = Math.round(val * 100);
     _mlScore     = mlPct;
-    const accTxt = _mlAccuracy ? ` (Acc:${Math.round(_mlAccuracy*100)}%)` : '';
+    const conf   = Math.abs(val - 0.5) * 200;   // 0-100 arası güven mesafesi
+    const accTxt = _mlAccuracy ? ` Acc:${Math.round(_mlAccuracy*100)}%` : '';
 
     // Badge güncelle
-    if (val > 0.60) {
+    if (val > 0.62) {
         _mlDir = 'LONG';
-        _mlSetBadge('⬆ LONG ' + mlPct + '%' + accTxt, 'b-green', true);
-    } else if (val < 0.40) {
+        _mlSetBadge(`⬆ LONG ${mlPct}% ·${accTxt}`, 'b-green', true);
+    } else if (val < 0.38) {
         _mlDir = 'SHORT';
-        _mlSetBadge('⬇ SHORT ' + (100 - mlPct) + '%' + accTxt, 'b-red', true);
+        _mlSetBadge(`⬇ SHORT ${100 - mlPct}% ·${accTxt}`, 'b-red', true);
     } else {
         _mlDir = 'NÖTR';
-        _mlSetBadge('○ NÖTR ' + mlPct + '%' + accTxt, 'b-gray', false);
+        _mlSetBadge(`○ NÖTR ·${accTxt}`, 'b-gray', false);
     }
+
+    // Confidence değerini global'e yaz (runAgent entegrasyonu için)
+    window._mlConfidence = conf;
 
     // Agent reasoning kutusunu güncelle
     _mlUpdateReasoning();
@@ -374,14 +432,33 @@ function _mlUpdateReasoning() {
 
     const dir  = _mlDir;
     const pct  = _mlScore;
+    const conf = window._mlConfidence || 0;
+    const acc  = _mlAccuracy ? ` · Doğruluk: ${Math.round(_mlAccuracy * 100)}%` : '';
     const clr  = dir === 'LONG' ? 'var(--green)' : dir === 'SHORT' ? 'var(--red)' : '#a1a1aa';
     const icon = dir === 'LONG' ? '⬆' : dir === 'SHORT' ? '⬇' : '○';
-    const acc  = _mlAccuracy ? ` · Doğruluk: ${Math.round(_mlAccuracy*100)}%` : '';
+
+    // Aktif yönü al (index.html'deki lastMode ile çapraz kontrol)
+    const sysDir = typeof lastMode !== 'undefined' ? lastMode : null;
+    const conflict = sysDir && dir !== 'NÖTR' && sysDir !== 'YATAY' && dir !== sysDir;
+    const strongSignal = conf >= 45;   // %62.5+ veya %37.5- güven eşiği
+
+    let extraHtml = '';
+    if (conflict && strongSignal) {
+        extraHtml = `<div style="margin-top:4px;padding:4px 8px;border-radius:6px;`
+            + `background:rgba(244,63,94,0.12);border:1px solid rgba(244,63,94,0.3);`
+            + `font-size:0.7rem;color:#f43f5e;font-weight:600;">`
+            + `⚠️ VETO: Derin Öğrenme sisteme <strong>KARŞI</strong> yön gösteriyor — `
+            + `giriş öncesi ekstra teyit alın!</div>`;
+    } else if (!conflict && dir !== 'NÖTR' && strongSignal) {
+        extraHtml = `<div style="margin-top:4px;font-size:0.68rem;color:#10b981;">` 
+            + `✓ Derin Öğrenme sistem yönünü destekliyor</div>`;
+    }
 
     const line = document.createElement('div');
     line.className = 'ml-reasoning-line';
     line.innerHTML = '<hr style="border-color:rgba(255,255,255,0.08);margin:6px 0">'
-        + `<span style="color:${clr};font-weight:700">🧠 Derin Öğrenme: ${icon} ${dir} (${pct}%${acc})</span>`;
+        + `<span style="color:${clr};font-weight:700">🧠 Derin Öğrenme: ${icon} ${dir} (${pct}%${acc})</span>`
+        + extraHtml;
     rBox.appendChild(line);
 }
 
@@ -390,3 +467,5 @@ window.calcMLPrediction   = calcMLPrediction;
 window._mlUpdateReasoning = _mlUpdateReasoning;
 window._mlGetScore        = () => _mlScore;
 window._mlGetDir          = () => _mlDir;
+window._mlGetConfidence   = () => window._mlConfidence || 0;
+window._mlIsReady         = () => _mlReady;
