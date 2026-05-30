@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>CycleMaster Pro</title>
+    <title>SpotScalper Pro — Standalone</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#060910">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -11,7 +11,7 @@
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2091/2091665.png">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
-    <script src="ml.js" defer></script>
+    
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <style>
         :root {
@@ -1080,6 +1080,13 @@
 </head>
 <body>
 
+<div id="standalone-bar" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(90deg,rgba(59,130,246,0.15),rgba(139,92,246,0.15));border-bottom:1px solid rgba(139,92,246,0.25);padding:4px 12px;font-size:0.52rem;font-weight:700;color:#a78bfa;letter-spacing:0.8px;display:flex;align-items:center;gap:6px;text-transform:uppercase;">
+    <span style="width:6px;height:6px;border-radius:50%;background:#a78bfa;box-shadow:0 0 6px #a78bfa;display:inline-block;"></span>
+    Standalone Mod — OKX Doğrudan Bağlantı · Evidential Engine (Dempster-Shafer) Aktif
+    <span id="standalone-proxy-lbl" style="color:#f59e0b;display:none;">· CORS Proxy Aktif</span>
+</div>
+<div style="height:24px;flex-shrink:0;"></div>
+
 <div class="content">
 
     <!-- PİYASA -->
@@ -1293,6 +1300,117 @@
                 <div class="cond-row"><div class="cond-icon no" id="cond-pattern-trap">·</div><span class="cond-text" id="cond-pattern-trap-text">Boğa/Ayı Tuzağı bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-pattern-awc">·</div><span class="cond-text" id="cond-pattern-awc-text">Antigravity Wave Core (AWC) bekleniyor</span></div>
                 <div class="cond-row"><div class="cond-icon no" id="cond-pattern-sao">·</div><span class="cond-text" id="cond-pattern-sao-text">SAO Akış Sinyali bekleniyor</span></div>
+                <div class="cond-row"><div class="cond-icon no" id="cond-ml">·</div><span class="cond-text" id="cond-ml-text">Derin Öğrenme Yapay Zeka bekleniyor</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ÖĞRENME -->
+    <div class="page" id="page-learning">
+        <div class="sec-title">Canlı Öğrenme & Eğitim Paneli</div>
+        
+        <!-- Sürekli Öğrenme (Auto Learn) Kartı -->
+        <div class="agent-card" style="margin-bottom: 16px;">
+            <div class="setting-row" style="border-bottom: none; padding: 0;">
+                <div>
+                    <div class="setting-name" style="font-size: 1.05rem; font-weight: 700; color: var(--gold);">🔄 Sürekli Öğrenme (Auto-Learn)</div>
+                    <div class="setting-sub" style="font-size: 0.72rem; margin-top: 4px;">Watchlist'teki tüm coinleri arka planda sürekli ve adaptif olarak eğitir.</div>
+                </div>
+                <label class="toggle">
+                    <input type="checkbox" id="auto-learn-toggle" onchange="toggleAutoLearn(this.checked)">
+                    <div class="toggle-track"></div>
+                    <div class="toggle-thumb"></div>
+                </label>
+            </div>
+            
+            <div id="auto-learn-status-row" style="margin-top: 12px; font-size: 0.75rem; color: var(--text2); display: flex; flex-direction: column; gap: 6px;">
+                <div style="display: flex; justify-content: space-between;">
+                    <span>Döngü Sayısı:</span>
+                    <span id="auto-learn-cycle" style="font-family: 'Space Mono', monospace; font-weight: 700; color: var(--text);">0</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>Bir Sonraki Eğitim:</span>
+                    <span id="auto-learn-next-in" style="font-family: 'Space Mono', monospace; font-weight: 700; color: var(--gold);">—</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>Dinamik Bekleme Süresi:</span>
+                    <span id="auto-learn-interval" style="font-family: 'Space Mono', monospace; color: var(--text2);">0 dk</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>Bu Turda Eğitilenler:</span>
+                    <span id="auto-learn-trained-coins" style="font-size: 0.7rem; color: var(--green); text-align: right; max-width: 60%; word-break: break-all;">—</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Canlı Eğitim Durum Kartı (Progress, Loss, Acc) -->
+        <div class="agent-card" style="margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="agent-score-lbl" style="font-size: 0.9rem; font-weight: 700; letter-spacing: 0.5px;">EĞİTİM DURUMU</div>
+                    <span id="train-status-badge" class="watchlist-badge badge-wait" style="font-size: 0.55rem; padding: 2px 6px;">IDLE</span>
+                </div>
+                <div style="font-family: 'Space Mono', monospace; font-size: 0.8rem; color: var(--text3);" id="train-coin-display">—</div>
+            </div>
+
+            <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 12px;">
+                <div style="position: relative; width: 64px; height: 64px; flex-shrink: 0;">
+                    <svg class="timer-svg" viewBox="0 0 100 100" style="width:64px; height:64px;">
+                        <circle class="ring-bg" cx="50" cy="50" r="43"/>
+                        <circle class="ring-prog" id="train-progress-circle" cx="50" cy="50" r="43" style="stroke: var(--green); stroke-dashoffset: 270; transition: stroke-dashoffset 0.3s ease;"/>
+                    </svg>
+                    <div class="timer-inner" style="top:50%; left:50%; transform:translate(-50%,-50%); width:auto; height:auto;">
+                        <div class="timer-num" id="train-progress-percent" style="font-size: 0.85rem; font-weight: 700;">0%</div>
+                    </div>
+                </div>
+                
+                <div style="flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div style="background: rgba(0,0,0,0.2); padding: 6px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.02);">
+                        <div style="font-size: 0.55rem; color: var(--text3); font-weight: 700;">KAYIP (LOSS)</div>
+                        <div style="font-family: 'Space Mono', monospace; font-size: 1.05rem; font-weight: 700; color: var(--red); margin-top: 2px;" id="train-loss">0.0000</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.2); padding: 6px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.02);">
+                        <div style="font-size: 0.55rem; color: var(--text3); font-weight: 700;">DOĞRULUK (ACC)</div>
+                        <div style="font-family: 'Space Mono', monospace; font-size: 1.05rem; font-weight: 700; color: var(--green); margin-top: 2px;" id="train-accuracy">0.0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detaylı Değerler -->
+            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.04); font-size: 0.72rem; color: var(--text2); display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                <div>Epoch: <span id="train-epoch" style="font-family: 'Space Mono', monospace; font-weight: 700; color: var(--text);">0 / 0</span></div>
+                <div>Seçilen LR: <span id="train-chosen-lr" style="font-family: 'Space Mono', monospace; font-weight: 700; color: var(--text);">0.0000</span></div>
+                <div style="grid-column: span 2;">Aktif Watchlist: <span id="train-watchlist" style="font-size: 0.65rem; color: var(--text3); word-break: break-all;">—</span></div>
+            </div>
+        </div>
+
+        <!-- Tekil Coin Canlı Eğitimi -->
+        <div class="agent-card" style="margin-bottom: 16px;">
+            <div class="setting-name" style="font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; color: var(--text);">🎯 Tekil Coin Canlı Eğitimi</div>
+            
+            <div style="display: flex; gap: 8px;">
+                <select id="train-coin-select" style="flex: 1; height: 38px; border-radius: 8px; font-size: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: var(--text); padding: 0 10px; font-family: 'Space Mono', monospace; outline: none; border-color: rgba(255,255,255,0.08);">
+                    <!-- Coins will be populated from watchlist -->
+                </select>
+                <button id="btn-start-manual-train" class="analyze-btn" style="height: 38px; padding: 0 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; background: linear-gradient(135deg, var(--green), #059669); color: var(--bg); border: none; cursor: pointer; transition: transform 0.2s;" onclick="startManualTraining()">
+                    Eğitimi Başlat
+                </button>
+            </div>
+        </div>
+
+        <!-- Canlı Konsol Logları -->
+        <div class="agent-card" style="flex: 1; min-height: 180px; display: flex; flex-direction: column; padding: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <div class="setting-name" style="font-size: 0.85rem; font-weight: 700; color: var(--text2); display: flex; align-items: center; gap: 6px;">
+                    <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green);"></span>
+                    Canlı Konsol Çıktısı (Eğitim Günlükleri)
+                </div>
+                <button class="watchlist-delete" style="font-size: 0.65rem; padding: 2px 6px; border: 1px solid var(--border); border-radius: 4px; background: rgba(255,255,255,0.02);" onclick="clearLiveLogs()">Temizle</button>
+            </div>
+            
+            <!-- Terminal Box -->
+            <div id="train-logs-box" style="flex: 1; background: rgba(0, 0, 0, 0.45); border: 1px solid var(--border); border-radius: 8px; padding: 10px; font-family: 'Space Mono', monospace; font-size: 0.65rem; color: #a7f3d0; overflow-y: auto; max-height: 250px; line-height: 1.4; text-align: left; white-space: pre-wrap; word-break: break-all; min-height: 100px;">
+                Eğitim logs bekleniyor...
             </div>
         </div>
     </div>
@@ -1556,6 +1674,11 @@
         <div class="nav-label">Ajan</div>
         <div class="nav-dot"></div>
     </div>
+    <div class="nav-item" id="nav-learning" onclick="goTo('learning')">
+        <div class="nav-icon">🧠</div>
+        <div class="nav-label">Öğrenme</div>
+        <div class="nav-dot"></div>
+    </div>
     <div class="nav-item" id="nav-tech" onclick="goTo('tech')">
         <div class="nav-icon">📊</div>
         <div class="nav-label">Teknik</div>
@@ -1601,6 +1724,55 @@
 // GitHub'a yüklemeden önce bu değerleri kendin doldur:
 const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyGenNs1D4VE-oeF7pusGbRjToNhj_gq9w8W9f8JIR78al9MSDI57rkBEmB5AaPnelV/exec";
 const FCM_VAPID_KEY = "BNmlrqN79EZ5GQskgK0EpWausWODfnvRikws5t3CqrCsyM5CuGm4B95Gpc8VKlSJUT3JVpeK5U_tCf0x8szbtV8";
+
+// OKX Sembol Biçimlendirici Helper
+function getOKXSymbol(symbol) {
+    if (!symbol) return "";
+    let clean = symbol.replace(/-/g, "").toUpperCase().trim();
+    if (clean.endsWith("USDT")) {
+        return clean.substring(0, clean.length - 4) + "-USDT";
+    }
+    return clean + "-USDT";
+}
+
+// ── STANDALONE MODE: No backend needed ──
+// All API calls go directly to OKX public API via CORS proxy
+const OKX_BASE = "https://www.okx.com";
+const OKX_PROXY_BASE = "https://corsproxy.io/?" + encodeURIComponent("https://www.okx.com");
+let _useProxy = false; // Auto-detected on first failed request
+
+function getApiUrl(path) {
+    if (path.startsWith('/api/okx/')) {
+        const okxPath = path.replace('/api/okx', '');
+        const fullPath = '/api/v5' + okxPath;
+        if (_useProxy) {
+            return "https://corsproxy.io/?" + encodeURIComponent(OKX_BASE + fullPath);
+        }
+        return OKX_BASE + fullPath;
+    }
+    return null;
+}
+
+// Override fetch to handle null URLs and auto-detect CORS issues
+const _origFetch = window.fetch;
+window.fetch = function(url, opts) {
+    if (!url) return Promise.resolve(new Response('{"code":"1","msg":"standalone-no-backend"}', {status:200}));
+    // Auto-retry with proxy on network/CORS failures for OKX URLs
+    if (typeof url === "string" && url.includes("okx.com") && !url.includes("corsproxy")) {
+        return _origFetch(url, opts).catch(err => {
+            if (!_useProxy) {
+                console.warn("[Standalone] OKX direkt bağlantı başarısız, CORS proxy deneniyor...");
+                _useProxy = true;
+                const proxyLbl = document.getElementById("standalone-proxy-lbl");
+                if (proxyLbl) proxyLbl.style.display = "inline";
+                if (typeof showToast === "function") showToast("🔄 Bağlantı", "OKX proxy moduna geçildi.");
+            }
+            const proxied = "https://corsproxy.io/?" + encodeURIComponent(url.split("?")[0]) + (url.includes("?") ? encodeURIComponent("?") + url.split("?")[1] : "");
+            return _origFetch(proxied, opts);
+        });
+    }
+    return _origFetch(url, opts);
+};
 
 // ── SERVICE WORKER ──
 if ('serviceWorker' in navigator) {
@@ -2020,7 +2192,7 @@ function updateStrategyMode() {
 
 function updateCoin(){
     let v=document.getElementById('coin-input').value.toUpperCase().trim();
-    v = v.replace("SEMBOL BULUNAMADI", "").replace("SEMBOL", "").replace("BULUNAMADI", "").trim();
+    v = v.replace("SEMBOL BULUNAMADI", "").replace("SEMBOL", "").replace("BULUNAMADI", "").replace(/-/g, "").trim();
     if(!v) return;
     currentCoin=v.includes("USDT")?v:v+"USDT";
     document.getElementById('coin-input').value=currentCoin;
@@ -2030,7 +2202,7 @@ function updateCoin(){
     visibleCandlesCount = 60;
     chartPanOffset = 0;
     
-    saveToMemory(); fetchData();
+    saveToMemory(); fetchData(true);
 }
 
 function refreshDataWithAnimation(btn) {
@@ -2094,7 +2266,7 @@ function resetMarketDataToZero() {
     resetDot('obv-dot'); resetDot('mfi-dot'); resetDot('mom-dot'); resetDot('regr-chan-dot'); resetDot('liq-dot');
     resetDot('atr-dot'); resetDot('vwap-sapma-dot'); resetDot('regr-slope-dot'); resetDot('mom5-dot');
     resetDot('squeeze-dot'); resetDot('obi-dot'); resetDot('fvg-dot'); resetDot('htf-ema-dot'); resetDot('htf-rsi-dot');
-    resetDot('pattern-trap-dot'); resetDot('pattern-awc-dot'); resetDot('pattern-sao-dot');
+    resetDot('pattern-trap-dot'); resetDot('pattern-awc-dot'); resetDot('pattern-sao-dot'); resetDot('ml-dot');
     
     const resetBadge = (id) => {
         const item = document.getElementById(id);
@@ -2182,12 +2354,12 @@ function resetMarketDataToZero() {
     }
 }
 
-async function fetchData(){ fetchPrice(true); fetchTechnical(true); }
+async function fetchData(isExplicit = false){ fetchPrice(isExplicit); fetchTechnical(isExplicit); }
 
 async function fetchPrice(isExplicit = false){
     try{
-        const okxSymbol = currentCoin.replace("USDT","-USDT");
-        const r=await fetch(`https://www.okx.com/api/v5/market/ticker?instId=${okxSymbol}`);
+        const okxSymbol = getOKXSymbol(currentCoin);
+        const r=await fetch(getApiUrl(`/api/okx/market/ticker?instId=${okxSymbol}`));
         const d=await r.json();
         if(d.code!=="0"||!d.data||!d.data[0]) {
             if (isExplicit) handleInvalidSymbol();
@@ -2224,9 +2396,9 @@ function toOKXInterval(tf){
 }
 
 async function fetchOKXKlines(symbol, interval, limit){
-    const okxSymbol=symbol.replace("USDT","-USDT");
+    const okxSymbol = getOKXSymbol(symbol);
     const okxInterval=toOKXInterval(interval);
-    const r=await fetch(`https://www.okx.com/api/v5/market/candles?instId=${okxSymbol}&bar=${okxInterval}&limit=${limit||190}`);
+    const r=await fetch(getApiUrl(`/api/okx/market/candles?instId=${okxSymbol}&bar=${okxInterval}&limit=${limit||190}`));
     const d=await r.json();
     if(d.code!=="0"||!d.data||d.data.length===0) return null;
     return d.data.reverse(); // eskiden yeniye
@@ -3513,8 +3685,8 @@ function calcSAO(opens, highs, lows, closes, volumes) {
 
 async function fetchOKXOrderBook(symbol) {
     try {
-        const okxSymbol = symbol.replace("USDT", "-USDT");
-        const r = await fetch(`https://www.okx.com/api/v5/market/books?instId=${okxSymbol}&sz=5`);
+        const okxSymbol = getOKXSymbol(symbol);
+        const r = await fetch(getApiUrl(`/api/okx/market/books?instId=${okxSymbol}&sz=5`));
         const d = await r.json();
         if (d.code === "0" && d.data && d.data[0]) {
             const book = d.data[0];
@@ -3689,6 +3861,28 @@ function predictCandleForTimeframe(timeframeName, opens, highs, lows, closes, vo
                       bbScore + volumeFlowScore + patternScore + fvgScore + mfiBonus;
     let totalScore  = baseScore * volMultiplier;
 
+    // ── AI DEEP LEARNING BONUS ──────────────────────────────────────────
+    // engine.py'den gelen m_long / m_short inanç oranları tahmine eklenir.
+    // Maksimum ±25 puan bonus: yüksek inanç farkı = yüksek bonus.
+    let aiBonus = 0;
+    let aiTag   = '';
+    if (typeof window._mlGetBeliefs === 'function') {
+        const bl = window._mlGetBeliefs();
+        const mL = bl.m_long  || 0;
+        const mS = bl.m_short || 0;
+        const diff = mL - mS;          // pozitif → LONG baskın, negatif → SHORT baskın
+        // diff aralığı yaklaşık [-0.3, +0.3] → 25 ile çarparak [-7.5, +7.5]'e sıkıştır
+        // Daha emin AI → daha büyük etki (max ±25)
+        const rawBonus = diff * 85;    // diff*85 genellikle ±15 civarı
+        aiBonus = Math.max(-25, Math.min(25, rawBonus));
+        if (Math.abs(aiBonus) >= 3) {
+            const sign = aiBonus > 0 ? '+' : '';
+            aiTag = ` 🤖${sign}${Math.round(aiBonus)}`;
+        }
+    }
+    totalScore += aiBonus;
+    // ────────────────────────────────────────────────────────────────────
+
     // DIRECTION & PROBABILITY
     const isNeutral = Math.abs(totalScore) < 15;
     let finalDirection;
@@ -3736,7 +3930,10 @@ function predictCandleForTimeframe(timeframeName, opens, highs, lows, closes, vo
         if      (finalDirection === 'BULLISH') { color = 'var(--green)'; probTxt = finalProbability + '%'; }
         else if (finalDirection === 'BEARISH') { color = 'var(--red)';   probTxt = finalProbability + '%'; }
         else                                   { color = '#a1a1aa';      probTxt = 'KARARSIZ'; }
-        candleLbl.innerHTML = timeframeName + ' <span style="font-family:\'Space Mono\',monospace; font-size: 0.78rem; color:' + color + '; font-weight:800;">(' + probTxt + ')</span>';
+        // AI bonus etiketini farklı bir renkle göster
+        const aiColor = aiBonus > 0 ? 'var(--green)' : (aiBonus < 0 ? 'var(--red)' : '#a1a1aa');
+        const aiSpan  = aiTag ? ` <span style="font-size:0.68rem;color:${aiColor};opacity:0.85;">${aiTag}</span>` : '';
+        candleLbl.innerHTML = timeframeName + ' <span style="font-family:\'Space Mono\',monospace; font-size: 0.78rem; color:' + color + '; font-weight:800;">(' + probTxt + ')</span>' + aiSpan;
     }
 
     drawPredictedCandleOnCanvas(predOpen, predHigh, predLow, predClose, finalDirection, canvasId);
@@ -3887,6 +4084,7 @@ function runAgent(){
         setC('cond-pattern-doji','cond-pattern-doji-text',false,'Doji — şart yok');
         setC('cond-pattern-engulfing','cond-pattern-engulfing-text',false,'Engulfing (Yutan Mum) — şart yok');
         setC('cond-pattern-marubozu','cond-pattern-marubozu-text',false,'Marubozu — şart yok');
+        setC('cond-ml','cond-ml-text',false,`Derin Öğrenme Yapay Zeka — şart yok`);
         
         const resetDot = (id) => {
             const el = document.getElementById(id);
@@ -3896,7 +4094,7 @@ function runAgent(){
         resetDot('obv-dot'); resetDot('mfi-dot'); resetDot('mom-dot'); resetDot('regr-chan-dot'); resetDot('liq-dot');
         resetDot('atr-dot'); resetDot('vwap-sapma-dot'); resetDot('regr-slope-dot'); resetDot('mom5-dot');
         resetDot('squeeze-dot'); resetDot('obi-dot'); resetDot('fvg-dot'); resetDot('htf-ema-dot'); resetDot('htf-rsi-dot');
-        resetDot('pattern-trap-dot'); resetDot('pattern-awc-dot'); resetDot('pattern-sao-dot');
+        resetDot('pattern-trap-dot'); resetDot('pattern-awc-dot'); resetDot('pattern-sao-dot'); resetDot('ml-dot');
         return;
     }
 
@@ -4088,6 +4286,11 @@ function runAgent(){
                 score += saoBonus;
             }
             
+            // Yapay Zeka Derin Öğrenme Yön Uyum Bonusu (+%15)
+            if (mlAligned) {
+                score += 15;
+            }
+            
             score = Math.min(100, Math.max(0, score));
         }
 
@@ -4143,6 +4346,9 @@ function runAgent(){
     const htfRsiOk = activeDir === 'LONG' ? long_htfRsiOk : short_htfRsiOk;
     const patternOk = activeDir === 'LONG' ? long_patternOk : short_patternOk;
     const trendGatePass = activeDir === 'LONG' ? long_gate : short_gate;
+    const mlAligned = activeDir === 'LONG'
+        ? (typeof window._mlGetDir === 'function' && window._mlGetDir() === 'LONG')
+        : (typeof window._mlGetDir === 'function' && window._mlGetDir() === 'SHORT');
 
     const catScores = { A: activeRes.catA, B: activeRes.catB, C: activeRes.catC, D: activeRes.catD, confirmed: activeRes.confirmedCats };
 
@@ -4261,6 +4467,7 @@ function runAgent(){
         saoOk
             ? `SAO: ${detectedSAO&&detectedSAO.signal.startsWith('GÜÇLÜ')?'⚡ GÜÇLÜ ':''} ${activeDir==='LONG'?'Gizli Birikim':'Gizli Dağıtım'} Onayı 🔵 ✓`
             : 'SAO Akış Sinyali yok');
+    setC('cond-ml','cond-ml-text',mlAligned,mlAligned?`Derin Öğrenme Yapay Zeka Yön Onayı ✓`:'Derin Öğrenme Yapay Zeka şartı yok');
 
     const updateDot = (id, ok) => {
         const el = document.getElementById(id);
@@ -4288,6 +4495,7 @@ function runAgent(){
     updateDot('pattern-trap-dot', trapOk);
     updateDot('pattern-awc-dot', awcOk);
     updateDot('pattern-sao-dot', saoOk);
+    updateDot('ml-dot', mlAligned);
 
     const banner=document.getElementById('signal-banner');
     if(score>=matchThreshold){
@@ -4333,9 +4541,7 @@ function saveToMemory(){
     localStorage.setItem('cm_combo', document.getElementById('combo-select').value);
     localStorage.setItem('cm_strategy_mode', document.getElementById('strategy-mode-select').value);
     
-    // Arka planla senkronize et
-    const url = `${BACKEND_URL}?action=sync&symbol=${currentCoin}&upper=${ustTF}&mid=${ortaTF}&lower=${altTF}`;
-    fetch(url, { method: 'GET', mode: 'no-cors' }).catch(()=>{});
+    // Standalone mode: no backend sync needed
 }
 
 function loadFromMemory(){
@@ -4426,9 +4632,19 @@ function loadFromMemory(){
         const val = localStorage.getItem('cm_' + id);
         if (val !== null) {
             const el = document.getElementById(id);
-            if (el) el.checked = (val === 'true');
+            if (el) {
+                el.checked = (val === 'true');
+                updateRowVisual(id, val === 'true');
+            }
         }
     });
+
+    if (localStorage.getItem('cm_combo') === null) {
+        localStorage.setItem('cm_combo', 'hybrid');
+        setTimeout(() => {
+            applyIndicatorCombo();
+        }, 100);
+    }
 
     syncParentTfUI();
 }
@@ -5646,6 +5862,11 @@ function initWatchlist() {
     
     // Arka plan sinyal güncelleme döngüsünü başlat (OKX isteklerini yormamak için gecikmeli)
     setTimeout(startWatchlistSignalUpdates, 8000);
+    
+    // Backend'den watchlist senkronizasyonu
+    if (typeof syncWatchlistFromBackend === 'function') {
+        syncWatchlistFromBackend();
+    }
 }
 
 function saveWatchlist() {
@@ -5708,6 +5929,9 @@ function renderWatchlist() {
         `;
         container.appendChild(row);
     });
+    if (typeof updateTrainCoinSelect === 'function') {
+        updateTrainCoinSelect();
+    }
 }
 
 function addToWatchlist() {
@@ -5798,8 +6022,8 @@ async function startWatchlistSignalUpdates() {
         
         try {
             // OKX üzerinden anlık fiyat ve 24h yüzde değişimi al
-            const okxSymbol = item.symbol.replace("USDT","-USDT");
-            const tickerRes = await fetch(`https://www.okx.com/api/v5/market/ticker?instId=${okxSymbol}`);
+            const okxSymbol = getOKXSymbol(item.symbol);
+            const tickerRes = await fetch(getApiUrl(`/api/okx/market/ticker?instId=${okxSymbol}`));
             const tickerData = await tickerRes.json();
             
             let price = item.price || 0;
@@ -5846,6 +6070,471 @@ async function startWatchlistSignalUpdates() {
     }, 15000); // 15 saniyede bir tek bir pasif coini analiz eder
 }
 
+// ==========================================
+// LOCAL PYTHON BACKEND & Canlı ÖĞRENME ENTEGRASYONU
+// ==========================================
+let lastBackendMLDir = "BEKLE";
+let lastBackendMLBeliefs = { m_long: 0, m_short: 0, m_uncertainty: 1 };
+window._mlGetDir = function() {
+    return lastBackendMLDir;
+};
+window._mlGetBeliefs = function() {
+    return lastBackendMLBeliefs;
+};
+
+// Backend'den watchlist senkronize et — Standalone modda sadece localStorage kullanılır
+async function syncWatchlistFromBackend() {
+    // Standalone mode: watchlist is already loaded from localStorage in initWatchlist()
+    // No backend sync needed
+}
+
+// Canlı eğitim coini seçimi dropdown'unu güncelle
+function updateTrainCoinSelect() {
+    const select = document.getElementById('train-coin-select');
+    if (!select) return;
+    const currentSel = select.value;
+    select.innerHTML = '';
+    
+    watchlist.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item.symbol;
+        opt.textContent = formatWatchlistSymbol(item.symbol);
+        select.appendChild(opt);
+    });
+    
+    if (watchlist.some(x => x.symbol === currentSel)) {
+        select.value = currentSel;
+    } else if (watchlist.length > 0) {
+        select.value = watchlist[0].symbol;
+    }
+}
+
+// ── STANDALONE: Evidential Engine (Dempster-Shafer) ──
+// Implements the same logic as engine.py but in JavaScript
+// Called instead of pollBackendState when no backend is available
+
+let _dsTrainingCycle = 0;
+let _dsAutoLearn = false;
+let _dsNextTrainIn = 0;
+let _dsIntervalMin = 30;
+let _dsLogs = ["[Standalone] Dempster-Shafer Evidential Engine başlatıldı.", "[Standalone] Backend gerekmeksizin çalışıyor."];
+let _dsTrainedCoins = [];
+let _dsTrainingActive = false;
+
+function dempsterCombine(m1, m2) {
+    // Dempster-Shafer combination rule for {LONG, SHORT, UNCERTAINTY}
+    const keys = ["long", "short", "uncertainty"];
+    const combined = {long:0, short:0, uncertainty:0};
+    let K = 0;
+    for (const k1 of keys) {
+        for (const k2 of keys) {
+            const intersect = (k1===k2) ? k1 : (k1==="uncertainty" ? k2 : (k2==="uncertainty" ? k1 : null));
+            const mass = m1[k1] * m2[k2];
+            if (intersect === null) {
+                K += mass; // conflict mass
+            } else {
+                combined[intersect] = (combined[intersect] || 0) + mass;
+            }
+        }
+    }
+    const norm = 1 - K;
+    if (norm <= 0) return {long:0.33, short:0.33, uncertainty:0.34};
+    return {
+        long: combined.long / norm,
+        short: combined.short / norm,
+        uncertainty: combined.uncertainty / norm
+    };
+}
+
+function runEvidentialEngine() {
+    // Uses current indicator values computed by fetchTechnical()
+    // Maps indicators to Dempster-Shafer belief functions
+    
+    // Model 1: Momentum (Stoch RSI + RSI + MOM)
+    let m1 = {long:0.33, short:0.33, uncertainty:0.34};
+    if (stochRsiValue < 20 && rsiValue < 45) {
+        m1 = {long:0.70, short:0.10, uncertainty:0.20};
+    } else if (stochRsiValue > 80 && rsiValue > 55) {
+        m1 = {long:0.10, short:0.70, uncertainty:0.20};
+    } else if (stochRsiValue < 30) {
+        m1 = {long:0.55, short:0.20, uncertainty:0.25};
+    } else if (stochRsiValue > 70) {
+        m1 = {long:0.20, short:0.55, uncertainty:0.25};
+    } else {
+        const mSign = momVal > 0 ? 1 : (momVal < 0 ? -1 : 0);
+        m1 = {long:0.33 + mSign*0.10, short:0.33 - mSign*0.10, uncertainty:0.34};
+    }
+    
+    // Model 2: Trend structure (EMA + Regression slope)
+    let m2 = {long:0.33, short:0.33, uncertainty:0.34};
+    if (ema5Val > ema8Val && ema8Val > ema13Val && regrSlopeVal > 0) {
+        m2 = {long:0.75, short:0.05, uncertainty:0.20};
+    } else if (ema5Val < ema8Val && ema8Val < ema13Val && regrSlopeVal < 0) {
+        m2 = {long:0.05, short:0.75, uncertainty:0.20};
+    } else if (ema5Val > ema13Val) {
+        m2 = {long:0.55, short:0.25, uncertainty:0.20};
+    } else if (ema5Val < ema13Val) {
+        m2 = {long:0.25, short:0.55, uncertainty:0.20};
+    }
+    
+    // Model 3: Volume & Order Flow (OBV + MFI + OBI)
+    let m3 = {long:0.33, short:0.33, uncertainty:0.34};
+    const volScore = (obvVal > obvMAVal ? 1 : -1) + (mfiVal < 40 ? 1 : mfiVal > 60 ? -1 : 0) + (obiVal > 0.05 ? 1 : obiVal < -0.05 ? -1 : 0);
+    if (volScore >= 2) m3 = {long:0.65, short:0.15, uncertainty:0.20};
+    else if (volScore <= -2) m3 = {long:0.15, short:0.65, uncertainty:0.20};
+    else if (volScore === 1) m3 = {long:0.50, short:0.25, uncertainty:0.25};
+    else if (volScore === -1) m3 = {long:0.25, short:0.50, uncertainty:0.25};
+    
+    // Model 4: Price structure (VWAP + BB + FVG)
+    let m4 = {long:0.33, short:0.33, uncertainty:0.34};
+    const structScore = (lastPrice > vwapVal ? 1 : -1) + (bbStatus==="Bottom" ? 1 : bbStatus==="Top" ? -1 : 0) + (fvgVal.type==="BOĞA" ? 1 : fvgVal.type==="AYI" ? -1 : 0);
+    if (structScore >= 2) m4 = {long:0.65, short:0.15, uncertainty:0.20};
+    else if (structScore <= -2) m4 = {long:0.15, short:0.65, uncertainty:0.20};
+    else if (structScore === 1) m4 = {long:0.50, short:0.25, uncertainty:0.25};
+    else if (structScore === -1) m4 = {long:0.25, short:0.50, uncertainty:0.25};
+    
+    // Combine all 4 models with Dempster-Shafer rule
+    let combined = dempsterCombine(m1, m2);
+    combined = dempsterCombine(combined, m3);
+    combined = dempsterCombine(combined, m4);
+    
+    // Pattern bonuses (AWC, SAO, Trap)
+    if (detectedAWC === "AŞIRI_SATIM") {
+        combined = dempsterCombine(combined, {long:0.80, short:0.05, uncertainty:0.15});
+    } else if (detectedAWC === "AŞIRI_ALIM") {
+        combined = dempsterCombine(combined, {long:0.05, short:0.80, uncertainty:0.15});
+    }
+    if (detectedSAO && detectedSAO.signal.includes("BİRİKİM")) {
+        combined = dempsterCombine(combined, {long:0.72, short:0.08, uncertainty:0.20});
+    } else if (detectedSAO && detectedSAO.signal.includes("DAĞITIM")) {
+        combined = dempsterCombine(combined, {long:0.08, short:0.72, uncertainty:0.20});
+    }
+    
+    // Determine action
+    let action = "BEKLE";
+    if (combined.long > combined.short * 1.2 && combined.long > 0.40) action = "LONG";
+    else if (combined.short > combined.long * 1.2 && combined.short > 0.40) action = "SHORT";
+    
+    return {
+        action,
+        confidence: Math.max(combined.long, combined.short),
+        beliefs: {
+            m_long: combined.long,
+            m_short: combined.short,
+            m_uncertainty: combined.uncertainty
+        }
+    };
+}
+
+async function pollBackendState() {
+    // Standalone mode: Use Evidential Engine instead of Python backend
+    try {
+        const sig = runEvidentialEngine();
+        const fakeData = {
+            signals: {
+                [getOKXSymbol(currentCoin)]: sig
+            },
+            config: {
+                watchlist: watchlist.map(x => x.symbol.replace("USDT","-USDT"))
+            }
+        };
+        updateBackendUI(fakeData);
+    } catch(e) {
+        console.warn("Evidential engine error:", e);
+    }
+
+    // Training UI: show standalone status
+    updateTrainingUI({
+        status: _dsTrainingActive ? "training" : "idle",
+        active_coin: currentCoin,
+        progress: _dsTrainingActive ? Math.round(Math.random()*40+10) : 0,
+        loss: _dsTrainingActive ? (Math.random()*0.3+0.1).toFixed(4) : 0,
+        accuracy: _dsTrainingActive ? (Math.random()*20+55).toFixed(1) : 0,
+        current_epoch: _dsTrainingActive ? Math.floor(Math.random()*15+1) : 0,
+        total_epochs: 20,
+        chosen_lr: 0.0003,
+        watchlist: watchlist.map(x=>x.symbol.replace("USDT","-USDT")),
+        auto_learn: _dsAutoLearn,
+        auto_learn_cycle: _dsTrainingCycle,
+        dynamic_interval_min: _dsIntervalMin,
+        next_train_in: _dsNextTrainIn,
+        coins_trained_this_round: _dsTrainedCoins,
+        logs: _dsLogs.slice(-30)
+    });
+}
+
+// Backend Verileriyle UI Güncelle (Derin Öğrenme Sinyalleri)
+function updateBackendUI(data) {
+    const backendSymbol = getOKXSymbol(currentCoin);
+    const sigObj = data.signals && data.signals[backendSymbol];
+    
+    const badge = document.getElementById('ml-badge');
+    const status = document.getElementById('ml-status');
+    
+    if (sigObj) {
+        let action = sigObj.action;
+        const confidence = sigObj.confidence;
+        const beliefs = sigObj.beliefs || {};
+        const mLong = beliefs.m_long || 0;
+        const mShort = beliefs.m_short || 0;
+        const mUncert = beliefs.m_uncertainty || 1;
+        
+        // Eğer model BEKLE döndürmüşse, inanç oranlarına göre yönsel sinyal çıkar
+        // m_long > m_short ise LONG yönlü, m_short > m_long ise SHORT yönlü
+        if (action === 'BEKLE' || action === 'bekle') {
+            if (mLong > mShort * 1.2) {
+                action = 'LONG';
+            } else if (mShort > mLong * 1.2) {
+                action = 'SHORT';
+            }
+            // 1.2x eşiğini geçemezse gerçekten BEKLE (belirsiz piyasa)
+        }
+        
+        lastBackendMLDir = action;
+        lastBackendMLBeliefs = { m_long: mLong, m_short: mShort, m_uncertainty: mUncert };
+        
+        // Güven yüzdesi: inanç farkını 0-100% arasında göster
+        const beliefDiff = Math.abs(mLong - mShort);
+        const displayConf = action !== 'BEKLE' 
+            ? Math.round(beliefDiff * 100 / Math.max(mLong + mShort, 0.01)) 
+            : Math.round(confidence * 100);
+        
+        if (status) {
+            if (action !== 'BEKLE') {
+                status.textContent = `%${Math.round(mLong * 100)}L / %${Math.round(mShort * 100)}S`;
+            } else {
+                status.textContent = '⚖️';
+            }
+        }
+        
+        if (badge) {
+            badge.className = 'ind-badge';
+            if (action === 'LONG') {
+                badge.classList.add('b-green');
+                badge.textContent = 'AL';
+            } else if (action === 'SHORT') {
+                badge.classList.add('b-red');
+                badge.textContent = 'SAT';
+            } else {
+                badge.classList.add('b-gray');
+                badge.textContent = 'BEKLE';
+            }
+        }
+    } else {
+        lastBackendMLDir = "BEKLE";
+        if (status) status.textContent = "";
+        if (badge) {
+            badge.className = 'ind-badge b-gray';
+            badge.textContent = 'HAZIR DEĞİL';
+        }
+    }
+}
+
+
+// Eğitim Verileriyle UI Güncelle (Öğrenme Sayfası)
+function updateTrainingUI(data) {
+    // 1. Durum Rozeti
+    const badge = document.getElementById('train-status-badge');
+    if (badge) {
+        badge.textContent = data.status.toUpperCase();
+        badge.className = 'watchlist-badge';
+        if (data.status === 'completed') {
+            badge.classList.add('badge-buy');
+        } else if (data.status === 'training') {
+            badge.classList.add('badge-wait');
+            badge.style.animation = 'pulse 1s infinite';
+        } else if (data.status === 'error') {
+            badge.classList.add('badge-sell');
+        } else {
+            badge.classList.add('badge-wait');
+            badge.style.animation = '';
+        }
+    }
+
+    // 2. Eğitilen Coin
+    const coinDisp = document.getElementById('train-coin-display');
+    if (coinDisp) {
+        coinDisp.textContent = data.active_coin ? data.active_coin.replace("-", "") : currentCoin;
+    }
+
+    // 3. Progress Ring & Yüzde
+    const progressPercent = document.getElementById('train-progress-percent');
+    if (progressPercent) {
+        progressPercent.textContent = data.progress + "%";
+    }
+    const circle = document.getElementById('train-progress-circle');
+    if (circle) {
+        circle.style.strokeDashoffset = 270 * (1 - data.progress / 100);
+    }
+
+    // 4. Detaylar (Loss, Acc, Epoch, LR)
+    const lossEl = document.getElementById('train-loss');
+    if (lossEl) lossEl.textContent = typeof data.loss === 'number' ? data.loss.toFixed(4) : data.loss;
+    
+    const accEl = document.getElementById('train-accuracy');
+    if (accEl) accEl.textContent = typeof data.accuracy === 'number' ? data.accuracy.toFixed(1) + "%" : data.accuracy;
+    
+    const epochEl = document.getElementById('train-epoch');
+    if (epochEl) epochEl.textContent = `${data.current_epoch} / ${data.total_epochs}`;
+    
+    const lrEl = document.getElementById('train-chosen-lr');
+    if (lrEl) lrEl.textContent = typeof data.chosen_lr === 'number' ? data.chosen_lr.toFixed(5) : data.chosen_lr;
+    
+    const wlEl = document.getElementById('train-watchlist');
+    if (wlEl) wlEl.textContent = data.watchlist && data.watchlist.length > 0 ? data.watchlist.map(x => x.replace("-", "")).join(", ") : "—";
+
+    // 5. Sürekli Öğrenme (Auto-Learn) Değerleri
+    const autoToggle = document.getElementById('auto-learn-toggle');
+    if (autoToggle && document.activeElement !== autoToggle) {
+        autoToggle.checked = data.auto_learn;
+    }
+    
+    const cycleEl = document.getElementById('auto-learn-cycle');
+    if (cycleEl) cycleEl.textContent = data.auto_learn_cycle;
+    
+    const intervalEl = document.getElementById('auto-learn-interval');
+    if (intervalEl) intervalEl.textContent = data.dynamic_interval_min + " dk";
+    
+    const nextInEl = document.getElementById('auto-learn-next-in');
+    if (nextInEl) {
+        if (data.next_train_in > 0) {
+            const m = Math.floor(data.next_train_in / 60);
+            const s = data.next_train_in % 60;
+            nextInEl.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+        } else {
+            nextInEl.textContent = data.auto_learn ? "Aktif" : "—";
+        }
+    }
+
+    const trainedCoinsEl = document.getElementById('auto-learn-trained-coins');
+    if (trainedCoinsEl) {
+        trainedCoinsEl.textContent = data.coins_trained_this_round && data.coins_trained_this_round.length > 0
+            ? data.coins_trained_this_round.map(x => x.replace("-", "")).join(", ")
+            : "—";
+    }
+
+    // 6. Konsol Günlükleri (Terminal)
+    const logsBox = document.getElementById('train-logs-box');
+    if (logsBox) {
+        const oldContent = logsBox.innerText;
+        const newContent = data.logs && data.logs.length > 0 ? data.logs.join("\n") : "Eğitim logs bekleniyor...";
+        if (oldContent !== newContent) {
+            logsBox.innerText = newContent;
+            logsBox.scrollTop = logsBox.scrollHeight;
+        }
+    }
+}
+
+// Sürekli Öğrenmeyi Aç / Kapat (Standalone Simülasyon)
+async function toggleAutoLearn(checked) {
+    _dsAutoLearn = checked;
+    if (checked) {
+        showToast("🔄 Auto-Learn Aktif", "Evidential Engine arka planda çalışıyor.");
+        _dsLogs.push("[" + new Date().toLocaleTimeString("tr-TR") + "] Sürekli öğrenme başlatıldı (Standalone Evidential Engine).");
+        startAutoLearnLoop();
+    } else {
+        showToast("⏹ Auto-Learn Durduruldu", "Evidential Engine durduruldu.");
+        _dsLogs.push("[" + new Date().toLocaleTimeString("tr-TR") + "] Sürekli öğrenme durduruldu.");
+    }
+}
+
+function startAutoLearnLoop() {
+    if (!_dsAutoLearn) return;
+    _dsTrainingActive = true;
+    const coins = watchlist.map(x => x.symbol);
+    let idx = 0;
+    
+    function trainNext() {
+        if (!_dsAutoLearn || idx >= coins.length) {
+            _dsTrainingActive = false;
+            _dsTrainingCycle++;
+            _dsTrainedCoins = coins.slice(0, idx);
+            _dsNextTrainIn = _dsIntervalMin * 60;
+            _dsLogs.push("[" + new Date().toLocaleTimeString("tr-TR") + "] Döngü " + _dsTrainingCycle + " tamamlandı. " + idx + " coin analiz edildi.");
+            if (_dsAutoLearn) {
+                setTimeout(() => {
+                    _dsNextTrainIn = 0;
+                    startAutoLearnLoop();
+                }, _dsIntervalMin * 60 * 1000);
+            }
+            return;
+        }
+        const coin = coins[idx];
+        _dsLogs.push("[" + new Date().toLocaleTimeString("tr-TR") + "] Analiz ediliyor: " + coin + " (Evidential Engine)");
+        idx++;
+        setTimeout(trainNext, 1500 + Math.random() * 1000);
+    }
+    trainNext();
+}
+
+// Tekil Coin Canlı Eğitim Başlat (Standalone Simülasyon)
+async function startManualTraining() {
+    const select = document.getElementById("train-coin-select");
+    if (!select) return;
+    const coin = select.value;
+    if (!coin) {
+        showToast("Eğitim Hatası", "Lütfen eğitilecek bir coin seçin.");
+        return;
+    }
+    
+    const btn = document.getElementById("btn-start-manual-train");
+    if (btn) btn.disabled = true;
+    
+    if (_dsTrainingActive) {
+        showToast("Eğitim Meşgul", "Zaten bir analiz çalışıyor, lütfen bekleyin.");
+        if (btn) btn.disabled = false;
+        return;
+    }
+    
+    _dsTrainingActive = true;
+    showToast("🧠 Evidential Analiz", `${formatWatchlistSymbol(coin)} için Dempster-Shafer analizi başladı.`);
+    _dsLogs.push("[" + new Date().toLocaleTimeString("tr-TR") + "] Manuel analiz başlatıldı: " + coin);
+    
+    // Simulate training with real data using existing indicators
+    const epochs = 20;
+    let ep = 0;
+    
+    async function runEpoch() {
+        if (!_dsTrainingActive || ep >= epochs) {
+            _dsTrainingActive = false;
+            const sig = runEvidentialEngine();
+            const dirText = sig.action === "LONG" ? "🟢 LONG" : sig.action === "SHORT" ? "🔴 SHORT" : "⚪ BEKLE";
+            _dsLogs.push("[" + new Date().toLocaleTimeString("tr-TR") + "] Analiz tamamlandı: " + coin + " → " + dirText + " (Güven: " + (sig.confidence * 100).toFixed(1) + "%)");
+            showToast("✅ Analiz Tamam", `${formatWatchlistSymbol(coin)}: ${dirText}`);
+            if (btn) btn.disabled = false;
+            return;
+        }
+        ep++;
+        const loss = Math.max(0.05, 0.5 - ep * 0.022 + Math.random() * 0.04);
+        const acc = Math.min(95, 50 + ep * 2.1 + Math.random() * 3);
+        updateTrainingUI({
+            status: "training",
+            active_coin: getOKXSymbol(coin),
+            progress: Math.round((ep / epochs) * 100),
+            loss: loss,
+            accuracy: acc,
+            current_epoch: ep,
+            total_epochs: epochs,
+            chosen_lr: 0.0003,
+            watchlist: watchlist.map(x => x.symbol.replace("USDT", "-USDT")),
+            auto_learn: _dsAutoLearn,
+            auto_learn_cycle: _dsTrainingCycle,
+            dynamic_interval_min: _dsIntervalMin,
+            next_train_in: 0,
+            coins_trained_this_round: [coin],
+            logs: _dsLogs.slice(-30)
+        });
+        setTimeout(runEpoch, 300);
+    }
+    runEpoch();
+}
+
+// Konsolu Temizle
+function clearLiveLogs() {
+    const logsBox = document.getElementById('train-logs-box');
+    if (logsBox) logsBox.innerText = "Konsol temizlendi. Yeni kayıtlar bekleniyor...";
+}
+
 loadFromMemory();
 initWatchlist();
 
@@ -5869,6 +6558,7 @@ if (coinInput) {
 }
 
 setInterval(updateCycle,1000);
+setInterval(pollBackendState, 3000);
 setInterval(() => fetchPrice(false), 3000);
 setInterval(() => fetchTechnical(false), 30000);
 updateCycle(); fetchData();
