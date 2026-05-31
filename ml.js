@@ -208,7 +208,7 @@ async function _runTraining(closes, highs, lows, volumes, isBackground) {
         // ── Veri seti oluştur ──────────────────────────────────────────────
         const featureRows = [];
         const labels      = [];
-        const startIdx    = Math.max(31, n - 150);  // Son 150 bar
+        const startIdx    = Math.max(31, n - 500);  // Son 500 bar
 
         let posCount = 0, negCount = 0;
 
@@ -243,14 +243,15 @@ async function _runTraining(closes, highs, lows, volumes, isBackground) {
             let pTrimmed = 0, nTrimmed = 0;
             const balancedFeats  = [];
             const balancedLabels = [];
-            for (let j = 0; j < featureRows.length; j++) {
+            // Sondan başa doğru giderek en güncel (yeni) verileri koruyalım
+            for (let j = featureRows.length - 1; j >= 0; j--) {
                 if (labels[j] === 1 && pTrimmed < minCount) {
-                    balancedFeats.push(featureRows[j]);
-                    balancedLabels.push(1);
+                    balancedFeats.unshift(featureRows[j]); // Kronolojik sırayı korumak için başa ekle
+                    balancedLabels.unshift(1);
                     pTrimmed++;
                 } else if (labels[j] === 0 && nTrimmed < minCount) {
-                    balancedFeats.push(featureRows[j]);
-                    balancedLabels.push(0);
+                    balancedFeats.unshift(featureRows[j]);
+                    balancedLabels.unshift(0);
                     nTrimmed++;
                 }
             }
@@ -285,12 +286,12 @@ async function _runTraining(closes, highs, lows, volumes, isBackground) {
         }
 
         let lastAcc = 0;
-        const EPOCHS = isFineTune ? 20 : 45;   // Fine-tune'da daha az epoch yeterli
+        const EPOCHS = isFineTune ? 5 : 45;   // Fine-tune'da çok daha az epoch yeterli (aşırı öğrenmeyi önler)
 
         await trainModel.fit(xs, ys, {
             epochs: EPOCHS,
             batchSize: 16,
-            shuffle: true,
+            shuffle: false, // Zaman serisinde data leakage (veri sızıntısı) olmaması için false
             validationSplit: 0.15,
             verbose: 0,
             callbacks: {
